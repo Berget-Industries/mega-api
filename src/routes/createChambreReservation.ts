@@ -35,8 +35,7 @@ async function createChambreReservation(ctx: Context) {
       return;
     }
   
-    const reservationDetails = new ChambreReservation(input);
-    await reservationDetails.save();
+    const reservationDetails = await ChambreReservation.create(input)
     const response = {
       status: "success",
       message: "Reservationen har bokats!",
