@@ -1,0 +1,27 @@
+{
+    "rules": {
+      "chambreBookingRules": [
+        {
+          "inputKey": "numberOfGuests",
+          "action": "isBetweenNumbers",
+          "max": 64,
+          "min": 35
+        }
+      ],
+      "normalBookingRules": [
+        {
+          "name": "under13Rules",
+          "key": "numberOfGuests",
+          "min": 1,
+          "max": 12
+        },
+        { 
+          "name": "over13Rules",
+          "key": "numberOfGuests",
+          "min": 13,
+          "max": 300
+        }
+      ]
+    }
+  }
+  
