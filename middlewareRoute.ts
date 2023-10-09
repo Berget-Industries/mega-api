@@ -42,7 +42,6 @@ export async function loadControllers({ baseRoute, directory, router }: Middlewa
 		}
 	}
 
-	// Logga filer som inte är kopplade till en router.
 	const unlinkedFiles = files.filter((file) => !loadedFiles.includes(file));
 	if (unlinkedFiles.length > 0) {
 		for (const unlinkedFile of unlinkedFiles) {
