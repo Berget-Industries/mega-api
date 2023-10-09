@@ -3,6 +3,7 @@ dotenv.config();
 import mongoose from "mongoose";
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { loadControllers } from "./middlewareRoute.ts";
+import * as colors from "https://deno.land/std@0.203.0/fmt/colors.ts";
 const PORT = 3000;
 
 async function init() {
@@ -14,13 +15,14 @@ async function init() {
 			Deno.exit();
 		}
 
-		console.log("Connecting to database...");
+		console.log(colors.yellow("Connecting to database..."));
 		await initDatabase(mongooseConnect);
-		console.log("Connected to database successfully.");
+		console.log(colors.green("Connected to database successfully."));
 
-		console.log("Loading oak...");
 		await initOakApp();
-		console.log(`Oak loaded successfully, PORT: ${PORT}`);
+		setTimeout(() => {
+			console.log(colors.green(`Oak loaded successfully, PORT: ${PORT}`));
+		}, 1000);
 	} catch (error) {
 		console.log("error", error);
 		Deno.exit();

@@ -34,7 +34,6 @@ async function editChambreReservation(ctx: Context) {
 		};
 
 		const updateData: Record<string, any> = {};
-
 		for (const [key, value] of Object.entries(input)) {
 			if (key !== "_id" && value !== null && value !== "") {
 				updateData[key] = value;

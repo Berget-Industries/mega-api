@@ -1,7 +1,7 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
-const router = new Router();
 import checkBookingRules from "../utils/checkBookingRules.ts";
+const router = new Router();
 
 async function createChambreReservation(ctx: Context) {
 	try {

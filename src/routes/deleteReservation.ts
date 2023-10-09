@@ -23,7 +23,6 @@ async function deleteReservation(ctx: Context) {
 		}
 
 		const reservationDetails = await Reservation.findOneAndDelete(input);
-
 		if (!reservationDetails) {
 			return (ctx.response.status = 404), (ctx.response.body = errRes), console.log(errRes);
 		}

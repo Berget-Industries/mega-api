@@ -1,17 +1,13 @@
 import { model, Schema } from "mongoose";
-
 export type Course = {
 	name: string;
 	count: number;
 };
-
 export type SetMenu = Record<"starters" | "mains" | "desserts", Course[]>;
-
 export type Allergi = {
 	type: string;
 	count: number;
 };
-
 export type Drinks = {
 	type: string;
 	count: number;
@@ -24,12 +20,9 @@ interface IReservationChambreDetails {
 	date: Date;
 	time: string;
 	phone: string;
-
 	allergies: Allergi[];
-
 	menu: SetMenu;
 	drinks: Drinks[];
-
 	comment: string;
 	other: string;
 }
