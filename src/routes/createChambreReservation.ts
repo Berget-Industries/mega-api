@@ -5,18 +5,44 @@ import checkBookingRules from "../utils/checkBookingRules.ts";
 
 async function createChambreReservation(ctx: Context) {
 	try {
-		const { name, email, date, time, numberOfGuests } = await ctx.request.body().value;
+		const {
+			name,
+			email,
+			date,
+			time,
+			numberOfGuests,
+			phone,
+			allergies,
+			menu,
+			drinks,
+			comment,
+			other,
+		} = await ctx.request.body().value;
 		const input = {
 			name,
 			email,
 			date,
 			time,
 			numberOfGuests,
+			phone,
+			allergies,
+			menu,
+			drinks,
+			comment,
+			other,
 		};
 
 		const isNull = Object.entries(input)
-			.filter(([k, v]) => v == null || v === "")
+			.filter(([k, v]) => {
+				if (k === "other" || k === "comment") {
+					return false;
+				} else {
+					return v == null || v === "";
+				}
+			})
 			.map(([k, v]) => k);
+
+		console.log(isNull);
 
 		const missingInfo = {
 			status: "missing-information",
