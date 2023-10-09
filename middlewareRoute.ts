@@ -26,9 +26,7 @@ export async function loadControllers({ baseRoute, directory, router }: Middlewa
 			if (controllerModule.default) {
 				const controller = controllerModule.default;
 				if (controller instanceof Router) {
-					const text = colors.green(
-						`Successfully Loaded routes from: ${join(directory, file)}`
-					);
+					const text = colors.green(`Loaded route from: ${join(directory, file)}`);
 					console.log(routerName + text);
 					router.use(`${baseRoute}`, controller.routes());
 					loadedFiles.push(file);
@@ -41,6 +39,7 @@ export async function loadControllers({ baseRoute, directory, router }: Middlewa
 			console.error(routerName + errorMessage);
 		}
 	}
+	console.log(routerName + colors.green("Successfully loaded Oak Router."));
 
 	const unlinkedFiles = files.filter((file) => !loadedFiles.includes(file));
 	if (unlinkedFiles.length > 0) {

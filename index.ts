@@ -3,7 +3,6 @@ dotenv.config();
 import mongoose from "mongoose";
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { loadControllers } from "./middlewareRoute.ts";
-import * as colors from "https://deno.land/std@0.203.0/fmt/colors.ts";
 const PORT = 3000;
 
 async function init() {
@@ -15,14 +14,13 @@ async function init() {
 			Deno.exit();
 		}
 
-		console.log(colors.yellow("Connecting to database..."));
+		console.log("Connecting to database...");
 		await initDatabase(mongooseConnect);
-		console.log(colors.green("Connected to database successfully."));
+		console.log("Connected to database successfully.");
 
+		console.log("Loading Oak...");
 		await initOakApp();
-		setTimeout(() => {
-			console.log(colors.green(`Oak loaded successfully, PORT: ${PORT}`));
-		}, 1000);
+		console.log(`Oak loaded successfully on PORT: ${PORT}.`);
 	} catch (error) {
 		console.log("error", error);
 		Deno.exit();
@@ -38,21 +36,18 @@ async function initDatabase(uri: string) {
 	}
 }
 
-function initOakApp(): Promise<void> {
-	return new Promise<void>((resolve) => {
-		const app = new Application();
-		const router = new Router();
-		const middlewareOptions = {
-			baseRoute: "/api",
-			directory: "./src/routes",
-			router,
-		};
-		loadControllers(middlewareOptions);
-		app.use(router.routes());
-		app.use(router.allowedMethods());
-		app.listen({ port: PORT });
-		resolve();
-	});
+async function initOakApp() {
+	const app = new Application();
+	const router = new Router();
+	const middlewareOptions = {
+		baseRoute: "/api",
+		directory: "./src/routes",
+		router,
+	};
+	await loadControllers(middlewareOptions);
+	app.use(router.routes());
+	app.use(router.allowedMethods());
+	app.listen({ port: PORT });
 }
 
 init();
