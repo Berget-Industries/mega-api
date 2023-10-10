@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { loadControllers } from "./middlewareRoute.ts";
 const PORT: string | undefined = Deno.env.get("PORT");
-const parsedPORT = PORT ? parseInt(PORT, 10) : NaN;
+const parsedPORT = PORT ? parseInt(PORT, 10) : null;
 
 async function init() {
 	try {
@@ -48,10 +48,12 @@ async function initOakApp() {
 	await loadControllers(middlewareOptions);
 	app.use(router.routes());
 	app.use(router.allowedMethods());
-	if (isNaN(parsedPORT)) {
+	if (parsedPORT) {
+		app.listen({ port: parsedPORT });
+	} else {
 		console.error("PORT är antingen inte satt eller inte ett giltigt heltal.");
+		Deno.exit();
 	}
-	app.listen({ port: parsedPORT });
 }
 
 init();
