@@ -23,7 +23,7 @@ interface IReservationChambreDetails {
 	menu: string;
 	starters: Course[];
 	mains: Course[];
-	dessert: Course[];
+	desserts: Course[];
 	drinks: Drinks[];
 	comment: string;
 	other: string;
