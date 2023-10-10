@@ -1,6 +1,7 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
+import { Types } from "npm:mongoose";
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
@@ -22,6 +23,16 @@ async function editChambreReservation(ctx: Context) {
 			comment,
 			other,
 		} = await ctx.request.body().value;
+
+		if (!_id && !Types.ObjectId.isValid(_id)) {
+			ctx.response.status = 200;
+			ctx.response.body = {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservation. Ogiltigt bokningsnummer.",
+			};
+
+			return;
+		}
 		const input = {
 			name,
 			email,
