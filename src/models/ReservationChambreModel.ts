@@ -40,7 +40,7 @@ const ReservationChambreScheme = new Schema<IReservationChambreDetails>({
 	menu: { type: String },
 	starters: { type: Array },
 	mains: { type: Array },
-	dessert: { type: Array },
+	desserts: { type: Array },
 	drinks: { type: Array },
 	comment: { type: String },
 	other: { type: String },
