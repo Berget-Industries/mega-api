@@ -38,14 +38,15 @@ async function createChambreReservation(ctx: Context) {
 			other,
 		};
 
-		const isNull = Object.entries(input)
-			.filter(([k, v]) => {
-				if (k === "other" || k === "comment") {
-					return false;
-				} else {
-					return v == null || v === "";
-				}
-			})
+		const isNull = Object.entries({
+			name,
+			email,
+			numberOfGuests,
+			date,
+			time,
+			phone,
+		})
+			.filter(([k, v]) => v == null)
 			.map(([k, v]) => k);
 
 		console.log(isNull);
