@@ -19,12 +19,12 @@ async function deleteReservation(ctx: Context) {
 				status: "missing-id",
 				message: "Saknar reservations id.",
 			};
-			return (ctx.response.status = 404), (ctx.response.body = message), console.log(message);
+			return (ctx.response.status = 200), (ctx.response.body = message), console.log(message);
 		}
 
 		const reservationDetails = await Reservation.findOneAndDelete(input);
 		if (!reservationDetails) {
-			return (ctx.response.status = 404), (ctx.response.body = errRes), console.log(errRes);
+			return (ctx.response.status = 200), (ctx.response.body = errRes), console.log(errRes);
 		}
 
 		const response = {
@@ -34,7 +34,7 @@ async function deleteReservation(ctx: Context) {
 		};
 
 		console.log(response);
-		ctx.response.status = 201;
+		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {

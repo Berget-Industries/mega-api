@@ -3,7 +3,6 @@ export type Course = {
 	name: string;
 	count: number;
 };
-export type SetMenu = Record<"starters" | "mains" | "desserts", Course[]>;
 export type Allergi = {
 	type: string;
 	count: number;
@@ -21,7 +20,10 @@ interface IReservationChambreDetails {
 	time: string;
 	phone: string;
 	allergies: Allergi[];
-	menu: SetMenu;
+	menu: string;
+	starters: Course[];
+	mains: Course[];
+	dessert: Course[];
 	drinks: Drinks[];
 	comment: string;
 	other: string;
@@ -35,7 +37,10 @@ const ReservationChambreScheme = new Schema<IReservationChambreDetails>({
 	numberOfGuests: { type: Number },
 	phone: { type: String },
 	allergies: { type: Array },
-	menu: { type: Object },
+	menu: { type: String },
+	starters: { type: Array },
+	mains: { type: Array },
+	dessert: { type: Array },
 	drinks: { type: Array },
 	comment: { type: String },
 	other: { type: String },

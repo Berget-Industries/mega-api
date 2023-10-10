@@ -25,7 +25,7 @@ async function createReservation(ctx: Context) {
 		};
 
 		if (isNull.length > 0) {
-			ctx.response.status = 404;
+			ctx.response.status = 200;
 			ctx.response.body = missingInfo;
 			console.log(missingInfo);
 			return;
@@ -39,7 +39,7 @@ async function createReservation(ctx: Context) {
 		};
 
 		console.log(response);
-		ctx.response.status = 201;
+		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
 		const errRes = {

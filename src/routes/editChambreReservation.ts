@@ -15,6 +15,9 @@ async function editChambreReservation(ctx: Context) {
 			phone,
 			allergies,
 			menu,
+			starters,
+			mains,
+			desserts,
 			drinks,
 			comment,
 			other,
@@ -28,6 +31,9 @@ async function editChambreReservation(ctx: Context) {
 			phone,
 			allergies,
 			menu,
+			starters,
+			mains,
+			desserts,
 			drinks,
 			comment,
 			other,
@@ -58,7 +64,7 @@ async function editChambreReservation(ctx: Context) {
 		};
 
 		console.log(response);
-		ctx.response.status = 201;
+		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
 		const errRes = {

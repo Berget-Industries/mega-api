@@ -48,7 +48,7 @@ async function editReservation(ctx: Context) {
 		};
 
 		console.log(response);
-		ctx.response.status = 201;
+		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {

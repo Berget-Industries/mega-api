@@ -14,6 +14,9 @@ async function createChambreReservation(ctx: Context) {
 			phone,
 			allergies,
 			menu,
+			starters,
+			mains,
+			desserts,
 			drinks,
 			comment,
 			other,
@@ -27,6 +30,9 @@ async function createChambreReservation(ctx: Context) {
 			phone,
 			allergies,
 			menu,
+			starters,
+			mains,
+			desserts,
 			drinks,
 			comment,
 			other,
@@ -52,7 +58,7 @@ async function createChambreReservation(ctx: Context) {
 		};
 
 		if (isNull.length > 0) {
-			ctx.response.status = 206;
+			ctx.response.status = 200;
 			ctx.response.body = missingInfo;
 			console.log(missingInfo);
 			return;
@@ -71,7 +77,7 @@ async function createChambreReservation(ctx: Context) {
 		};
 
 		console.log(response);
-		ctx.response.status = 201;
+		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
 		const errRes = {
