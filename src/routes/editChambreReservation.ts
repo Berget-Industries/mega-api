@@ -74,11 +74,10 @@ async function editChambreReservation(ctx: Context) {
 		);
 
 		if (!reservationDetails) {
-			return (
-				(ctx.response.status = 200),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
+			ctx.response.status = 200;
+			ctx.response.body = invalidIDErrMsg;
+			console.log(invalidIDErrMsg);
+			return;
 		}
 
 		const response = {
@@ -91,11 +90,10 @@ async function editChambreReservation(ctx: Context) {
 		ctx.response.body = response;
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
-			return (
-				(ctx.response.status = 400),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
+			ctx.response.status = 400;
+			ctx.response.body = invalidIDErrMsg;
+			console.log(invalidIDErrMsg);
+			return;
 		}
 		console.log(invalidIDErrMsg);
 		ctx.response.status = 500;

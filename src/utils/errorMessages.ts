@@ -10,7 +10,7 @@ export const missingInfoErrMsg = {
 
 export const invalidIDErrMsg = {
 	status: "invalid-information",
-	message: "ID:et är inte giltigt.",
+	message: "Kunde inte hitta reservationen. ID:et är ogiltigt",
 };
 
 export const createResSuccessMsg = {

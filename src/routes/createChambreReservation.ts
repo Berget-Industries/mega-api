@@ -47,7 +47,7 @@ async function createChambreReservation(ctx: Context) {
 			time,
 			phone,
 		})
-			.filter(([k, v]) => v == null)
+			.filter(([k, v]) => v == null || v === "")
 			.map(([k, v]) => k);
 
 		console.log(isNull);
