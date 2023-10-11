@@ -1,12 +1,9 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
-<<<<<<< HEAD
 import { editResSuccessMsg, invalidIDErrMsg } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-=======
 import { Types } from "npm:mongoose";
->>>>>>> 60e84ed9fddb177438111549143467f4328f7fb7
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
