@@ -1,17 +1,14 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
-import { missingIdErrMsg, invalidIDErrMsg, deleteResSuccessMsg } from "../utils/errorMessages.ts";
+import { missingIdErrMsg, invalidIDErrMsg, getDataSuccessMsg } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 const router = new Router();
 
-async function deleteChambreReservation(ctx: Context) {
+async function getReservationData(ctx: Context) {
 	try {
 		const { _id } = await ctx.request.body().value;
-		const input = {
-			_id,
-		};
 
-		if (!input._id) {
+		if (!_id) {
 			missingIdErrMsg;
 			return (
 				(ctx.response.status = 200),
@@ -20,18 +17,10 @@ async function deleteChambreReservation(ctx: Context) {
 			);
 		}
 
-		const reservationDetails = await ChambreReservation.findOneAndDelete(input);
-		if (!reservationDetails) {
-			return (
-				(ctx.response.status = 200),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
-		}
-
+		const getData = await ChambreReservation.findById(_id);
 		const response = {
-			...deleteResSuccessMsg,
-			reservationDetails: reservationDetails,
+			...getDataSuccessMsg,
+			reservationData: getData,
 		};
 
 		console.log(response);
@@ -52,6 +41,6 @@ async function deleteChambreReservation(ctx: Context) {
 	}
 }
 
-router.post("/deleteChambreReservation", deleteChambreReservation);
+router.post("/getReservationData", getReservationData);
 
 export default router;

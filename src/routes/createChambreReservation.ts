@@ -1,6 +1,7 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
+import { missingInfoErrMsg, createResSuccessMsg } from "../utils/errorMessages.ts";
 const router = new Router();
 
 async function createChambreReservation(ctx: Context) {
@@ -51,17 +52,12 @@ async function createChambreReservation(ctx: Context) {
 
 		console.log(isNull);
 
-		const missingInfo = {
-			status: "missing-information",
-			message:
-				"Det gick inte att skapa reservationen. Följande information saknas: " +
-				isNull.toString(),
-		};
+		missingInfoErrMsg.message += isNull.toString();
 
 		if (isNull.length > 0) {
 			ctx.response.status = 200;
-			ctx.response.body = missingInfo;
-			console.log(missingInfo);
+			ctx.response.body = missingInfoErrMsg;
+			console.log(missingInfoErrMsg);
 			return;
 		}
 
@@ -72,8 +68,7 @@ async function createChambreReservation(ctx: Context) {
 
 		const reservationDetails = await ChambreReservation.create(input);
 		const response = {
-			status: "success",
-			message: "Reservationen har bokats!",
+			...createResSuccessMsg,
 			reservationData: reservationDetails,
 		};
 

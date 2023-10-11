@@ -1,6 +1,8 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
+import { editResSuccessMsg, invalidIDErrMsg } from "../utils/errorMessages.ts";
+import mongoose from "mongoose";
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
@@ -57,9 +59,16 @@ async function editChambreReservation(ctx: Context) {
 			{ new: true }
 		);
 
+		if (!reservationDetails) {
+			return (
+				(ctx.response.status = 200),
+				(ctx.response.body = invalidIDErrMsg),
+				console.log(invalidIDErrMsg)
+			);
+		}
+
 		const response = {
-			status: "success",
-			message: "Reservationen har uppdaterats!",
+			...editResSuccessMsg,
 			reservationData: reservationDetails,
 		};
 
@@ -67,13 +76,16 @@ async function editChambreReservation(ctx: Context) {
 		ctx.response.status = 200;
 		ctx.response.body = response;
 	} catch (error) {
-		const errRes = {
-			status: "internal-error",
-			message: "Kunde inte ändra reservationen.",
-		};
-		console.log(errRes);
+		if (error instanceof mongoose.Error.CastError) {
+			return (
+				(ctx.response.status = 400),
+				(ctx.response.body = invalidIDErrMsg),
+				console.log(invalidIDErrMsg)
+			);
+		}
+		console.log(invalidIDErrMsg);
 		ctx.response.status = 500;
-		ctx.response.body = errRes;
+		ctx.response.body = invalidIDErrMsg;
 		console.log("Fel inträffade: ", error);
 	}
 }
