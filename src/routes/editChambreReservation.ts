@@ -26,15 +26,6 @@ async function editChambreReservation(ctx: Context) {
 			other,
 		} = await ctx.request.body().value;
 
-		if (!_id && !Types.ObjectId.isValid(_id)) {
-			ctx.response.status = 200;
-			ctx.response.body = {
-				status: "invalid-id",
-				message: "Kunde inte hitta reservation. Ogiltigt bokningsnummer.",
-			};
-
-			return;
-		}
 		const input = {
 			name,
 			email,
