@@ -52,12 +52,15 @@ async function createChambreReservation(ctx: Context) {
 
 		console.log(isNull);
 
-		missingInfoErrMsg.message += isNull.toString();
-
 		if (isNull.length > 0) {
+			const body = {
+				...missingInfoErrMsg,
+				message: missingInfoErrMsg.message + isNull.toString(),
+			};
+
 			ctx.response.status = 200;
-			ctx.response.body = missingInfoErrMsg;
-			console.log(missingInfoErrMsg);
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
 
