@@ -1,9 +1,10 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
-import { editResSuccessMsg, invalidIDErrMsg } from "../utils/errorMessages.ts";
-import mongoose from "mongoose";
+import { editResSuccessMsg, invalidIDErrMsg, notAvailableErrMsg } from "../utils/errorMessages.ts";
+import { checkAvailableDates, editReservationFromDate } from "../utils/availableDates.ts";
 import { Types } from "npm:mongoose";
+import mongoose from "mongoose";
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
@@ -43,6 +44,12 @@ async function editChambreReservation(ctx: Context) {
 			other,
 		};
 
+		if (!_id && !Types.ObjectId.isValid(_id)) {
+			ctx.response.status = 200;
+			ctx.response.body = invalidIDErrMsg;
+			return;
+		}
+
 		const updateData: Record<string, any> = {};
 		for (const [key, value] of Object.entries(input)) {
 			if (key !== "_id" && value !== null && value !== "") {
@@ -50,10 +57,19 @@ async function editChambreReservation(ctx: Context) {
 			}
 		}
 
+		const result = checkAvailableDates(date, time, _id);
+		if ((await result) === "Kan inte bokas") {
+			ctx.response.status = 500;
+			ctx.response.body = notAvailableErrMsg;
+			return;
+		}
+
 		const rulesPassed = checkBookingRules(input, ctx);
 		if (!rulesPassed) {
 			return;
 		}
+
+		await editReservationFromDate(_id, time, date);
 
 		const reservationDetails = await ChambreReservation.findOneAndUpdate(
 			{ _id },

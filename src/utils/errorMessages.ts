@@ -16,23 +16,29 @@ export const invalidIDErrMsg = {
 export const createResSuccessMsg = {
 	status: "success",
 	message: "Reservationen har bokats!",
-	reservationData: {},
+	reservationDetails: {},
 };
 
 export const editResSuccessMsg = {
 	status: "success",
 	message: "Reservationen har uppdaterats!",
-	reservationData: {},
+	reservationDetails: {},
 };
 
 export const deleteResSuccessMsg = {
 	status: "success",
 	message: "Reservationen har tagits bort!",
-	reservationData: {},
+	reservationDetails: {},
 };
 
 export const getDataSuccessMsg = {
 	status: "success",
 	message: "Reservation har hämtats!",
 	reservationData: {},
+};
+
+export const notAvailableErrMsg = {
+	status: "not-available",
+	message:
+		"Reservationen kunde inte skapas eftersom datumet eller tiden kunden angav är upptagen",
 };

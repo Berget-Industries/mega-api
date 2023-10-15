@@ -1,5 +1,6 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
+import { deleteReservationFromDate } from "../utils/availableDates.ts";
 import { missingIdErrMsg, invalidIDErrMsg, deleteResSuccessMsg } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 const router = new Router();
@@ -19,8 +20,10 @@ async function deleteChambreReservation(ctx: Context) {
 				console.log(missingIdErrMsg)
 			);
 		}
+		await deleteReservationFromDate(_id);
 
 		const reservationDetails = await ChambreReservation.findOneAndDelete(input);
+
 		if (!reservationDetails) {
 			return (
 				(ctx.response.status = 200),
