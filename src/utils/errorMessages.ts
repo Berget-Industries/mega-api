@@ -13,6 +13,12 @@ export const invalidIDErrMsg = {
 	message: "Kunde inte hitta reservationen. ID:et är ogiltigt",
 };
 
+export const notAvailableErrMsg = {
+	status: "not-available",
+	message:
+		"Reservationen kunde inte skapas eftersom datumet eller tiden kunden angav är upptagen",
+};
+
 export const createResSuccessMsg = {
 	status: "success",
 	message: "Reservationen har bokats!",
@@ -35,10 +41,4 @@ export const getDataSuccessMsg = {
 	status: "success",
 	message: "Reservation har hämtats!",
 	reservationData: {},
-};
-
-export const notAvailableErrMsg = {
-	status: "not-available",
-	message:
-		"Reservationen kunde inte skapas eftersom datumet eller tiden kunden angav är upptagen",
 };

@@ -37,14 +37,20 @@ export async function addReservationToDate(date: string, time: string, addToDate
 	if (time >= "11:30" && time <= "16:00") {
 		const update = {
 			$set: {
-				lunch: { isAvailable: false },
+				lunch: {
+					...addToDate,
+					isAvailable: false,
+				},
 			},
 		};
 		await AvailableDate.updateOne(updateDate, update);
 	} else if (time >= "17:00" && time < "21:00") {
 		const update = {
 			$set: {
-				dinner: { addToDate, isAvailable: false },
+				dinner: {
+					...addToDate,
+					isAvailable: false,
+				},
 			},
 		};
 		await AvailableDate.updateOne(updateDate, update);
@@ -93,15 +99,15 @@ export async function editReservationFromDate(_id: string, time: string, date: D
 	if (document) {
 		let reservationToMove;
 		if (document.lunch._id === searchId) {
-			reservationToMove = document.lunch;
+			(reservationToMove = document.lunch), document.lunch.isAvailable;
 		} else if (document.dinner._id === searchId) {
-			reservationToMove = document.dinner;
+			(reservationToMove = document.dinner), document.dinner.isAvailable;
 		}
 		if (document.lunch._id === searchId) {
 			document.lunch = {
 				isAvailable: true,
 			};
-		} else if (document.dinner === searchId) {
+		} else if (document.dinner._id === searchId) {
 			document.dinner = {
 				isAvailable: true,
 			};

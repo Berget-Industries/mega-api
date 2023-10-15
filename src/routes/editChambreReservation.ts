@@ -44,9 +44,18 @@ async function editChambreReservation(ctx: Context) {
 			other,
 		};
 
-		if (!_id && !Types.ObjectId.isValid(_id)) {
+		const checkIfIDExist = await ChambreReservation.findOne({ _id });
+
+		if ((!_id && !Types.ObjectId.isValid(_id)) || !checkIfIDExist) {
 			ctx.response.status = 200;
 			ctx.response.body = invalidIDErrMsg;
+			return;
+		}
+
+		const result = checkAvailableDates(date, time, _id);
+		if ((await result) === "Kan inte bokas") {
+			ctx.response.status = 500;
+			ctx.response.body = notAvailableErrMsg;
 			return;
 		}
 
@@ -55,13 +64,6 @@ async function editChambreReservation(ctx: Context) {
 			if (key !== "_id" && value !== null && value !== "") {
 				updateData[key] = value;
 			}
-		}
-
-		const result = checkAvailableDates(date, time, _id);
-		if ((await result) === "Kan inte bokas") {
-			ctx.response.status = 500;
-			ctx.response.body = notAvailableErrMsg;
-			return;
 		}
 
 		const rulesPassed = checkBookingRules(input, ctx);
@@ -76,13 +78,6 @@ async function editChambreReservation(ctx: Context) {
 			{ $set: updateData },
 			{ new: true }
 		);
-
-		if (!reservationDetails) {
-			ctx.response.status = 200;
-			ctx.response.body = invalidIDErrMsg;
-			console.log(invalidIDErrMsg);
-			return;
-		}
 
 		const response = {
 			...editResSuccessMsg,
