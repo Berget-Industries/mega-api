@@ -1,4 +1,4 @@
-import rulesFile from "../../config.json";
+import rulesFile from "../../config.json" with { type: "json" };
 
 export interface Rule {
 	inputKey: string;
