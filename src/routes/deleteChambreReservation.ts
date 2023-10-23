@@ -1,7 +1,12 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import { deleteReservationFromDate } from "../utils/availableDates.ts";
-import { missingIdErrMsg, invalidIDErrMsg, deleteResSuccessMsg } from "../utils/errorMessages.ts";
+import {
+	getMissingIdErrorMessage,
+	getInvalidIdErrorMessage,
+	getDeleteReservationErrorMessage,
+	getDeleteReservationSuccessMessage,
+} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 const router = new Router();
 
@@ -13,45 +18,41 @@ async function deleteChambreReservation(ctx: Context) {
 		};
 
 		if (!input._id) {
-			missingIdErrMsg;
-			return (
-				(ctx.response.status = 200),
-				(ctx.response.body = missingIdErrMsg),
-				console.log(missingIdErrMsg)
-			);
+			const body = getMissingIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
+			return;
 		}
-		await deleteReservationFromDate(_id);
 
+		await deleteReservationFromDate(_id);
 		const reservationDetails = await ChambreReservation.findOneAndDelete(input);
 
 		if (!reservationDetails) {
-			return (
-				(ctx.response.status = 200),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
+			const body = getInvalidIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
+			return;
 		}
 
-		const response = {
-			...deleteResSuccessMsg,
-			reservationDetails: reservationDetails,
-		};
-
-		console.log(response);
+		const body = getDeleteReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
-		ctx.response.body = response;
+		ctx.response.body = body;
+		console.log(body);
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
-			return (
-				(ctx.response.status = 400),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
+			const body = getMissingIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
+			return;
 		}
-		console.log(invalidIDErrMsg);
+		const body = getDeleteReservationErrorMessage();
 		ctx.response.status = 500;
-		ctx.response.body = invalidIDErrMsg;
-		console.log("Fel inträffade: ", error);
+		ctx.response.body = body;
+		console.log(body);
+		return;
 	}
 }
 

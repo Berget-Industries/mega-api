@@ -3,12 +3,13 @@ import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import { checkAvailableDates, addReservationToDate } from "../utils/availableDates.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
 import {
-	missingInfoErrMsg,
-	createResSuccessMsg,
-	notAvailableErrMsg,
+	getMissingInformationErrorMessage,
+	getCreateReservationSuccessMessage,
+	getNotAvailableErrorMessage,
+	getCreateReservationErrorMessage,
 } from "../utils/errorMessages.ts";
-const router = new Router();
 
+const router = new Router();
 async function createChambreReservation(ctx: Context) {
 	try {
 		const {
@@ -56,12 +57,12 @@ async function createChambreReservation(ctx: Context) {
 		})
 			.filter(([k, v]) => v == null || v === "")
 			.map(([k, v]) => k);
-		missingInfoErrMsg.message + isNull.toString();
 
 		if (isNull.length > 0) {
+			const body = getMissingInformationErrorMessage(isNull.toString());
 			ctx.response.status = 200;
-			ctx.response.body = missingInfoErrMsg;
-			console.log(missingInfoErrMsg);
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
 
@@ -70,10 +71,12 @@ async function createChambreReservation(ctx: Context) {
 			return;
 		}
 
-		const result = checkAvailableDates(date, time, _id);
-		if ((await result) === "Kan inte bokas") {
-			ctx.response.status = 500;
-			ctx.response.body = notAvailableErrMsg;
+		const result = await checkAvailableDates(date, time, _id);
+		if (result === "Kan inte bokas") {
+			const body = getNotAvailableErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
 
@@ -83,21 +86,15 @@ async function createChambreReservation(ctx: Context) {
 		};
 
 		await addReservationToDate(date, time, addToDate);
-		const response = {
-			...createResSuccessMsg,
-			reservationDetails: reservationDetails,
-		};
-		console.log(response);
+		const body = getCreateReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
-		ctx.response.body = response;
+		ctx.response.body = body;
+		console.log(body);
 	} catch (error) {
-		const errRes = {
-			status: "internal-error",
-			message: "Kunde inte skapa reservation",
-		};
-		console.log(errRes);
+		const body = getCreateReservationErrorMessage(error);
 		ctx.response.status = 500;
-		ctx.response.body = errRes;
+		ctx.response.body = body;
+		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
 }

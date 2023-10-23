@@ -1,6 +1,11 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
-import { missingIdErrMsg, invalidIDErrMsg, getDataSuccessMsg } from "../utils/errorMessages.ts";
+import {
+	getMissingIdErrorMessage,
+	getReservationDataErrorMessage,
+	getInvalidIdErrorMessage,
+	getReservationDataSuccessMessage,
+} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 const router = new Router();
 
@@ -9,34 +14,32 @@ async function getReservationData(ctx: Context) {
 		const { _id } = await ctx.request.body().value;
 
 		if (!_id) {
-			missingIdErrMsg;
-			return (
-				(ctx.response.status = 200),
-				(ctx.response.body = missingIdErrMsg),
-				console.log(missingIdErrMsg)
-			);
+			const body = getMissingIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
+			return;
 		}
 
-		const getData = await ChambreReservation.findById(_id);
-		const response = {
-			...getDataSuccessMsg,
-			reservationData: getData,
-		};
+		const reservationDetails = await ChambreReservation.findById(_id);
 
-		console.log(response);
+		const body = getReservationDataSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
-		ctx.response.body = response;
+		ctx.response.body = body;
+		console.log(body);
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
-			return (
-				(ctx.response.status = 400),
-				(ctx.response.body = invalidIDErrMsg),
-				console.log(invalidIDErrMsg)
-			);
+			const body = getInvalidIdErrorMessage();
+			ctx.response.status = 400;
+			ctx.response.body = body;
+			console.log(body);
+			return;
 		}
-		console.log(invalidIDErrMsg);
+
+		const body = getReservationDataErrorMessage(error);
 		ctx.response.status = 500;
-		ctx.response.body = invalidIDErrMsg;
+		ctx.response.body = body;
+		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
 }

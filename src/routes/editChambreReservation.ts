@@ -1,10 +1,13 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import checkBookingRules from "../utils/checkBookingRules.ts";
-import { editResSuccessMsg, invalidIDErrMsg, notAvailableErrMsg } from "../utils/errorMessages.ts";
-import { checkAvailableDates, editReservationFromDate } from "../utils/availableDates.ts";
-import { Types } from "npm:mongoose";
+import {
+	getEditReservationSuccessMessage,
+	getInvalidIdErrorMessage,
+	getEditReservationErrorMessage,
+} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
+import { Types } from "npm:mongoose";
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
@@ -44,21 +47,6 @@ async function editChambreReservation(ctx: Context) {
 			other,
 		};
 
-		const checkIfIDExist = await ChambreReservation.findOne({ _id });
-
-		if ((!_id && !Types.ObjectId.isValid(_id)) || !checkIfIDExist) {
-			ctx.response.status = 200;
-			ctx.response.body = invalidIDErrMsg;
-			return;
-		}
-
-		const result = checkAvailableDates(date, time, _id);
-		if ((await result) === "Kan inte bokas") {
-			ctx.response.status = 500;
-			ctx.response.body = notAvailableErrMsg;
-			return;
-		}
-
 		const updateData: Record<string, any> = {};
 		for (const [key, value] of Object.entries(input)) {
 			if (key !== "_id" && value !== null && value !== "") {
@@ -71,32 +59,36 @@ async function editChambreReservation(ctx: Context) {
 			return;
 		}
 
-		await editReservationFromDate(_id, time, date);
-
 		const reservationDetails = await ChambreReservation.findOneAndUpdate(
 			{ _id },
 			{ $set: updateData },
 			{ new: true }
 		);
 
-		const response = {
-			...editResSuccessMsg,
-			reservationData: reservationDetails,
-		};
-
-		console.log(response);
-		ctx.response.status = 200;
-		ctx.response.body = response;
-	} catch (error) {
-		if (error instanceof mongoose.Error.CastError) {
-			ctx.response.status = 400;
-			ctx.response.body = invalidIDErrMsg;
-			console.log(invalidIDErrMsg);
+		if (!reservationDetails) {
+			const body = getInvalidIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
-		console.log(invalidIDErrMsg);
+
+		const body = getEditReservationSuccessMessage(reservationDetails);
+		ctx.response.status = 200;
+		ctx.response.body = body;
+		console.log(body);
+	} catch (error) {
+		if (error instanceof mongoose.Error.CastError) {
+			const body = getInvalidIdErrorMessage();
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
+			return;
+		}
+		const body = getEditReservationErrorMessage(error);
 		ctx.response.status = 500;
-		ctx.response.body = invalidIDErrMsg;
+		ctx.response.body = body;
+		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
 }
