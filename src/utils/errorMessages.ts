@@ -12,6 +12,11 @@ export const getInvalidIdErrorMessage = () => ({
 	message: "Kunde inte hitta reservationen. ID:et är ogiltigt",
 });
 
+export const getNotAvailableErrorMessage = () => ({
+	status: "not-available",
+	message: "Tiden är inte ledig!",
+});
+
 export const getCreateReservationSuccessMessage = (reservationData: object) => ({
 	status: "success",
 	message: "Reservationen har bokats!",
