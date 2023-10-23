@@ -1,12 +1,13 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
 import { checkAvailableDates, addReservationToDate } from "../utils/availableDates.ts";
-import checkBookingRules from "../utils/checkBookingRules.ts";
+import { checkChambreBookingRules } from "../utils/checkBookingRules.ts";
 import {
 	getMissingInformationErrorMessage,
 	getCreateReservationSuccessMessage,
 	getNotAvailableErrorMessage,
 	getCreateReservationErrorMessage,
+	getBrokenRulesErrorMessage,
 } from "../utils/errorMessages.ts";
 
 const router = new Router();
@@ -66,8 +67,12 @@ async function createChambreReservation(ctx: Context) {
 			return;
 		}
 
-		const rulesPassed = checkBookingRules(input, ctx);
-		if (!rulesPassed) {
+		const brokenRules = checkChambreBookingRules(input);
+		if (brokenRules.length > 0) {
+			const body = getBrokenRulesErrorMessage(brokenRules);
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
 

@@ -6,8 +6,13 @@
 				"action": "isBetweenNumbers",
 				"max": 64,
 				"min": 35,
-				"opening": "11:30",
-				"closing": "21:00"
+				"message": "La Cucina tar bara emot 35 till 64 gäster!"
+			},
+			{
+				"inputKey": "time",
+				"max": "11.30",
+				"min": "21:00",
+				"message": "Det går bara att boka la cucina mellan 11.30 och 21.00!"
 			}
 		],
 		"normalBookingRules": [

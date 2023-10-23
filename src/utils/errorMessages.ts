@@ -1,3 +1,5 @@
+import { BrokenRule } from "./checkBookingRules.ts";
+
 export const getMissingIdErrorMessage = () => ({
 	status: "missing-id",
 	message: "Saknar reservations id:et.",
@@ -15,6 +17,13 @@ export const getInvalidIdErrorMessage = () => ({
 export const getNotAvailableErrorMessage = () => ({
 	status: "not-available",
 	message: "Tiden är inte ledig!",
+});
+
+export const getBrokenRulesErrorMessage = (brokenRules: BrokenRule[]) => ({
+	status: "booking-rules-not-followed",
+	message: Object.entries(brokenRules)
+		.map(([key, message]) => `Broken rule for value of ${key}: ${message}`)
+		.join("\n"),
 });
 
 export const getCreateReservationSuccessMessage = ({ name, date, time, numberOfGuests }: any) => ({

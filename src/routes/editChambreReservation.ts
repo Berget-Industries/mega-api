@@ -1,10 +1,11 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
-import checkBookingRules from "../utils/checkBookingRules.ts";
+import { checkChambreBookingRules } from "../utils/checkBookingRules.ts";
 import {
 	getEditReservationSuccessMessage,
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
+	getBrokenRulesErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import { Types } from "npm:mongoose";
@@ -54,8 +55,12 @@ async function editChambreReservation(ctx: Context) {
 			}
 		}
 
-		const rulesPassed = checkBookingRules(input, ctx);
-		if (!rulesPassed) {
+		const brokenRules = checkChambreBookingRules(input);
+		if (brokenRules.length > 0) {
+			const body = getBrokenRulesErrorMessage(brokenRules);
+			ctx.response.status = 200;
+			ctx.response.body = body;
+			console.log(body);
 			return;
 		}
 
