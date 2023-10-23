@@ -17,10 +17,19 @@ export const getNotAvailableErrorMessage = () => ({
 	message: "Tiden är inte ledig!",
 });
 
-export const getCreateReservationSuccessMessage = (reservationData: object) => ({
+export const getCreateReservationSuccessMessage = ({ name, date, time, numberOfGuests }: any) => ({
 	status: "success",
 	message: "Reservationen har bokats!",
-	reservationData,
+	nextStep:
+		numberOfGuests > 12
+			? "Säg till gästen att välja en av våra sällskapsmenyer. Säg att du har bifogat menyerna i mailet. Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst. Fråga även efter specialkost och andra önskemål."
+			: "",
+	reservationData: {
+		name,
+		date,
+		time,
+		numberOfGuests,
+	},
 });
 export const getCreateReservationErrorMessage = (error: any) => ({
 	status: "internal-error",
