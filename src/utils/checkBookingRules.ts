@@ -15,7 +15,8 @@ export function checkChambreBookingRules(input: any): BrokenRule[] {
 	const brokenRules: BrokenRule[] = [];
 	rules.forEach(({ inputKey, max, min, message }: Rule) => {
 		if (input[inputKey] > max || input[inputKey] < min) {
-			brokenRules.push({ [inputKey]: message });
+			brokenRules.push({ inputKey, message });
+			console.log(brokenRules)
 		}
 	});
 

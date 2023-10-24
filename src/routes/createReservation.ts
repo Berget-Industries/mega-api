@@ -7,15 +7,30 @@ import {
 	getMissingInformationErrorMessage,
 } from "../utils/errorMessages.ts";
 
+import { IReservationDetails } from "../models/ReservationModel.ts";
+
 async function createReservation(ctx: Context) {
 	try {
-		const { name, email, date, time, numberOfGuests } = await ctx.request.body().value;
-		const input = {
+		const {
+			chambre,
 			name,
 			email,
 			date,
 			time,
 			numberOfGuests,
+			phone,
+			comment,
+		}: IReservationDetails = await ctx.request.body().value;
+
+		const input = {
+			chambre,
+			name,
+			email,
+			date,
+			time,
+			numberOfGuests,
+			phone,
+			comment,
 		};
 
 		const isNull = Object.entries(input)

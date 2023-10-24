@@ -1,4 +1,5 @@
 import { BrokenRule } from "./checkBookingRules.ts";
+import { IAvailableDateDetails } from "../models/AvailableDatesModel.ts";
 
 export const getMissingIdErrorMessage = () => ({
 	status: "missing-id",
@@ -21,14 +22,20 @@ export const getNotAvailableErrorMessage = () => ({
 
 export const getBrokenRulesErrorMessage = (brokenRules: BrokenRule[]) => ({
 	status: "booking-rules-not-followed",
-	message: Object.entries(brokenRules)
-		.map(([key, message]) => `Broken rule for value of ${key}: ${message}`)
+	message: brokenRules
+		.map(({ inputKey, message }) => `Broken rule for value of ${inputKey}: ${message}`)
 		.join("\n"),
 });
 
-export const getCreateReservationSuccessMessage = ({ name, date, time, numberOfGuests }: any) => ({
+export const getCreateReservationSuccessMessage = ({
+	name,
+	date,
+	time,
+	numberOfGuests,
+	_id,
+}: any) => ({
 	status: "success",
-	message: "Reservationen har bokats!",
+	message: "Reservationen har bokats med bokningsnummer: " + _id,
 	nextStep:
 		numberOfGuests > 12
 			? "Säg till gästen att välja en av våra sällskapsmenyer. Säg att du har bifogat menyerna i mailet. Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst. Fråga även efter specialkost och andra önskemål."
@@ -38,6 +45,7 @@ export const getCreateReservationSuccessMessage = ({ name, date, time, numberOfG
 		date,
 		time,
 		numberOfGuests,
+		_id,
 	},
 });
 export const getCreateReservationErrorMessage = (error: any) => ({
@@ -80,4 +88,21 @@ export const getReservationDataSuccessMessage = (reservationData: any) => ({
 export const getReservationDataErrorMessage = (error: any) => ({
 	status: "success",
 	message: "Kunde inte hämta reservation!",
+});
+
+export const getAvailableChambreDatesErrorMessage = (error: any) => ({
+	status: "could-not-get-dates",
+	message: "Något gick fel kunde inte hitta lediga tider i chambre.",
+});
+
+export const getAvailableChambreDatesSuccessMessage = (
+	availableDates: IAvailableDateDetails[]
+) => ({
+	status: "success",
+	message: "Här är lediga tider för chambre!",
+	availableDates: availableDates.map(({ date, lunch, dinner }) => ({
+		date,
+		lunch: lunch.isAvailable,
+		dinner: dinner.isAvailable,
+	})),
 });

@@ -10,8 +10,8 @@
 			},
 			{
 				"inputKey": "time",
-				"max": "11.30",
-				"min": "21:00",
+				"max": "21:00",
+				"min": "11:30",
 				"message": "Det går bara att boka la cucina mellan 11.30 och 21.00!"
 			}
 		],

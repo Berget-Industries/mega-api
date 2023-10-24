@@ -6,9 +6,10 @@ import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
 	getBrokenRulesErrorMessage,
+	getNotAvailableErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-import { Types } from "npm:mongoose";
+import { checkAvailableDates, editReservationFromDate } from "../utils/availableDates.ts";
 const router = new Router();
 
 async function editChambreReservation(ctx: Context) {
@@ -21,14 +22,8 @@ async function editChambreReservation(ctx: Context) {
 			time,
 			numberOfGuests,
 			phone,
-			allergies,
-			menu,
-			starters,
-			mains,
-			desserts,
-			drinks,
+
 			comment,
-			other,
 		} = await ctx.request.body().value;
 
 		const input = {
@@ -38,14 +33,7 @@ async function editChambreReservation(ctx: Context) {
 			time,
 			numberOfGuests,
 			phone,
-			allergies,
-			menu,
-			starters,
-			mains,
-			desserts,
-			drinks,
 			comment,
-			other,
 		};
 
 		const updateData: Record<string, any> = {};
@@ -64,13 +52,8 @@ async function editChambreReservation(ctx: Context) {
 			return;
 		}
 
-		const reservationDetails = await ChambreReservation.findOneAndUpdate(
-			{ _id },
-			{ $set: updateData },
-			{ new: true }
-		);
-
-		if (!reservationDetails) {
+		const reservationDoc = await ChambreReservation.findById(_id);
+		if (!reservationDoc) {
 			const body = getInvalidIdErrorMessage();
 			ctx.response.status = 200;
 			ctx.response.body = body;
@@ -78,12 +61,35 @@ async function editChambreReservation(ctx: Context) {
 			return;
 		}
 
+		if (date || time) {
+			const newDate = date ? new Date(date) : reservationDoc.date;
+			const newTime = time ? time : reservationDoc.time;
+
+			const isNewDateAvailable = await checkAvailableDates({ date: newDate, time: newTime });
+			if (!isNewDateAvailable) {
+				const body = getNotAvailableErrorMessage();
+				ctx.response.status = 200;
+				ctx.response.body = body;
+				console.log(body);
+				return;
+			}
+
+			await editReservationFromDate({ reservationId: _id, date: newDate, time: newTime });
+		}
+
+		const reservationDetails = await ChambreReservation.findOneAndUpdate(
+			{ _id },
+			{ $set: updateData },
+			{ new: true }
+		);
+
 		const body = getEditReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
 		ctx.response.body = body;
 		console.log(body);
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
+			console.error(error);
 			const body = getInvalidIdErrorMessage();
 			ctx.response.status = 200;
 			ctx.response.body = body;
