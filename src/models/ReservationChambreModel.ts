@@ -1,16 +1,32 @@
 import { model, Schema } from "mongoose";
-export type Course = {
+
+export interface Allergy {
+	count: number;
+	combination: string[];
+}
+export interface BaseCourse {
+	type: string;
 	name: string;
 	count: number;
-};
-export type Allergi = {
-	type: string;
-	count: number;
-};
+	allergies: Allergy[];
+}
+
+export interface Course extends BaseCourse {
+	options?: BaseCourse[];
+}
+
 export type Drinks = {
 	type: string;
 	count: number;
 };
+
+export interface Menu {
+	starter: Course;
+	main: Course;
+	dessert: Course;
+	drinks: Drinks[];
+	comment: string;
+}
 
 interface IReservationChambreDetails {
 	name: string;
@@ -19,14 +35,8 @@ interface IReservationChambreDetails {
 	date: Date;
 	time: string;
 	phone: string;
-	allergies: Allergi[];
-	menu: string;
-	starters: Course[];
-	mains: Course[];
-	desserts: Course[];
-	drinks: Drinks[];
+	menu: Menu;
 	comment: string;
-	other: string;
 }
 
 const ReservationChambreScheme = new Schema<IReservationChambreDetails>({
@@ -36,14 +46,8 @@ const ReservationChambreScheme = new Schema<IReservationChambreDetails>({
 	time: { type: String },
 	numberOfGuests: { type: Number },
 	phone: { type: String },
-	allergies: { type: Array },
-	menu: { type: String },
-	starters: { type: Array },
-	mains: { type: Array },
-	desserts: { type: Array },
-	drinks: { type: Array },
+	menu: { type: Object },
 	comment: { type: String },
-	other: { type: String },
 });
 
 export const ChambreReservation = model<IReservationChambreDetails>(
