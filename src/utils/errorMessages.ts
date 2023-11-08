@@ -38,7 +38,11 @@ export const getCreateReservationSuccessMessage = ({
 	message: "Reservationen har bokats med bokningsnummer: " + _id,
 	nextStep:
 		numberOfGuests > 12
-			? "Säg till gästen att välja en av våra sällskapsmenyer. Säg att du har bifogat menyerna i mailet. Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst. Fråga även efter specialkost och andra önskemål."
+			? `
+Säg till gästen att välja en av våra sällskapsmenyer samt hillhandahållt information om specialkost och andra önskemål.
+Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst. 
+Gästen ska gå in på denna länk för att välja meny: http://localhost:3000/${_id}
+`
 			: "",
 	reservationData: {
 		name,
