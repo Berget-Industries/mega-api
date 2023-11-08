@@ -99,7 +99,7 @@ export const getAvailableChambreDatesSuccessMessage = (
 	availableDates: IAvailableDateDetails[]
 ) => ({
 	status: "success",
-	message: "Här är lediga tider för chambre!",
+	message: availableDates.length > 0 ? "Här är lediga tider för chambre!" : "Det är fullbokat!",
 	availableDates: availableDates.map(({ date, lunch, dinner }) => ({
 		date,
 		lunch: lunch.isAvailable,
