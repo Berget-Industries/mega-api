@@ -1,5 +1,6 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ChambreReservation } from "../models/ReservationChambreModel.ts";
+import { Reservation } from "../models/ReservationModel.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,
@@ -21,7 +22,7 @@ async function getReservationData(ctx: Context) {
 			return;
 		}
 
-		const reservationDetails = await ChambreReservation.findById(_id);
+		const reservationDetails = await Reservation.findById(_id);
 
 		const body = getReservationDataSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
