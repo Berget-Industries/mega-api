@@ -25,7 +25,7 @@ async function deleteChambreReservation(ctx: Context) {
 			return;
 		}
 
-		await deleteReservationFromDate(_id);
+		await deleteReservationFromDate({ reservationId: _id });
 		const reservationDetails = await ChambreReservation.findOneAndDelete(input);
 
 		if (!reservationDetails) {
@@ -52,6 +52,7 @@ async function deleteChambreReservation(ctx: Context) {
 		ctx.response.status = 500;
 		ctx.response.body = body;
 		console.log(body);
+		console.log(error);
 		return;
 	}
 }
