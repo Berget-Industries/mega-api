@@ -142,12 +142,10 @@ export async function editReservationFromDate({
 }
 
 interface getAvailableChambreDatesInput {
-	date: Date;
+	startDate: Date;
+	endDate: Date;
 }
-export async function getAvilableDates({ date }: getAvailableChambreDatesInput) {
-	const startDate = moment(date).subtract(7, "d");
-	const endDate = moment(date).add(7, "d");
-
+export async function getAvilableDates({ startDate, endDate }: getAvailableChambreDatesInput) {
 	const docs = await AvailableDate.find({
 		date: {
 			$gte: startDate,

@@ -9,10 +9,11 @@ import { getAvilableDates } from "../utils/availableDates.ts";
 const router = new Router();
 async function getAvailableChambreDates(ctx: Context) {
 	try {
-		const { date } = await ctx.request.body().value;
+		let { startDate, endDate } = await ctx.request.body().value;
 
 		const missingInformation = Object.entries({
-			date,
+			startDate,
+			endDate,
 		})
 			.filter(([k, v]) => v == null || v === "")
 			.map(([k, v]) => k);
@@ -25,7 +26,10 @@ async function getAvailableChambreDates(ctx: Context) {
 			return;
 		}
 
-		const availableDates = await getAvilableDates({ date });
+		startDate = new Date(startDate);
+		endDate = new Date(endDate);
+
+		const availableDates = await getAvilableDates({ startDate, endDate });
 
 		const body = getAvailableChambreDatesSuccessMessage(availableDates);
 		ctx.response.status = 200;
