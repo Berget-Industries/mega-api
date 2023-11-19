@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { ChambreReservation } from "../models/ReservationChambreModel.ts";
+import { Reservation } from "../models/ReservationModel.ts";
 import {
 	getEditReservationSuccessMessage,
 	getInvalidIdErrorMessage,
@@ -8,11 +8,11 @@ import {
 import mongoose from "mongoose";
 const router = new Router();
 
-async function editChambreReservation(ctx: Context) {
+async function editReservation(ctx: Context) {
 	try {
 		const { _id, menu } = await ctx.request.body().value;
 
-		const reservationDoc = await ChambreReservation.findById(_id);
+		const reservationDoc = await Reservation.findById(_id);
 		if (!reservationDoc) {
 			const body = getInvalidIdErrorMessage();
 			ctx.response.status = 200;
@@ -21,7 +21,7 @@ async function editChambreReservation(ctx: Context) {
 			return;
 		}
 
-		const reservationDetails = await ChambreReservation.findOneAndUpdate(
+		const reservationDetails = await Reservation.findOneAndUpdate(
 			{ _id },
 			{ $set: { menu } },
 			{ new: true }
@@ -48,6 +48,6 @@ async function editChambreReservation(ctx: Context) {
 	}
 }
 
-router.post("/addSelectedMenu", editChambreReservation);
+router.post("/addSelectedMenu", editReservation);
 
 export default router;
