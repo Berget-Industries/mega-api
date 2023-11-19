@@ -9,6 +9,7 @@ export interface IReservationDetails {
 	numberOfGuests: number;
 	phone: string;
 	comment: string;
+	menu: object;
 }
 
 export const ReservationScheme = new Schema<IReservationDetails>({
@@ -20,6 +21,7 @@ export const ReservationScheme = new Schema<IReservationDetails>({
 	numberOfGuests: { type: Number },
 	comment: { type: String },
 	phone: { type: String },
+	menu: { type: Object },
 });
 
 export const Reservation = model<IReservationDetails>("ReservationDetails", ReservationScheme);
