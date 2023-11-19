@@ -1827,8 +1827,8 @@ const data = [
 ];
 
 import AvailableDate from "./src/models/AvailableDatesModel.ts";
-import mongoose from "npm:mongoose";
-import dotenv from "npm:dotenv";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 dotenv.config();
 
 try {
