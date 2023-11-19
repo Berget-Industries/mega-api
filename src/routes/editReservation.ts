@@ -11,13 +11,15 @@ import {
 const router = new Router();
 async function editReservation(ctx: Context) {
 	try {
-		const { _id, name, email, date, time, numberOfGuests } = await ctx.request.body().value;
+		const { _id, name, email, date, time, numberOfGuests, phone } = await ctx.request.body()
+			.value;
 		const input = {
 			name,
 			email,
 			date,
 			time,
 			numberOfGuests,
+			phone,
 		};
 
 		const updateData: Record<string, any> = {};
