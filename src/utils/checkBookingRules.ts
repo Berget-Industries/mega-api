@@ -1,18 +1,40 @@
 import rulesFile from "../../config.json" with { type: "json" };
 
+type ruleValue = string | number;
 export interface Rule {
 	inputKey: string;
-	max: number | string;
-	min: number | string;
+	max:ruleValue;
+	min:ruleValue;
 	message: string;
+	parseValue?(input:ruleValue): ruleValue
 }
 
 export type BrokenRule = Record<string, string>;
 
 export function checkBookingRules(input: any, rules: Rule[]): BrokenRule[] {
+
+	const allRules: Rule[] = [
+		{
+			inputKey: "date",
+			max: 999999999999,
+			min: new Date().getTime() / 1000,
+			message: "Bokningen måste vara i framtiden. Det går inte att boka ett datum som redan har varit.",
+			parseValue: (_) => (new Date(_).getTime())
+		},
+		...rules,
+	];
+
+	console.log(allRules)
+
 	const brokenRules: BrokenRule[] = [];
-	rules.forEach(({ inputKey, max, min, message }: Rule) => {
-		if (input[inputKey] > max || input[inputKey] < min) {
+	allRules.forEach(({ inputKey, max, min, message, parseValue }: Rule) => {
+		let valueToCheck = input[inputKey];
+		
+		if (parseValue) {
+			valueToCheck = parseValue(valueToCheck);
+		}
+
+		if (valueToCheck > max || valueToCheck < min) {
 			brokenRules.push({ inputKey, message });
 			console.log(brokenRules)
 		}
