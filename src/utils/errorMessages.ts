@@ -41,7 +41,7 @@ export const getCreateReservationSuccessMessage = ({
 			? `
 Säg till gästen att välja en av våra sällskapsmenyer samt hillhandahållt information om specialkost och andra önskemål.
 Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst. 
-Gästen ska gå in på denna länk för att välja meny: http://localhost:3000/${_id}
+Gästen ska gå in på denna länk för att välja meny: https://setmenuform.berget.industries/${_id}
 `
 			: "",
 	reservationData: {
