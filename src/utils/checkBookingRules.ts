@@ -19,7 +19,7 @@ export function checkBookingRules(input: any, rules: Rule[]): BrokenRule[] {
 			max: 999999999999,
 			min: new Date().getTime() / 1000,
 			message: "Bokningen måste vara i framtiden. Det går inte att boka ett datum som redan har varit.",
-			parseValue: (_) => (new Date(_).getTime())
+			parseValue: (_) => (new Date(_).getTime() / 1000)
 		},
 		...rules,
 	];
