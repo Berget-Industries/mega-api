@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
-import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Application, Router, Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { loadControllers } from "./middlewareRoute.ts";
 const PORT: string | undefined = Deno.env.get("PORT");
 const parsedPORT = PORT ? parseInt(PORT, 10) : null;
