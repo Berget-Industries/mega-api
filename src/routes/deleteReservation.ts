@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/ReservationModel.ts";
+import { Reservation } from "../models/Reservation.ts";
 import mongoose from "mongoose";
 import {
 	getDeleteReservationErrorMessage,

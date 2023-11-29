@@ -1,11 +1,11 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Conversation } from "../models/ConversationModel.ts";
+import { ConversationModel } from "../models/Conversation.ts";
+import { Message } from "../models/Message.ts";
 import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-import Ticket from "../models/TicketModel.ts";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 const router = new Router();
 
@@ -13,53 +13,42 @@ async function addMessageHistory(ctx: Context) {
 	try {
 		const {
 			_id,
-			messages,
-			participants,
-			date,
-			contact,
-			responseTime,
-			timeSaved,
-			usedTokens,
-			type,
+			organizationId,
+			conversationId,
+			contactId,
+			createdAt,
+			lastActivity,
+			input,
+			llmOutput,
 		} = await ctx.request.body().value;
 
-		let conversation = await Conversation.findById(_id);
+		let conversation = await ConversationModel.findById(_id);
 		if (!conversation) {
-			conversation = await Conversation.create({ _id, participants });
-		}
-
-		conversation.messages = [...conversation.messages, ...messages];
-		await conversation.save();
-
-		let ticket = await Ticket.findOneAndUpdate(
-			{ conversationId: _id },
-			{
-				$set: {
-					responseTime,
-					usedTokens,
-					timeSaved,
-					contact,
-					date,
-					type,
-				},
-			},
-			{ new: true }
-		);
-
-		if (!ticket) {
-			ticket = await Ticket.create({
-				conversationId: _id,
-				responseTime,
-				usedTokens,
-				timeSaved,
-				contact,
-				date,
-				type,
+			conversation = await ConversationModel.create({
+				_id,
+				organizationId,
+				conversationId,
+				messages: [],
+				contactId,
+				createdAt,
+				lastActivity,
 			});
 		}
 
+		const messageDoc = await Message.create({
+			conversationId,
+			organizationId,
+			contactId,
+			createdAt,
+			input,
+			llmOutput,
+		});
+
+		conversation.messages = [...conversation.messages, messageDoc._id];
+		await conversation.save();
+
 		ctx.response.status = 200;
-		ctx.response.body = { conversation: conversation.toJSON(), ticket: ticket.toJSON() };
+		ctx.response.body = { conversation: conversation.toJSON(), ticket: messageDoc.toJSON() };
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
 			console.error(error);

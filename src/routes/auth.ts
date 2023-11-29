@@ -1,6 +1,6 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 // import bcrypt from "npm:bcrypt";
-import { User } from "../models/UserModel.ts";
+import { UserModel } from "../models/User.ts";
 import * as bcrypt from "npm:bcrypt-ts";
 
 import { sign as jwtSign, verify as jwtVerify } from "npm:jsonwebtoken";
@@ -11,7 +11,7 @@ import authenticationMiddleware from "../middleware/authenticationMiddleware.ts"
 const router = new Router();
 
 async function validateUser(email: string, password: string): Promise<any> {
-	const user = await User.findOne({ email });
+	const user = await UserModel.findOne({ email });
 	if (!user) {
 		return null; // Användaren finns inte
 	}
