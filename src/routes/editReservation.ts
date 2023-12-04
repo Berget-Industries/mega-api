@@ -7,12 +7,13 @@ import {
 	getInvalidIdErrorMessage,
 	getEditReservationNoChangeMessage,
 } from "../utils/errorMessages.ts";
+import { ConversationModel } from "../models/Conversation.ts";
 
 const router = new Router();
 async function editReservation(ctx: Context) {
 	try {
-		const { _id, name, email, date, time, numberOfGuests, phone } = await ctx.request.body()
-			.value;
+		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
+			await ctx.request.body().value;
 		const input = {
 			name,
 			email,
@@ -38,9 +39,30 @@ async function editReservation(ctx: Context) {
 
 		const reservationDetails = await Reservation.findOneAndUpdate(
 			{ _id },
-			{ $set: updateData },
+			{ $set: updateData, $addToSet: { conversations: conversationId } },
 			{ new: true }
 		);
+
+		// let conversation = await ConversationModel.findById(conversationId);
+		// if (!conversation) {
+		// 	conversation = await ConversationModel.create({
+		// 		_id: conversationId,
+		// 		organizationId: "",
+		// 		contactId: "",
+		// 		messages: [],
+		// 		lastActivity: new Date(),
+		// 		actions: [],
+		// 	});
+		// }
+
+		// conversation.actions = [
+		// 	...conversation.actions,
+		// 	{
+		// 		type: "editReservation",
+		// 		docId: conversationId,
+		// 		date: new Date(),
+		// 	},
+		// ];
 
 		const body = getEditReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;

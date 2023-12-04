@@ -6,6 +6,7 @@ export interface IOrganization {
 	logoUrl: string;
 	users: string[];
 	conversations: string[];
+	messages: string[];
 }
 
 export const OrganizationSchema = new Schema({
@@ -13,6 +14,7 @@ export const OrganizationSchema = new Schema({
 	logoUrl: String,
 	users: [{ type: Schema.Types.ObjectId, ref: "User" }],
 	conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
+	messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 });
 
 export default model<IOrganization>("Organization", OrganizationSchema);

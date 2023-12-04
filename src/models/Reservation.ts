@@ -9,7 +9,8 @@ export interface IReservationDetails {
 	numberOfGuests: number;
 	phone: string;
 	comment: string;
-	menu: object;
+	menu: object | undefined;
+	conversations: [{ type: Schema.Types.ObjectId; ref: "Conversation" }];
 }
 
 export const ReservationScheme = new Schema<IReservationDetails>({
@@ -22,6 +23,7 @@ export const ReservationScheme = new Schema<IReservationDetails>({
 	comment: { type: String },
 	phone: { type: String },
 	menu: { type: Object },
+	conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
 });
 
 export const Reservation = model<IReservationDetails>("ReservationDetails", ReservationScheme);

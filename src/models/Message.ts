@@ -1,5 +1,12 @@
 import { model, Schema } from "mongoose";
 
+export interface IAction {
+	type: "skapa-reservation" | "redigera-reservation" | "avboka-reservation";
+	docId: string;
+	date: Date;
+	input: any;
+	displayName: string;
+}
 export interface IUsedTokens {
 	input: number;
 	output: number;
@@ -11,11 +18,10 @@ export interface ILLMOutput {
 	output: string;
 	usedTokens: IUsedTokens;
 	responseTime: number;
-	actions: string[];
+	actions: IAction[];
 }
 
 export interface IMessage {
-	_id: string;
 	organizationId: { type: Schema.Types.ObjectId; ref: "Organization" };
 	conversationId: { type: Schema.Types.ObjectId; ref: "Conversation" };
 	contactId: { type: Schema.Types.ObjectId; ref: "Contact" };
@@ -25,7 +31,6 @@ export interface IMessage {
 }
 
 export const MessageSchema = new Schema<IMessage>({
-	_id: String,
 	organizationId: { type: Schema.Types.ObjectId, ref: "Organization" },
 	conversationId: { type: Schema.Types.ObjectId, ref: "Conversation" },
 	contactId: { type: Schema.Types.ObjectId, ref: "Contact" },

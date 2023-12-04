@@ -1,7 +1,6 @@
 import { model, Schema } from "mongoose";
 
 export interface IContact {
-	_id: string;
 	name: string;
 	email: string;
 	phoneNumber: string;
@@ -9,7 +8,6 @@ export interface IContact {
 }
 
 export const ContactSchema = new Schema({
-	_id: String,
 	name: String,
 	email: String,
 	phoneNumber: String,

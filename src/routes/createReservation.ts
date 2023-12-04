@@ -12,21 +12,14 @@ import {
 import { checkAvailableDates, addReservationToDate } from "../utils/availableDates.ts";
 import { checkChambreBookingRules, checkNormalBookingRules } from "../utils/checkBookingRules.ts";
 import { IReservationDetails } from "../models/Reservation.ts";
+import { ConversationModel } from "../models/Conversation.ts";
 
 async function createReservation(ctx: Context) {
 	try {
-		const {
-			chambre,
-			name,
-			email,
-			date,
-			time,
-			numberOfGuests,
-			phone,
-			comment,
-		}: IReservationDetails = await ctx.request.body().value;
+		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
+			await ctx.request.body().value;
 
-		const input = {
+		const input: IReservationDetails = {
 			chambre,
 			name,
 			email,
@@ -35,6 +28,8 @@ async function createReservation(ctx: Context) {
 			numberOfGuests,
 			phone,
 			comment,
+			menu: undefined,
+			conversations: [conversationId],
 		};
 
 		const missingInformation = Object.entries({
@@ -98,6 +93,25 @@ ${JSON.stringify(isAvailableMessage)}
 			time,
 			reservationId: reservationDetails._id.toString(),
 		});
+
+		// let conversation = await ConversationModel.findById(conversationId);
+		// if (!conversation) {
+		// 	conversation = await ConversationModel.create({
+		// 		_id: conversationId,
+		// 		lastActivity: new Date(),
+		// 	});
+		// }
+
+		// conversation.actions = [
+		// 	...conversation.actions,
+		// 	{
+		// 		type: chambre ? "createChambreReservation" : "createReservation",
+		// 		docId: conversationId,
+		// 		date: new Date(),
+		// 	},
+		// ];
+
+		// await conversation.save();
 
 		const body = getCreateReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
