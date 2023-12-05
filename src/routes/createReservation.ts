@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/Reservation.ts";
+import { Reservation, Conversation } from "../models/index.ts";
 const router = new Router();
 import {
 	getCreateReservationSuccessMessage,
@@ -12,7 +12,6 @@ import {
 import { checkAvailableDates, addReservationToDate } from "../utils/availableDates.ts";
 import { checkChambreBookingRules, checkNormalBookingRules } from "../utils/checkBookingRules.ts";
 import { IReservationDetails } from "../models/Reservation.ts";
-import { ConversationModel } from "../models/Conversation.ts";
 
 async function createReservation(ctx: Context) {
 	try {

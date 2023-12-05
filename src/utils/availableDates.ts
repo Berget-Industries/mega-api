@@ -1,4 +1,4 @@
-import { AvailableDate } from "../models/AvailableDatesModel.ts";
+import { AvailableDates } from "../models/index.ts";
 import moment from "npm:moment";
 
 const timesOfDay = {
@@ -29,7 +29,7 @@ export async function checkAvailableDates({
 	date,
 	time,
 }: checkAvailableDatesInput): Promise<boolean> {
-	const document = await AvailableDate.findOne({ date });
+	const document = await AvailableDates.findOne({ date });
 
 	if (!document) {
 		return false;
@@ -54,7 +54,7 @@ export async function addReservationToDate({
 	date,
 	time,
 }: addReservationToDateInput) {
-	const dateToUpdate = await AvailableDate.findOne({ date });
+	const dateToUpdate = await AvailableDates.findOne({ date });
 
 	if (!dateToUpdate) {
 		throw new Error("Could not find date document");
@@ -62,7 +62,7 @@ export async function addReservationToDate({
 
 	const keyToUpdate = getKeyToUpdateByTime(time);
 
-	await AvailableDate.updateOne(
+	await AvailableDates.updateOne(
 		{
 			date,
 		},
@@ -83,7 +83,7 @@ interface deleteReservationFromDateInput {
 	reservationId: string;
 }
 export async function deleteReservationFromDate({ reservationId }: deleteReservationFromDateInput) {
-	const dateDocumentToUpdate = await AvailableDate.findOne({
+	const dateDocumentToUpdate = await AvailableDates.findOne({
 		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
 	});
 
@@ -123,7 +123,7 @@ export async function editReservationFromDate({
 	date,
 	time,
 }: editReservationFromDateInput) {
-	const dateDocumentToUpdate = await AvailableDate.findOne({
+	const dateDocumentToUpdate = await AvailableDates.findOne({
 		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
 	});
 
@@ -146,7 +146,7 @@ interface getAvailableChambreDatesInput {
 	endDate: Date;
 }
 export async function getAvilableDates({ startDate, endDate }: getAvailableChambreDatesInput) {
-	const docs = await AvailableDate.find({
+	const docs = await AvailableDates.find({
 		date: {
 			$gte: startDate,
 			$lte: endDate,

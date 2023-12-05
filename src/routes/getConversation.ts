@@ -1,7 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { ConversationModel } from "../models/Conversation.ts";
-import OrganizationModel from "../models/Organization.ts";
-import { Reservation } from "../models/Reservation.ts";
+import { Conversation, Organization, Reservation } from "../models/index.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,
@@ -24,7 +22,7 @@ router.get("/organization/conversation", async (ctx: Context) => {
 			return;
 		}
 
-		const conversation = await ConversationModel.findById(conversationId)
+		const conversation = await Conversation.findById(conversationId)
 			.populate("messages contactId")
 			.exec();
 

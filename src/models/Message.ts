@@ -30,15 +30,14 @@ export interface IMessage {
 	llmOutput: ILLMOutput[];
 }
 
-export const MessageSchema = new Schema<IMessage>({
-	organizationId: { type: Schema.Types.ObjectId, ref: "Organization" },
-	conversationId: { type: Schema.Types.ObjectId, ref: "Conversation" },
-	contactId: { type: Schema.Types.ObjectId, ref: "Contact" },
-	createdAt: Date,
-	input: String,
-	llmOutput: Array,
-});
-
-export const Message = model<IMessage>("Message", MessageSchema);
-
-export default Message;
+export default model<IMessage>(
+	"Message",
+	new Schema<IMessage>({
+		organizationId: { type: Schema.Types.ObjectId, ref: "Organization" },
+		conversationId: { type: Schema.Types.ObjectId, ref: "Conversation" },
+		contactId: { type: Schema.Types.ObjectId, ref: "Contact" },
+		createdAt: Date,
+		input: String,
+		llmOutput: Array,
+	})
+);

@@ -7,13 +7,12 @@ export interface IConveration {
 	lastActivity: Date;
 }
 
-export const ConversationSchema = new Schema({
-	organizationId: { type: Schema.Types.ObjectId, ref: "Organization" },
-	contactId: { type: Schema.Types.ObjectId, ref: "Contact" },
-	messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-	lastActivity: Date,
-});
-
-export const ConversationModel = model<IConveration>("Conversation", ConversationSchema);
-
-export default ConversationModel;
+export default model<IConveration>(
+	"Conversation",
+	new Schema({
+		organizationId: { type: Schema.Types.ObjectId, ref: "Organization" },
+		contactId: { type: Schema.Types.ObjectId, ref: "Contact" },
+		messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+		lastActivity: Date,
+	})
+);

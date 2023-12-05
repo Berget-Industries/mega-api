@@ -3651,7 +3651,7 @@ const data = [
 	},
 ];
 
-import AvailableDate from "./src/models/AvailableDatesModel.ts";
+import AvailableDate from "./src/models/AvailableDates.ts";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();

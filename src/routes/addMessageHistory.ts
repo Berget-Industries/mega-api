@@ -1,8 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { ConversationModel } from "../models/Conversation.ts";
-import { Message } from "../models/Message.ts";
-import ContactModel from "../models/Contact.ts";
-import Organization from "../models/Organization.ts";
+import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
@@ -27,17 +24,17 @@ router.post(
 				llmOutput,
 			} = await ctx.request.body().value;
 
-			let contact = await ContactModel.findOne({ email: contactEmail });
+			let contact = await Contact.findOne({ email: contactEmail });
 			if (!contact) {
-				contact = await ContactModel.create({
+				contact = await Contact.create({
 					email: contactEmail,
 					name: contactName,
 				});
 			}
 
-			let conversation = await ConversationModel.findById(conversationId);
+			let conversation = await Conversation.findById(conversationId);
 			if (!conversation) {
-				conversation = await ConversationModel.create({
+				conversation = await Conversation.create({
 					_id: conversationId,
 					messages: [],
 					lastActivity: createdAt,
@@ -69,7 +66,7 @@ router.post(
 				}
 			);
 
-			const newConv = await ConversationModel.findById({ _id: conversationId })
+			const newConv = await Conversation.findById({ _id: conversationId })
 				.populate("messages")
 				.exec();
 

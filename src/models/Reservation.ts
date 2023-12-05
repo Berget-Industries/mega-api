@@ -13,19 +13,18 @@ export interface IReservationDetails {
 	conversations: [{ type: Schema.Types.ObjectId; ref: "Conversation" }];
 }
 
-export const ReservationScheme = new Schema<IReservationDetails>({
-	chambre: { type: Boolean },
-	name: { type: String },
-	email: { type: String },
-	date: { type: Date },
-	time: { type: String },
-	numberOfGuests: { type: Number },
-	comment: { type: String },
-	phone: { type: String },
-	menu: { type: Object },
-	conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
-});
-
-export const Reservation = model<IReservationDetails>("ReservationDetails", ReservationScheme);
-
-export default ReservationScheme;
+export default model<IReservationDetails>(
+	"ReservationDetails",
+	new Schema<IReservationDetails>({
+		chambre: { type: Boolean },
+		name: { type: String },
+		email: { type: String },
+		date: { type: Date },
+		time: { type: String },
+		numberOfGuests: { type: Number },
+		comment: { type: String },
+		phone: { type: String },
+		menu: { type: Object },
+		conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
+	})
+);

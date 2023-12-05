@@ -1,6 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { ConversationModel } from "../models/Conversation.ts";
-import OrganizationModel from "../models/Organization.ts";
+import { Conversation, Organization } from "../models/index.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,
@@ -27,7 +26,7 @@ router.get("/organization/conversations", async (ctx: Context) => {
 			return;
 		}
 
-		const organization = await OrganizationModel.findById(organizationId)
+		const organization = await Organization.findById(organizationId)
 			.populate({
 				path: "conversations",
 				populate: [{ path: "messages" }, { path: "contactId" }],

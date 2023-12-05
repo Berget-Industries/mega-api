@@ -7,13 +7,12 @@ export interface IContact {
 	avatarUrl: string;
 }
 
-export const ContactSchema = new Schema({
-	name: String,
-	email: String,
-	phoneNumber: String,
-	avatarUrl: String,
-});
-
-export const ContactModel = model<IContact>("Contact", ContactSchema);
-
-export default ContactModel;
+export default model<IContact>(
+	"Contact",
+	new Schema({
+		name: String,
+		email: String,
+		phoneNumber: String,
+		avatarUrl: String,
+	})
+);

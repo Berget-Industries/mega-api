@@ -1,5 +1,7 @@
-export { default as ContactModel } from "./Contact.ts";
-export { default as UserModel } from "./User.ts";
-export { default as MessageModel } from "./Message.ts";
-export { default as OrganizationModel } from "./Organization.ts";
-export { default as ConversationModel } from "./Conversation.ts";
+export { default as AvailableDates } from "./AvailableDates.ts";
+export { default as Contact } from "./Contact.ts";
+export { default as Conversation } from "./Conversation.ts";
+export { default as Message } from "./Message.ts";
+export { default as Organization } from "./Organization.ts";
+export { default as Reservation } from "./Reservation.ts";
+export { default as User } from "./User.ts";

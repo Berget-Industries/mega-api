@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/Reservation.ts";
+import { Reservation, Conversation } from "../models/index.ts";
 import mongoose from "mongoose";
 import {
 	getEditReservationErrorMessage,
@@ -7,7 +7,6 @@ import {
 	getInvalidIdErrorMessage,
 	getEditReservationNoChangeMessage,
 } from "../utils/errorMessages.ts";
-import { ConversationModel } from "../models/Conversation.ts";
 
 const router = new Router();
 async function editReservation(ctx: Context) {

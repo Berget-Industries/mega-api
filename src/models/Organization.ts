@@ -9,12 +9,13 @@ export interface IOrganization {
 	messages: string[];
 }
 
-export const OrganizationSchema = new Schema({
-	name: String,
-	logoUrl: String,
-	users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-	conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
-	messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-});
-
-export default model<IOrganization>("Organization", OrganizationSchema);
+export default model<IOrganization>(
+	"Organization",
+	new Schema({
+		name: String,
+		logoUrl: String,
+		users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+		conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
+		messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+	})
+);

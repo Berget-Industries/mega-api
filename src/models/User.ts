@@ -8,14 +8,13 @@ export interface IUser {
 	organizations: string[];
 }
 
-export const UserSchema = new Schema<IUser>({
-	name: String,
-	password: String,
-	email: String,
-	avatarUrl: String,
-	organizations: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
-});
-
-export const UserModel = model<IUser>("User", UserSchema);
-
-export default UserModel;
+export default model<IUser>(
+	"User",
+	new Schema<IUser>({
+		name: String,
+		password: String,
+		email: String,
+		avatarUrl: String,
+		organizations: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
+	})
+);
