@@ -1,5 +1,5 @@
 import { BrokenRule } from "./checkBookingRules.ts";
-import { IAvailableDateDetails } from "../models/AvailableDatesModel.ts";
+import { IAvailableDateDetails } from "../models/AvailableDates.ts";
 
 export const getMissingIdErrorMessage = () => ({
 	status: "missing-id",

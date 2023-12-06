@@ -1,5 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/Reservation.ts";
+import { Reservation } from "../models/index.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,

@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { ContactModel } from "../models/Contact.ts";
+import { Contact } from "../models/index.ts";
 import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
@@ -16,7 +16,7 @@ async function updateContact(ctx: Context) {
 			contact: { status, role, email, name, lastActivity, address, avatarUrl, phoneNumber },
 		} = await ctx.request.body().value;
 
-		let contact = await ContactModel.findOneAndUpdate(
+		let contact = await Contact.findOneAndUpdate(
 			{ email },
 			{
 				$set: {
@@ -34,7 +34,7 @@ async function updateContact(ctx: Context) {
 		);
 
 		if (!contact) {
-			contact = await ContactModel.create({
+			contact = await Contact.create({
 				status,
 				role,
 				email,

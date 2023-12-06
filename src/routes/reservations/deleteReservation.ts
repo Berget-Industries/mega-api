@@ -10,7 +10,7 @@ import {
 
 const router = new Router();
 
-router.post("/delete", async (ctx: Context) => {
+router.post("/reservation/delete", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		const input = {

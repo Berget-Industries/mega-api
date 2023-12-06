@@ -11,7 +11,7 @@ import authenticationMiddleware from "../middleware/authenticationMiddleware.ts"
 const router = new Router();
 
 async function validateUser(email: string, password: string): Promise<any> {
-	const user = await UserModel.findOne({ email });
+	const user = await User.findOne({ email });
 	if (!user) {
 		return null; // Användaren finns inte
 	}

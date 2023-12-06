@@ -10,7 +10,7 @@ import {
 
 const router = new Router();
 
-router.post("/edit", async (ctx: Context) => {
+router.post("/reservation/edit", async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
 			await ctx.request.body().value;
