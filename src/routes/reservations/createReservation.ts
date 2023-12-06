@@ -1,5 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../models/index.ts";
+import { Reservation, Conversation } from "../../models/index.ts";
 const router = new Router();
 import {
 	getCreateReservationSuccessMessage,
@@ -7,13 +7,16 @@ import {
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
 	getBrokenRulesErrorMessage,
-} from "../utils/errorMessages.ts";
+} from "../../utils/errorMessages.ts";
 
-import { checkAvailableDates, addReservationToDate } from "../utils/availableDates.ts";
-import { checkChambreBookingRules, checkNormalBookingRules } from "../utils/checkBookingRules.ts";
-import { IReservationDetails } from "../models/Reservation.ts";
+import { checkAvailableDates, addReservationToDate } from "../../utils/availableDates.ts";
+import {
+	checkChambreBookingRules,
+	checkNormalBookingRules,
+} from "../../utils/checkBookingRules.ts";
+import { IReservationDetails } from "../../models/Reservation.ts";
 
-async function createReservation(ctx: Context) {
+router.post("/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
 			await ctx.request.body().value;
@@ -123,8 +126,6 @@ ${JSON.stringify(isAvailableMessage)}
 		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
-}
-
-router.post("/createReservation", createReservation);
+});
 
 export default router;

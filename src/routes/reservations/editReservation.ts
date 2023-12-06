@@ -1,15 +1,16 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../models/index.ts";
+import { Reservation, Conversation } from "../../models/index.ts";
 import mongoose from "mongoose";
 import {
 	getEditReservationErrorMessage,
 	getEditReservationSuccessMessage,
 	getInvalidIdErrorMessage,
 	getEditReservationNoChangeMessage,
-} from "../utils/errorMessages.ts";
+} from "../../utils/errorMessages.ts";
 
 const router = new Router();
-async function editReservation(ctx: Context) {
+
+router.post("/edit", async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
 			await ctx.request.body().value;
@@ -81,8 +82,6 @@ async function editReservation(ctx: Context) {
 		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
-}
-
-router.post("/editReservation", editReservation);
+});
 
 export default router;

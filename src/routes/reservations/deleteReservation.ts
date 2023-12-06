@@ -1,15 +1,16 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/Reservation.ts";
+import { Reservation } from "../../models/index.ts";
 import mongoose from "mongoose";
 import {
 	getDeleteReservationErrorMessage,
 	getMissingIdErrorMessage,
 	getDeleteReservationSuccessMessage,
 	getInvalidIdErrorMessage,
-} from "../utils/errorMessages.ts";
+} from "../../utils/errorMessages.ts";
 
 const router = new Router();
-async function deleteReservation(ctx: Context) {
+
+router.post("/delete", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		const input = {
@@ -51,8 +52,6 @@ async function deleteReservation(ctx: Context) {
 		console.log(body);
 		return;
 	}
-}
-
-router.post("/deleteReservation", deleteReservation);
+});
 
 export default router;

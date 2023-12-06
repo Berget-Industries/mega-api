@@ -1,6 +1,6 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 // import bcrypt from "npm:bcrypt";
-import { UserModel } from "../models/User.ts";
+import { User } from "../models/index.ts";
 import * as bcrypt from "npm:bcrypt-ts";
 
 import { sign as jwtSign, verify as jwtVerify } from "npm:jsonwebtoken";
