@@ -8,8 +8,17 @@ import {
 	getEditReservationNoChangeMessage,
 } from "../../utils/errorMessages.ts";
 import convertToUTC from "../../utils/convertToUTC.ts";
-
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import { checkAvailableDates } from "../../utils/availableDates.ts";
+import {
+	checkChambreBookingRules,
+	checkNormalBookingRules,
+} from "../../utils/checkBookingRules.ts";
+import {
+	getBrokenRulesErrorMessage,
+	getMissingInformationErrorMessage,
+	getNotAvailableErrorMessage,
+} from "../../utils/errorMessages.ts";
 
 const router = new Router();
 
@@ -36,6 +45,43 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		if (Object.keys(updateData).length === 0) {
 			const body = getEditReservationNoChangeMessage();
 			handleResponseSuccess(ctx, body);
+			return;
+		}
+
+		const chambre = (await Reservation.findById(_id))?.chambre;
+
+		const brokenRules = chambre
+			? checkChambreBookingRules({ ...input, time })
+			: checkNormalBookingRules({ ...input, time });
+		const brokenRulesMessage =
+			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
+
+		const isDateAndTimeRulesBroken = brokenRules.filter(
+			(_) => _.inputKey === "time" || "date"
+		).length;
+		const isAvailable =
+			date && time && isDateAndTimeRulesBroken === 0
+				? chambre
+					? await checkAvailableDates({ date, time })
+					: true
+				: null;
+		const isAvailableMessage =
+			isAvailable === null
+				? "tid och eller datum saknas"
+				: isAvailable === false
+				? getNotAvailableErrorMessage()
+				: "önskad tid går att boka";
+
+		const responseBody = `
+====
+${JSON.stringify(brokenRulesMessage)}
+====
+${JSON.stringify(isAvailableMessage)}
+====
+`;
+
+		if (brokenRules.length > 0 || !isAvailable) {
+			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
 
