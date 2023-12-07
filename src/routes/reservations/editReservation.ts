@@ -48,27 +48,7 @@ router.post("/reservation/edit", async (ctx: Context) => {
 			return;
 		}
 
-		const missingInformation = Object.entries({
-			name,
-			email,
-			date,
-			time,
-			numberOfGuests,
-			phone,
-		})
-			.filter(([k, v]) => v == null || v === "")
-			.map(([k, v]) => k);
-		const missingInformationMessage =
-			missingInformation.length > 0
-				? getMissingInformationErrorMessage(missingInformation.toString())
-				: "det saknas ingen information";
-
 		const chambre = (await Reservation.findById(_id))?.chambre;
-		if (!chambre) {
-			const body = getEditReservationNoChangeMessage();
-			handleResponseSuccess(ctx, body);
-			return;
-		}
 
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
@@ -94,15 +74,13 @@ router.post("/reservation/edit", async (ctx: Context) => {
 
 		const responseBody = `
 ====
-${JSON.stringify(missingInformationMessage)}
-====
 ${JSON.stringify(brokenRulesMessage)}
 ====
 ${JSON.stringify(isAvailableMessage)}
 ====
 `;
 
-		if (missingInformation.length > 0 || brokenRules.length > 0 || !isAvailable) {
+		if (brokenRules.length > 0 || !isAvailable) {
 			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
