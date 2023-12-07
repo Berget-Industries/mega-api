@@ -5,3 +5,4 @@ export { default as Message } from "./Message.ts";
 export { default as Organization } from "./Organization.ts";
 export { default as Reservation } from "./Reservation.ts";
 export { default as User } from "./User.ts";
+export { default as AiAccessKey } from "./AiAccessKey.ts";

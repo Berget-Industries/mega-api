@@ -1,13 +1,9 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-// import bcrypt from "npm:bcrypt";
-import { User } from "../models/index.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import { User } from "../../models/index.ts";
 import * as bcrypt from "npm:bcrypt-ts";
-
 import { sign as jwtSign, verify as jwtVerify } from "npm:jsonwebtoken";
-import { sessionStore } from "../utils/sessionStore.ts";
-
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { sessionStore } from "../../utils/sessionStore.ts";
 
 const router = new Router();
 
@@ -35,7 +31,7 @@ async function validateUser(email: string, password: string): Promise<any> {
 	return res;
 }
 
-router.post("/auth/login", async (ctx: Context) => {
+router.post("/login", async (ctx: Context) => {
 	try {
 		const { email, password } = await ctx.request.body().value;
 		// Validera användarnamn och lösenord...
@@ -58,29 +54,6 @@ router.post("/auth/login", async (ctx: Context) => {
 			accessToken: token,
 			user,
 		};
-		handleResponseSuccess(ctx, body);
-	} catch (error) {
-		console.error(error);
-		const body = { message: "Internal Server Error" };
-		handleResponseError(ctx, body);
-	}
-});
-
-router.get("/auth/me", authenticationMiddleware, async (ctx: Context) => {
-	const body = {
-		user: ctx.state.session.user,
-	};
-	handleResponseSuccess(ctx, body);
-});
-
-router.post("/auth/logout", async (ctx: Context) => {
-	try {
-		const token = ctx.request.headers.get("Authorization")?.replace("Bearer ", "");
-		if (token) {
-			sessionStore.deleteSession(token);
-		}
-
-		const body = { message: "Logged out successfully" };
 		handleResponseSuccess(ctx, body);
 	} catch (error) {
 		console.error(error);
