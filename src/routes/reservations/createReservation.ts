@@ -16,25 +16,18 @@ import {
 	checkNormalBookingRules,
 } from "../../utils/checkBookingRules.ts";
 import { IReservationDetails } from "../../models/Reservation.ts";
+import convertToUTC from "../../utils/convertToUTC.ts";
 
 router.post("/reservation/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
 			await ctx.request.body().value;
 
-		const combinedDate = new Date(`${date}T${time}`);
-		const utcDateTime = new Date(
-			combinedDate.getTime() - combinedDate.getTimezoneOffset() * 60000
-		);
-		// const dateInUTC = new Date(
-		// 	combinedDate.getTime() - combinedDate.getTimezoneOffset() * 60000
-		// );
-
 		const input: IReservationDetails = {
 			chambre,
 			name,
 			email,
-			date: utcDateTime,
+			date: convertToUTC(date, time),
 			numberOfGuests,
 			phone,
 			comment,
