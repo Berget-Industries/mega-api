@@ -8,7 +8,7 @@ export interface IAiAccessKey {
 export default model<IAiAccessKey>(
 	"AiAccessKey",
 	new Schema<IAiAccessKey>({
-		key: { type: String, required: true },
+		key: { type: String, required: true, unique: true },
 		organization: { type: Schema.Types.ObjectId, ref: "Organization" },
 	})
 );

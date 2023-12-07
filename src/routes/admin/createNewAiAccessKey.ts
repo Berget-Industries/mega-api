@@ -4,6 +4,14 @@ import systemAdminAuthenticationMiddleware from "../../middleware/systemAdminAut
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { AiAccessKey } from "../../models/index.ts";
 
+function uuidv4() {
+	return "xxxxxxxx-xxxx-9xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+		const r = (Math.random() * 16) | 0,
+			v = c === "x" ? r : (r & 0x3) | 0x8;
+		return v.toString(16);
+	});
+}
+
 const router = new Router();
 
 router.post(
@@ -14,8 +22,10 @@ router.post(
 		try {
 			const { organization } = await ctx.request.body().value;
 
+			const key = uuidv4();
 			const aiAccessKey = await AiAccessKey.create({
 				organization,
+				key,
 			});
 
 			const body = { aiAccessKey: aiAccessKey.toObject() };
