@@ -6,13 +6,11 @@ import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();
 
-router.use(createReservation.routes());
-router.use(createReservation.allowedMethods());
+const routes = [createReservation, editReservation, deleteReservation];
 
-router.use(editReservation.routes());
-router.use(editReservation.allowedMethods());
-
-router.use(deleteReservation.routes());
-router.use(deleteReservation.allowedMethods());
+routes.forEach((_) => {
+	router.use(_.routes());
+	router.use(_.allowedMethods());
+});
 
 export default router;
