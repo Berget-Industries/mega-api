@@ -6,6 +6,7 @@ export interface IUser {
 	email: string;
 	avatarUrl: string;
 	organizations: string[];
+	systemAdmin: boolean;
 }
 
 export default model<IUser>(
@@ -13,8 +14,9 @@ export default model<IUser>(
 	new Schema<IUser>({
 		name: String,
 		password: String,
-		email: String,
+		email: { type: String, unique: true },
 		avatarUrl: String,
 		organizations: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
+		systemAdmin: { type: Boolean, default: false },
 	})
 );

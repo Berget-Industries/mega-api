@@ -1,7 +1,8 @@
 import reservations from "./reservations/index.ts";
 import addMessageHistory from "./addMessageHistory.ts";
 import addSelectedMenu from "./addSelectedMenu.ts";
-import auth from "./auth.ts";
+import auth from "./auth/index.ts";
+import admin from "./admin/index.ts";
 import getAvailableChambreDates from "./getAvailableChambreDates.ts";
 import getConverstaion from "./getConversation.ts";
 import getConversations from "./getConversations.ts";
@@ -24,6 +25,9 @@ router.use(addSelectedMenu.allowedMethods());
 
 router.use(auth.routes());
 router.use(auth.allowedMethods());
+
+router.use(admin.routes());
+router.use(admin.allowedMethods());
 
 router.use(getAvailableChambreDates.routes());
 router.use(getAvailableChambreDates.allowedMethods());
