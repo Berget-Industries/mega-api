@@ -14,37 +14,22 @@ import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();
 
-router.use(reservations.routes());
-router.use(reservations.allowedMethods());
+const routes = [
+	reservations,
+	addMessageHistory,
+	addSelectedMenu,
+	auth,
+	getAvailableChambreDates,
+	getConversations,
+	getConverstaion,
+	getMessages,
+	getReservationData,
+	updateContact,
+];
 
-router.use(addMessageHistory.routes());
-router.use(addMessageHistory.allowedMethods());
-
-router.use(addSelectedMenu.routes());
-router.use(addSelectedMenu.allowedMethods());
-
-router.use(auth.routes());
-router.use(auth.allowedMethods());
-
-router.use(admin.routes());
-router.use(admin.allowedMethods());
-
-router.use(getAvailableChambreDates.routes());
-router.use(getAvailableChambreDates.allowedMethods());
-
-router.use(getConversations.routes());
-router.use(getConversations.allowedMethods());
-
-router.use(getConverstaion.routes());
-router.use(getConverstaion.allowedMethods());
-
-router.use(getMessages.routes());
-router.use(getMessages.allowedMethods());
-
-router.use(getReservationData.routes());
-router.use(getReservationData.allowedMethods());
-
-router.use(updateContact.routes());
-router.use(updateContact.allowedMethods());
+routes.forEach((_) => {
+	router.use(_.routes());
+	router.use(_.allowedMethods());
+});
 
 export default router;

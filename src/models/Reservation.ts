@@ -5,7 +5,6 @@ export interface IReservationDetails {
 	name: string;
 	email: string;
 	date: Date;
-	time: string;
 	numberOfGuests: number;
 	phone: string;
 	comment: string;
@@ -20,7 +19,6 @@ export default model<IReservationDetails>(
 		name: { type: String },
 		email: { type: String },
 		date: { type: Date },
-		time: { type: String },
 		numberOfGuests: { type: Number },
 		comment: { type: String },
 		phone: { type: String },
