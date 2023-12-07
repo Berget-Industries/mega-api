@@ -63,13 +63,12 @@ router.post("/reservation/edit", async (ctx: Context) => {
 				? getMissingInformationErrorMessage(missingInformation.toString())
 				: "det saknas ingen information";
 
-		const reservationDetails = await Reservation.findOneAndUpdate(
-			{ _id },
-			{ $set: updateData, $addToSet: { conversations: conversationId } },
-			{ new: true }
-		);
-
-		const { chambre } = reservationDetails;
+		const chambre = (await Reservation.findById(_id))?.chambre;
+		if (!chambre) {
+			const body = getEditReservationNoChangeMessage();
+			handleResponseError(ctx, body);
+			return;
+		}
 
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
@@ -107,6 +106,12 @@ ${JSON.stringify(isAvailableMessage)}
 			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
+
+		const reservationDetails = await Reservation.findOneAndUpdate(
+			{ _id },
+			{ $set: updateData, $addToSet: { conversations: conversationId } },
+			{ new: true }
+		);
 
 		// let conversation = await ConversationModel.findById(conversationId);
 		// if (!conversation) {
