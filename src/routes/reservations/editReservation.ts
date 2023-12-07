@@ -24,11 +24,10 @@ const router = new Router();
 
 router.post("/reservation/edit", async (ctx: Context) => {
 	try {
-		const { _id, chambre, name, email, date, time, numberOfGuests, phone, conversationId } =
+		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
 			await ctx.request.body().value;
 
 		const input = {
-			chambre,
 			name,
 			email,
 			date: convertToUTC(date, time),
@@ -63,6 +62,14 @@ router.post("/reservation/edit", async (ctx: Context) => {
 			missingInformation.length > 0
 				? getMissingInformationErrorMessage(missingInformation.toString())
 				: "det saknas ingen information";
+
+		const reservationDetails = await Reservation.findOneAndUpdate(
+			{ _id },
+			{ $set: updateData, $addToSet: { conversations: conversationId } },
+			{ new: true }
+		);
+
+		const { chambre } = reservationDetails;
 
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
@@ -100,12 +107,6 @@ ${JSON.stringify(isAvailableMessage)}
 			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
-
-		const reservationDetails = await Reservation.findOneAndUpdate(
-			{ _id },
-			{ $set: updateData, $addToSet: { conversations: conversationId } },
-			{ new: true }
-		);
 
 		// let conversation = await ConversationModel.findById(conversationId);
 		// if (!conversation) {
