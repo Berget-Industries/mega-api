@@ -1,5 +1,6 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../models/index.ts";
+import moment from "npm:moment-timezone";
 const router = new Router();
 import {
 	getCreateReservationSuccessMessage,
@@ -21,12 +22,19 @@ router.post("/reservation/create", async (ctx: Context) => {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
 			await ctx.request.body().value;
 
+		const combinedDate = new Date(`${date}T${time}`);
+		const utcDateTime = new Date(
+			combinedDate.getTime() - combinedDate.getTimezoneOffset() * 60000
+		);
+		// const dateInUTC = new Date(
+		// 	combinedDate.getTime() - combinedDate.getTimezoneOffset() * 60000
+		// );
+
 		const input: IReservationDetails = {
 			chambre,
 			name,
 			email,
-			date,
-			time,
+			date: utcDateTime,
 			numberOfGuests,
 			phone,
 			comment,
@@ -50,15 +58,14 @@ router.post("/reservation/create", async (ctx: Context) => {
 				: "det saknas ingen information";
 
 		const brokenRules = chambre
-			? checkChambreBookingRules(input)
-			: checkNormalBookingRules(input);
+			? checkChambreBookingRules({ input, time })
+			: checkNormalBookingRules({ input, time });
 		const brokenRulesMessage =
 			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
 
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
-
 		const isAvailable =
 			date && time && isDateAndTimeRulesBroken === 0
 				? chambre
