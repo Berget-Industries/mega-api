@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
-import { Application, Router, Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 import routes from "./src/routes/index.ts";
 

@@ -7,6 +7,7 @@ import {
 	getInvalidIdErrorMessage,
 	getEditReservationNoChangeMessage,
 } from "../../utils/errorMessages.ts";
+import convertToUTC from "../../utils/convertToUTC.ts";
 
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
@@ -16,11 +17,11 @@ router.post("/reservation/edit", async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
 			await ctx.request.body().value;
+
 		const input = {
 			name,
 			email,
-			date,
-			time,
+			date: convertToUTC(date, time),
 			numberOfGuests,
 			phone,
 		};
