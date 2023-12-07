@@ -58,8 +58,8 @@ router.post("/reservation/create", async (ctx: Context) => {
 				: "det saknas ingen information";
 
 		const brokenRules = chambre
-			? checkChambreBookingRules({ input, time })
-			: checkNormalBookingRules({ input, time });
+			? checkChambreBookingRules({ ...input, time })
+			: checkNormalBookingRules({ ...input, time });
 		const brokenRulesMessage =
 			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
 
