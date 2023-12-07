@@ -66,7 +66,7 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		const chambre = (await Reservation.findById(_id))?.chambre;
 		if (!chambre) {
 			const body = getEditReservationNoChangeMessage();
-			handleResponseError(ctx, body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
