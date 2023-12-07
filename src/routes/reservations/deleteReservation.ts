@@ -9,7 +9,6 @@ import {
 } from "../../utils/errorMessages.ts";
 
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { deleteReservationFromDate } from "../../utils/availableDates.ts";
 
 const router = new Router();
 
@@ -32,9 +31,6 @@ router.post("/reservation/delete", async (ctx: Context) => {
 			handleResponseSuccess(ctx, body);
 			return;
 		}
-		await deleteReservationFromDate({
-			reservationId: _id,
-		});
 
 		const body = getDeleteReservationSuccessMessage(reservationDetails);
 		handleResponseSuccess(ctx, body);

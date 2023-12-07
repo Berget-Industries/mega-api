@@ -19,7 +19,6 @@ import {
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
 } from "../../utils/errorMessages.ts";
-import { editReservationFromDate } from "../../utils/availableDates.ts";
 
 const router = new Router();
 
@@ -91,11 +90,6 @@ ${JSON.stringify(isAvailableMessage)}
 			{ $set: updateData, $addToSet: { conversations: conversationId } },
 			{ new: true }
 		);
-		await editReservationFromDate({
-			reservationId: _id,
-			date,
-			time,
-		});
 
 		// let conversation = await ConversationModel.findById(conversationId);
 		// if (!conversation) {
