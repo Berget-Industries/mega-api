@@ -8,6 +8,8 @@ import {
 	getInvalidIdErrorMessage,
 } from "../../utils/errorMessages.ts";
 
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+
 const router = new Router();
 
 router.post("/reservation/delete", async (ctx: Context) => {
@@ -19,37 +21,28 @@ router.post("/reservation/delete", async (ctx: Context) => {
 
 		if (!input._id) {
 			const body = getMissingIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
 		const reservationDetails = await Reservation.findOneAndDelete(input);
 		if (!reservationDetails) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
 		const body = getDeleteReservationSuccessMessage(reservationDetails);
-		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseError(ctx, body);
 			return;
 		}
 		const body = getDeleteReservationErrorMessage();
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseError(ctx, body);
 		return;
 	}
 });

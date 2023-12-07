@@ -16,6 +16,8 @@ import {
 } from "../../utils/checkBookingRules.ts";
 import { IReservationDetails } from "../../models/Reservation.ts";
 
+import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
+
 router.post("/reservation/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
@@ -83,9 +85,7 @@ ${JSON.stringify(isAvailableMessage)}
 `;
 
 		if (missingInformation.length > 0 || brokenRules.length > 0 || !isAvailable) {
-			ctx.response.status = 200;
-			ctx.response.body = responseBody;
-			console.log(responseBody);
+			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
 
@@ -116,15 +116,11 @@ ${JSON.stringify(isAvailableMessage)}
 		// await conversation.save();
 
 		const body = getCreateReservationSuccessMessage(reservationDetails);
-		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		const body = getCreateReservationErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 });
 

@@ -6,6 +6,8 @@ import {
 } from "../utils/errorMessages.ts";
 import { getAvilableDates } from "../utils/availableDates.ts";
 
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 async function getAvailableChambreDates(ctx: Context) {
 	try {
@@ -20,9 +22,7 @@ async function getAvailableChambreDates(ctx: Context) {
 
 		if (missingInformation.length > 0) {
 			const body = getMissingInformationErrorMessage(missingInformation.toString());
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
@@ -32,15 +32,11 @@ async function getAvailableChambreDates(ctx: Context) {
 		const availableDates = await getAvilableDates({ startDate, endDate });
 
 		const body = getAvailableChambreDatesSuccessMessage(availableDates);
-		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		const body = getAvailableChambreDatesErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 }
 
