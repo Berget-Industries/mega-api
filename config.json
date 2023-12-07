@@ -1,27 +1,33 @@
 {
-    "rules": {
-      "chambreBookingRules": [
-        {
-          "inputKey": "numberOfGuests",
-          "action": "isBetweenNumbers",
-          "max": 64,
-          "min": 35
-        }
-      ],
-      "normalBookingRules": [
-        {
-          "name": "under13Rules",
-          "key": "numberOfGuests",
-          "min": 1,
-          "max": 12
-        },
-        { 
-          "name": "over13Rules",
-          "key": "numberOfGuests",
-          "min": 13,
-          "max": 300
-        }
-      ]
-    }
-  }
-  
+	"rules": {
+		"chambreBookingRules": [
+			{
+				"inputKey": "numberOfGuests",
+				"action": "isBetweenNumbers",
+				"max": 64,
+				"min": 35,
+				"message": "La Cucina tar bara emot 35 till 64 gäster!"
+			},
+			{
+				"inputKey": "time",
+				"max": "21:00",
+				"min": "11:30",
+				"message": "Det går bara att boka la cucina mellan 11.30 och 21.00!"
+			}
+		],
+		"normalBookingRules": [
+			{
+				"inputKey": "numberOfGuests",
+				"max": 100,
+				"min": 2,
+				"message": "Jag kan endast hjälpa till med bokningar för 2-100 personer."
+			},
+			{
+				"inputKey": "time",
+				"max": "22:00",
+				"min": "17.00",
+				"message": "Det går bara att boka bord mellan 17:00 - 22:00"
+			}
+		]
+	}
+}

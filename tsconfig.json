@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"module": "commonjs", // or esnext, depending on your environment
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true
+	}
+}

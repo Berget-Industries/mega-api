@@ -1,49 +1,51 @@
-import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation } from "../models/index.ts";
 import {
-	getMissingIdErrorMessage,
-	getReservationDataErrorMessage,
+	getEditReservationSuccessMessage,
 	getInvalidIdErrorMessage,
-	getReservationDataSuccessMessage,
+	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 const router = new Router();
 
-async function getReservationData(ctx: Context) {
+router.post("/addSelectedMenu", async (ctx: Context) => {
 	try {
-		const { _id } = await ctx.request.body().value;
+		const { _id, menu } = await ctx.request.body().value;
 
-		if (!_id) {
-			const body = getMissingIdErrorMessage();
+		const reservationDoc = await Reservation.findById(_id);
+		if (!reservationDoc) {
+			const body = getInvalidIdErrorMessage();
 			ctx.response.status = 200;
 			ctx.response.body = body;
 			console.log(body);
 			return;
 		}
 
-		const reservationDetails = await Reservation.findById(_id);
+		const reservationDetails = await Reservation.findOneAndUpdate(
+			{ _id },
+			{ $set: { menu } },
+			{ new: true }
+		);
 
-		const body = getReservationDataSuccessMessage(reservationDetails);
+		const body = getEditReservationSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
 		ctx.response.body = body;
 		console.log(body);
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
+			console.error(error);
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 400;
+			ctx.response.status = 200;
 			ctx.response.body = body;
 			console.log(body);
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
+		const body = getEditReservationErrorMessage(error);
 		ctx.response.status = 500;
 		ctx.response.body = body;
 		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
-}
-
-router.post("/getReservationData", getReservationData);
+});
 
 export default router;

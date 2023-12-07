@@ -1,5 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/index.ts";
+import { Conversation, Organization, Reservation } from "../models/index.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,
@@ -7,13 +7,14 @@ import {
 	getReservationDataSuccessMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
+
 const router = new Router();
 
-async function getReservationData(ctx: Context) {
+router.get("/organization/conversation", async (ctx: Context) => {
 	try {
-		const { _id } = await ctx.request.body().value;
+		const conversationId = ctx.request.url.searchParams.get("conversationId");
 
-		if (!_id) {
+		if (!conversationId) {
 			const body = getMissingIdErrorMessage();
 			ctx.response.status = 200;
 			ctx.response.body = body;
@@ -21,12 +22,12 @@ async function getReservationData(ctx: Context) {
 			return;
 		}
 
-		const reservationDetails = await Reservation.findById(_id);
+		const conversation = await Conversation.findById(conversationId)
+			.populate("messages contactId")
+			.exec();
 
-		const body = getReservationDataSuccessMessage(reservationDetails);
 		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		ctx.response.body = { conversation };
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
@@ -42,8 +43,6 @@ async function getReservationData(ctx: Context) {
 		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
-}
-
-router.post("/getReservationData", getReservationData);
+});
 
 export default router;

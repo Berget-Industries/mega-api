@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
-import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { loadControllers } from "./middlewareRoute.ts";
+import { Application, Router, Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+
+import routes from "./src/routes/index.ts";
+
 const PORT: string | undefined = Deno.env.get("PORT");
 const parsedPORT = PORT ? parseInt(PORT, 10) : null;
 
@@ -40,12 +42,10 @@ async function initDatabase(uri: string) {
 async function initOakApp() {
 	const app = new Application();
 	const router = new Router();
-	const middlewareOptions = {
-		baseRoute: "/api",
-		directory: "./src/routes",
-		router,
-	};
-	await loadControllers(middlewareOptions);
+
+	router.use("/api", routes.routes());
+	router.use("/api", routes.allowedMethods());
+
 	app.use(router.routes());
 	app.use(router.allowedMethods());
 	if (parsedPORT) {

@@ -1,5 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/index.ts";
+import { Conversation, Organization } from "../models/index.ts";
 import {
 	getMissingIdErrorMessage,
 	getReservationDataErrorMessage,
@@ -7,13 +7,18 @@ import {
 	getReservationDataSuccessMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
+
 const router = new Router();
 
-async function getReservationData(ctx: Context) {
+router.get("/organization/conversations", async (ctx: Context) => {
 	try {
-		const { _id } = await ctx.request.body().value;
+		const params = ctx.request.url.searchParams;
 
-		if (!_id) {
+		const endDate = params.get("endDate");
+		const startDate = params.get("startDate");
+		const organizationId = params.get("organizationId");
+
+		if (!organizationId) {
 			const body = getMissingIdErrorMessage();
 			ctx.response.status = 200;
 			ctx.response.body = body;
@@ -21,12 +26,17 @@ async function getReservationData(ctx: Context) {
 			return;
 		}
 
-		const reservationDetails = await Reservation.findById(_id);
+		const organization = await Organization.findById(organizationId)
+			.populate({
+				path: "conversations",
+				populate: [{ path: "messages" }, { path: "contactId" }],
+			})
+			.exec();
 
-		const body = getReservationDataSuccessMessage(reservationDetails);
+		const conversations = organization ? organization.conversations : [];
+
 		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		ctx.response.body = { conversations };
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
@@ -42,8 +52,6 @@ async function getReservationData(ctx: Context) {
 		console.log(body);
 		console.log("Fel inträffade: ", error);
 	}
-}
-
-router.post("/getReservationData", getReservationData);
+});
 
 export default router;
