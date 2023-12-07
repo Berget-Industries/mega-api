@@ -6,6 +6,8 @@ import {
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 
 router.post("/addSelectedMenu", async (ctx: Context) => {
@@ -15,9 +17,7 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 		const reservationDoc = await Reservation.findById(_id);
 		if (!reservationDoc) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
@@ -28,23 +28,16 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 		);
 
 		const body = getEditReservationSuccessMessage(reservationDetails);
-		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			console.error(error);
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseError(ctx, body);
 			return;
 		}
 		const body = getEditReservationErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 });
 

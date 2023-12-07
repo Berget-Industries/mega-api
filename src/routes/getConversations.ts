@@ -8,6 +8,8 @@ import {
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 
 router.get("/organization/conversations", async (ctx: Context) => {
@@ -20,9 +22,7 @@ router.get("/organization/conversations", async (ctx: Context) => {
 
 		if (!organizationId) {
 			const body = getMissingIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
@@ -35,22 +35,18 @@ router.get("/organization/conversations", async (ctx: Context) => {
 
 		const conversations = organization ? organization.conversations : [];
 
-		ctx.response.status = 200;
-		ctx.response.body = { conversations };
+		const body = { conversations };
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 400;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseError(ctx, body);
 			return;
 		}
 
 		const body = getReservationDataErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 });
 

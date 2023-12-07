@@ -9,6 +9,8 @@ import {
 import mongoose from "mongoose";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 
 router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
@@ -41,22 +43,18 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 
 		const messages = organization?.messages;
 
-		ctx.response.status = 200;
-		ctx.response.body = { messages };
+		const body = { messages };
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 400;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseError(ctx, body);
 			return;
 		}
 
 		const body = getReservationDataErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 });
 

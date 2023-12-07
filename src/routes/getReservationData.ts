@@ -7,6 +7,8 @@ import {
 	getReservationDataSuccessMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 
 async function getReservationData(ctx: Context) {
@@ -15,32 +17,24 @@ async function getReservationData(ctx: Context) {
 
 		if (!_id) {
 			const body = getMissingIdErrorMessage();
-			ctx.response.status = 200;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseSuccess(ctx, body);
 			return;
 		}
 
 		const reservationDetails = await Reservation.findById(_id);
 
 		const body = getReservationDataSuccessMessage(reservationDetails);
-		ctx.response.status = 200;
-		ctx.response.body = body;
-		console.log(body);
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
 			const body = getInvalidIdErrorMessage();
-			ctx.response.status = 400;
-			ctx.response.body = body;
-			console.log(body);
+			handleResponseError(ctx, body);
 			return;
 		}
 
 		const body = getReservationDataErrorMessage(error);
-		ctx.response.status = 500;
-		ctx.response.body = body;
-		console.log(body);
-		console.log("Fel inträffade: ", error);
+		handleResponseError(ctx, body);
 	}
 }
 

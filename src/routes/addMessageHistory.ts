@@ -7,6 +7,8 @@ import {
 import mongoose from "mongoose";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+
 const router = new Router();
 
 router.post(
@@ -72,22 +74,17 @@ router.post(
 
 			if (!newConv) throw "asd";
 
-			ctx.response.status = 200;
-			ctx.response.body = { conversation: newConv.toJSON() };
+			const body = { conversation: newConv.toJSON() };
+			handleResponseSuccess(ctx, body);
 		} catch (error) {
+			console.error(error);
 			if (error instanceof mongoose.Error.CastError) {
-				console.error(error);
 				const body = getInvalidIdErrorMessage();
-				ctx.response.status = 200;
-				ctx.response.body = body;
-				console.log(body);
+				handleResponseError(ctx, body);
 				return;
 			}
 			const body = getEditReservationErrorMessage(error);
-			ctx.response.status = 500;
-			ctx.response.body = body;
-			console.log(body);
-			console.log("Fel inträffade: ", error);
+			handleResponseError(ctx, body);
 		}
 	}
 );

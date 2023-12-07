@@ -7,6 +7,7 @@ import { sign as jwtSign, verify as jwtVerify } from "npm:jsonwebtoken";
 import { sessionStore } from "../utils/sessionStore.ts";
 
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
 
@@ -53,23 +54,23 @@ router.post("/auth/login", async (ctx: Context) => {
 		// Skapa en session och spara den i session store
 		sessionStore.createSession(user, token, Date.now() + 2 * 60 * 60 * 1000);
 
-		ctx.response.status = 200;
-		ctx.response.body = {
+		const body = {
 			accessToken: token,
 			user,
 		};
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
 		console.error(error);
-		ctx.response.status = 500;
-		ctx.response.body = { message: "Internal Server Error" };
+		const body = { message: "Internal Server Error" };
+		handleResponseError(ctx, body);
 	}
 });
 
 router.get("/auth/me", authenticationMiddleware, async (ctx: Context) => {
-	ctx.response.status = 200;
-	ctx.response.body = {
+	const body = {
 		user: ctx.state.session.user,
 	};
+	handleResponseSuccess(ctx, body);
 });
 
 router.post("/auth/logout", async (ctx: Context) => {
@@ -79,11 +80,12 @@ router.post("/auth/logout", async (ctx: Context) => {
 			sessionStore.deleteSession(token);
 		}
 
-		ctx.response.status = 200;
-		ctx.response.body = { message: "Logged out successfully" };
+		const body = { message: "Logged out successfully" };
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
-		ctx.response.status = 500;
-		ctx.response.body = { message: "Internal Server Error" };
+		console.error(error);
+		const body = { message: "Internal Server Error" };
+		handleResponseError(ctx, body);
 	}
 });
 
