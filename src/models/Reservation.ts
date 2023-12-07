@@ -10,6 +10,7 @@ export interface IReservationDetails {
 	comment: string;
 	menu: object | undefined;
 	conversations: [{ type: Schema.Types.ObjectId; ref: "Conversation" }];
+	organzization: [{ type: Schema.Types.ObjectId; ref: "Organization" }];
 }
 
 export default model<IReservationDetails>(
@@ -24,5 +25,6 @@ export default model<IReservationDetails>(
 		phone: { type: String },
 		menu: { type: Object },
 		conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
+		organzization: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
 	})
 );
