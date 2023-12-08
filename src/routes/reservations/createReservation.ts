@@ -22,18 +22,8 @@ import { handleResponseSuccess, handleResponseError } from "../../utils/contextH
 
 router.post("/reservation/create", async (ctx: Context) => {
 	try {
-		const {
-			chambre,
-			name,
-			email,
-			date,
-			time,
-			numberOfGuests,
-			phone,
-			comment,
-			conversationId,
-			organizationId,
-		} = await ctx.request.body().value;
+		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
+			await ctx.request.body().value;
 
 		const input: IReservationDetails = {
 			chambre,
@@ -45,7 +35,6 @@ router.post("/reservation/create", async (ctx: Context) => {
 			comment,
 			menu: undefined,
 			conversations: [conversationId],
-			organization: organizationId,
 		};
 
 		const missingInformation = Object.entries({
