@@ -1,12 +1,6 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../models/index.ts";
 import mongoose from "mongoose";
-import {
-	getEditReservationErrorMessage,
-	getEditReservationSuccessMessage,
-	getInvalidIdErrorMessage,
-	getEditReservationNoChangeMessage,
-} from "../../utils/errorMessages.ts";
 import convertToUTC from "../../utils/convertToUTC.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { checkAvailableDates, editReservationFromDate } from "../../utils/availableDates.ts";
@@ -14,11 +8,6 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../utils/checkBookingRules.ts";
-import {
-	getBrokenRulesErrorMessage,
-	getMissingInformationErrorMessage,
-	getNotAvailableErrorMessage,
-} from "../../utils/errorMessages.ts";
 
 const router = new Router();
 
@@ -43,8 +32,10 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		}
 
 		if (Object.keys(updateData).length === 0) {
-			const body = getEditReservationNoChangeMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "no-change",
+				message: "Allt gick som det skulle men inget ändrades i reservationen.",
+			});
 			return;
 		}
 
@@ -54,8 +45,14 @@ router.post("/reservation/edit", async (ctx: Context) => {
 			? checkChambreBookingRules({ ...input, time })
 			: checkNormalBookingRules({ ...input, time });
 		const brokenRulesMessage =
-			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
-
+			brokenRules.length > 0
+				? brokenRules
+						.map(
+							({ inputKey, message }) =>
+								`Bruten regel för värde av ${inputKey}: ${message}.`
+						)
+						.join("\n")
+				: "Alla regler följs.";
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
@@ -67,10 +64,13 @@ router.post("/reservation/edit", async (ctx: Context) => {
 				: null;
 		const isAvailableMessage =
 			isAvailable === null
-				? "tid och eller datum saknas"
+				? "Tid och eller datum saknas."
 				: isAvailable === false
-				? getNotAvailableErrorMessage()
-				: "önskad tid går att boka";
+				? {
+						status: "not-available",
+						message: "Tiden är inte ledig.",
+				  }
+				: "Önskad tid går att boka.";
 
 		const responseBody = `
 ====
@@ -81,7 +81,7 @@ ${JSON.stringify(isAvailableMessage)}
 `;
 
 		if (brokenRules.length > 0 || !isAvailable) {
-			handleResponseSuccess(ctx, responseBody);
+			handleResponseError(ctx, responseBody);
 			return;
 		}
 
@@ -116,18 +116,25 @@ ${JSON.stringify(isAvailableMessage)}
 		// 		date: new Date(),
 		// 	},
 		// ];
-
-		const body = getEditReservationSuccessMessage(reservationDetails);
-		handleResponseSuccess(ctx, body);
+		console.log(reservationDetails);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Reservationen har uppdaterats.",
+			reservationData: reservationDetails,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-		const body = getEditReservationErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

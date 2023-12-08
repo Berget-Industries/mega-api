@@ -1,11 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation } from "../models/index.ts";
-import {
-	getMissingIdErrorMessage,
-	getReservationDataErrorMessage,
-	getInvalidIdErrorMessage,
-	getReservationDataSuccessMessage,
-} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
@@ -16,25 +10,32 @@ async function getReservationData(ctx: Context) {
 		const { _id } = await ctx.request.body().value;
 
 		if (!_id) {
-			const body = getMissingIdErrorMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseError(ctx, {
+				status: "missing-id",
+				message: "Saknar reservations id:et.",
+			});
 			return;
 		}
 
 		const reservationDetails = await Reservation.findById(_id);
-
-		const body = getReservationDataSuccessMessage(reservationDetails);
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Reservation har hämtats.",
+			reservationData: reservationDetails,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 }
 
