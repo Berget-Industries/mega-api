@@ -29,7 +29,7 @@ router.get("/organization/conversation", async (ctx: Context) => {
 			return;
 		}
 		handleResponseError(ctx, {
-			status: "success",
+			status: "internal-error",
 			message: "Tekniskt fel.",
 		});
 	}
