@@ -2,8 +2,9 @@ import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { User } from "../../models/index.ts";
 import * as bcrypt from "npm:bcrypt-ts";
-import { sign as jwtSign, verify as jwtVerify } from "npm:jsonwebtoken";
 import { sessionStore } from "../../utils/sessionStore.ts";
+
+import { createJwtToken } from "../../utils/jwt.ts";
 
 const router = new Router();
 
@@ -43,9 +44,7 @@ router.post("/login", async (ctx: Context) => {
 			return;
 		}
 
-		const token = await jwtSign({ email }, Deno.env.get("JWT_SECRET") || "", {
-			expiresIn: "2h",
-		});
+		const token = await createJwtToken({ email });
 
 		// Skapa en session och spara den i session store
 		sessionStore.createSession(user, token, Date.now() + 2 * 60 * 60 * 1000);
