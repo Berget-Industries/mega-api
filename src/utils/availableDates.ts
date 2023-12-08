@@ -29,15 +29,22 @@ export async function checkAvailableDates({
 	date,
 	time,
 }: checkAvailableDatesInput): Promise<boolean> {
-	const document = await AvailableDates.findOne({ date });
+	const startOfDay = moment(date).startOf("day");
+	const endOfDay = moment(date).endOf("day");
+	const dateToUpdate = await AvailableDates.findOne({
+		date: {
+			$gte: startOfDay,
+			$lte: endOfDay,
+		},
+	});
 
-	if (!document) {
+	if (!dateToUpdate) {
 		return false;
 	}
 
 	const keyToCheck = getKeyToUpdateByTime(time);
 
-	if (document[keyToCheck].isAvailable) {
+	if (dateToUpdate[keyToCheck].isAvailable) {
 		return true;
 	} else {
 		return false;
@@ -54,7 +61,14 @@ export async function addReservationToDate({
 	date,
 	time,
 }: addReservationToDateInput) {
-	const dateToUpdate = await AvailableDates.findOne({ date });
+	const startOfDay = moment(date).startOf("day");
+	const endOfDay = moment(date).endOf("day");
+	const dateToUpdate = await AvailableDates.findOne({
+		date: {
+			$gte: startOfDay,
+			$lte: endOfDay,
+		},
+	});
 
 	if (!dateToUpdate) {
 		throw new Error("Could not find date document");
@@ -64,7 +78,10 @@ export async function addReservationToDate({
 
 	await AvailableDates.updateOne(
 		{
-			date,
+			date: {
+				$gte: startOfDay,
+				$lte: endOfDay,
+			},
 		},
 		{
 			$set: {
