@@ -9,7 +9,7 @@ import {
 } from "../../utils/errorMessages.ts";
 import convertToUTC from "../../utils/convertToUTC.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { checkAvailableDates } from "../../utils/availableDates.ts";
+import { checkAvailableDates, editReservationFromDate } from "../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
@@ -90,6 +90,11 @@ ${JSON.stringify(isAvailableMessage)}
 			{ $set: updateData, $addToSet: { conversations: conversationId } },
 			{ new: true }
 		);
+		editReservationFromDate({
+			reservationId: _id,
+			date,
+			time,
+		});
 
 		// let conversation = await ConversationModel.findById(conversationId);
 		// if (!conversation) {
