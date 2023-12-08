@@ -1,22 +1,23 @@
 import { Context, Next } from "https://deno.land/x/oak/mod.ts";
-import { verify } from "npm:jsonwebtoken";
+import { AiAccessKey } from "../models/index.ts";
 
 export default async function authenticationMiddleware(ctx: Context, next: Next) {
 	try {
-		const token = ctx.request.headers.get("Authorization")?.replace("Bearer ", "");
+		const key = ctx.request.headers.get("AiAuthorization");
+		const keyDoc = await AiAccessKey.findOne({ key });
 
-		if (!token) {
-			throw "unauthorized";
+		if (!keyDoc) {
+			ctx.response.status = 401;
+			ctx.response.body = { message: "Unauthorized" };
+			return;
 		}
 
-		const payload = await verify(token, Deno.env.get("JWT_SECRET"));
-
-		ctx.state.organization = payload.organization;
+		ctx.state.organization = keyDoc.organization;
 
 		await next();
 	} catch (error) {
 		ctx.response.status = 401;
-		ctx.response.body = { message: "Invalid or expired token" };
+		ctx.response.body = { message: "Invalid key!" };
 		console.error(error);
 	}
 }
