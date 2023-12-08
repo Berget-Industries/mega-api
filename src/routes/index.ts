@@ -19,6 +19,7 @@ const routes = [
 	addMessageHistory,
 	addSelectedMenu,
 	auth,
+	admin,
 	getAvailableChambreDates,
 	getConversations,
 	getConverstaion,
