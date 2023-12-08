@@ -1,8 +1,8 @@
 import { Context, Router } from "https://deno.land/x/oak/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { verify as jwtVerify } from "npm:jsonwebtoken";
 import { User } from "../../models/index.ts";
 import * as bcrypt from "npm:bcrypt-ts";
+import { verify } from "../../utils/jwt.ts";
 
 const router = new Router();
 
@@ -10,7 +10,7 @@ router.post("/changePasswordWithToken", async (ctx: Context) => {
 	try {
 		const { newPassword, token } = await ctx.request.body().value;
 
-		const payload = await jwtVerify(token, Deno.env.get("JWT_SECRET"));
+		const payload = await verify(token);
 
 		if (payload.type !== "reset-password") {
 			handleResponseError(ctx, "invalid token");
