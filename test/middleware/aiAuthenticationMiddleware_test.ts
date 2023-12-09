@@ -20,7 +20,7 @@ function createMockContext(key: string | null): Context {
 	} as any as Context;
 }
 
-Deno.test("Middleware Test - Valid Key", async () => {
+Deno.test("Ai Authentication Middleware - Valid Access Key", async () => {
 	sandbox.stub(AiAccessKey, "findOne").resolves({ organization: "Test Organization" });
 
 	const ctx = createMockContext("valid_key");
@@ -32,7 +32,7 @@ Deno.test("Middleware Test - Valid Key", async () => {
 	sandbox.restore();
 });
 
-Deno.test("Middleware Test - Invalid Key", async () => {
+Deno.test("Ai Authentication Middleware - Invalid Access Key", async () => {
 	sandbox.stub(AiAccessKey, "findOne").resolves(null);
 
 	const ctx = createMockContext("invalid_key");
@@ -44,7 +44,7 @@ Deno.test("Middleware Test - Invalid Key", async () => {
 	sandbox.restore();
 });
 
-Deno.test("Middleware Test - Exception Handling", async () => {
+Deno.test("Ai Authentication Middleware - Exception Handling", async () => {
 	const findOneStub = sandbox.stub(AiAccessKey, "findOne").throws(new Error("Database error"));
 
 	const ctx = createMockContext("valid_key");

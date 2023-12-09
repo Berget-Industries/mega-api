@@ -51,7 +51,7 @@ function createMockContext(authorization: string | null): Context {
 	} as any as Context;
 }
 
-Deno.test("Authentication Middleware - No Token", async () => {
+Deno.test("User Authentication Middleware - No Token", async () => {
 	const ctx = createMockContext(null);
 	await authenticationMiddleware(ctx, () => Promise.resolve());
 
@@ -59,7 +59,7 @@ Deno.test("Authentication Middleware - No Token", async () => {
 	assertEquals(ctx.response.body, { message: "Unauthorized" });
 });
 
-Deno.test("Authentication Middleware - Valid Token", async () => {
+Deno.test("User Authentication Middleware - Valid Token", async () => {
 	const payload = { email: "user@example.com" };
 	const token = await createJwtToken(payload);
 
@@ -74,7 +74,7 @@ Deno.test("Authentication Middleware - Valid Token", async () => {
 	sandbox.restore();
 });
 
-Deno.test("Authentication Middleware - Invalid Token", async () => {
+Deno.test("User Authentication Middleware - Invalid Token", async () => {
 	const token = "invalid_token";
 	const ctx = createMockContext(token);
 	await authenticationMiddleware(ctx, () => {
