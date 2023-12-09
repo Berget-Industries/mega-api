@@ -14,7 +14,7 @@ router.post("/reservation/delete", async (ctx: Context) => {
 		};
 
 		if (!input._id) {
-			handleResponseError(ctx, {
+			handleResponseSuccess(ctx, {
 				status: "missing-id",
 				message: "Saknar reservations id:et.",
 			});
@@ -23,7 +23,7 @@ router.post("/reservation/delete", async (ctx: Context) => {
 
 		const reservationDetails = await Reservation.findOneAndDelete(input);
 		if (!reservationDetails) {
-			handleResponseError(ctx, {
+			handleResponseSuccess(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
 			});
@@ -41,7 +41,7 @@ router.post("/reservation/delete", async (ctx: Context) => {
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseError(ctx, {
+			handleResponseSuccess(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
 			});

@@ -15,10 +15,10 @@ async function getAvailableChambreDates(ctx: Context) {
 			.map(([k, v]) => k);
 
 		if (missingInformation.length > 0) {
-			handleResponseError(ctx, {
+			handleResponseSuccess(ctx, {
 				status: "missing-information",
 				message:
-					"Det gick inte att skapa reservationen. Följande information saknas: " +
+					"Det gick inte att hitta reservationen. Följande information saknas: " +
 					missingInformation.toString(),
 			});
 			return;
@@ -27,22 +27,24 @@ async function getAvailableChambreDates(ctx: Context) {
 		startDate = new Date(startDate);
 		endDate = new Date(endDate);
 
-		const availableDates = await getAvilableDates({ startDate, endDate });
-		handleResponseSuccess(ctx, {
-			status: "success",
-			message:
-				availableDates.length > 0
-					? "Här är lediga tider för chambre."
-					: "Det är fullbokat.",
-			availableDates: availableDates.map(({ date, lunch, dinner }) => ({
+		const availableDates = (await getAvilableDates({ startDate, endDate })).map(
+			({ date, lunch, dinner }) => ({
 				date,
 				lunch: lunch.isAvailable,
 				dinner: dinner.isAvailable,
-			})),
+			})
+		);
+		const message =
+			availableDates.length > 0 ? "Här är lediga tider för chambre." : "Det är fullbokat.";
+
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message,
+			availableDates,
 		});
 	} catch (error) {
 		console.error(error);
-		handleResponseError(ctx, {
+		handleResponseSuccess(ctx, {
 			status: "could-not-get-dates",
 			message: "Något gick fel, kunde inte hitta lediga tider i chambre.",
 		});

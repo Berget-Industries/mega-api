@@ -125,7 +125,7 @@ ${JSON.stringify(isAvailableMessage)}
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseError(ctx, {
+			handleResponseSuccess(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
 			});

@@ -68,13 +68,17 @@ router.post(
 				.exec();
 
 			if (!newConv) throw "asd";
-			handleResponseSuccess(ctx, { conversation: newConv.toJSON() });
+			handleResponseSuccess(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta konversationen. ID:et är ogiltigt.",
+				conversation: newConv.toJSON(),
+			});
 		} catch (error) {
 			console.error(error);
 			if (error instanceof mongoose.Error.CastError) {
 				handleResponseError(ctx, {
-					status: "invalid-id",
-					message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+					status: "error",
+					message: "Nånting gick fel.",
 				});
 				return;
 			}
