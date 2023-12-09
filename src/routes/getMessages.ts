@@ -6,7 +6,8 @@ import { Message, Organization } from "../models/index.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
-router.get("/getMessages", aiAuthenticationMiddleware, async (ctx: Context) => {
+
+router.get("/getMessages", async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 
