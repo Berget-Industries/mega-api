@@ -1,4 +1,6 @@
 import * as jwt from "https://deno.land/x/djwt/mod.ts";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function getJwtSecret() {
 	const jwtSecretBase64 = Deno.env.get("JWT_SECRET");
@@ -16,7 +18,7 @@ export async function getJwtSecret() {
 		jwtSecretUint8Array,
 		{ name: "HMAC", hash: { name: "SHA-256" } },
 		false,
-		["verify"]
+		["sign", "verify"]
 	);
 
 	return jwtSecretKey;
