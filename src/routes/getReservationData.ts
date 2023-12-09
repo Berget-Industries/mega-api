@@ -8,6 +8,7 @@ import {
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 
 const router = new Router();
 
@@ -38,6 +39,6 @@ async function getReservationData(ctx: Context) {
 	}
 }
 
-router.post("/getReservationData", getReservationData);
+router.post("/getReservationData", getReservationData, aiAuthenticationMiddleware);
 
 export default router;

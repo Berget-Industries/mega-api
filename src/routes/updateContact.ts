@@ -5,7 +5,7 @@ import {
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
@@ -66,7 +66,8 @@ async function updateContact(ctx: Context) {
 router.post(
 	"/updateContact",
 	//authenticationMiddleware,
-	updateContact
+	updateContact,
+	aiAuthenticationMiddleware
 );
 
 export default router;

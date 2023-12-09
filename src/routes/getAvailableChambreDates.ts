@@ -5,7 +5,7 @@ import {
 	getAvailableChambreDatesErrorMessage,
 } from "../utils/errorMessages.ts";
 import { getAvilableDates } from "../utils/availableDates.ts";
-
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
@@ -40,6 +40,6 @@ async function getAvailableChambreDates(ctx: Context) {
 	}
 }
 
-router.post("/getAvailableChambreDates", getAvailableChambreDates);
+router.post("/getAvailableChambreDates", getAvailableChambreDates, aiAuthenticationMiddleware);
 
 export default router;
