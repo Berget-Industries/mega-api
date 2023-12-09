@@ -12,7 +12,7 @@ import { handleResponseError, handleResponseSuccess } from "../utils/contextHand
 
 const router = new Router();
 
-router.get("/organization/conversations", aiAuthenticationMiddleware async (ctx: Context) => {
+router.get("/organization/conversations", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 
