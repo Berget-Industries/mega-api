@@ -9,7 +9,7 @@ router.get("/organization/conversation", async (ctx: Context) => {
 	try {
 		const conversationId = ctx.request.url.searchParams.get("conversationId");
 		if (!conversationId) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "missing-id",
 				message: "Saknar reservations id:et.",
 			});
@@ -26,7 +26,7 @@ router.get("/organization/conversation", async (ctx: Context) => {
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
 			});

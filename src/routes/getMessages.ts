@@ -38,7 +38,7 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta meddelanden. ID:et är ogiltigt.",
 			});

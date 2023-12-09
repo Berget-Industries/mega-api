@@ -11,7 +11,7 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 
 		const reservationDoc = await Reservation.findById(_id);
 		if (!reservationDoc) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt",
 			});
@@ -32,7 +32,7 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "invalid-id",
 				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
 			});
