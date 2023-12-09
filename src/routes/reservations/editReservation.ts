@@ -19,10 +19,10 @@ import {
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
 } from "../../utils/errorMessages.ts";
-
+import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
 const router = new Router();
 
-router.post("/reservation/edit", async (ctx: Context) => {
+router.post("/reservation/edit", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
 			await ctx.request.body().value;

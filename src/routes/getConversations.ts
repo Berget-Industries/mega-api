@@ -7,12 +7,12 @@ import {
 	getReservationDataSuccessMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
 
-router.get("/organization/conversations", async (ctx: Context) => {
+router.get("/organization/conversations", aiAuthenticationMiddleware async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 

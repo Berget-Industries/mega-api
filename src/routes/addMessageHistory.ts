@@ -5,7 +5,7 @@ import {
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
@@ -14,6 +14,7 @@ const router = new Router();
 router.post(
 	"/addMessageHistory",
 	//authenticationMiddleware,
+	aiAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
 			const {
@@ -52,7 +53,7 @@ router.post(
 				llmOutput,
 			});
 
-			conversation.organizationId = organizationId;
+			conversation.organizationId = ctx.state.organization;
 			conversation.contactId = contact._id;
 			conversation.lastActivity = createdAt;
 			conversation.messages = [...conversation.messages, messageDoc._id.toString()];

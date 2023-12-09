@@ -10,10 +10,11 @@ import {
 
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { deleteReservationFromDate } from "../../utils/availableDates.ts";
+import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
 
 const router = new Router();
 
-router.post("/reservation/delete", async (ctx: Context) => {
+router.post("/reservation/delete", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		const input = {

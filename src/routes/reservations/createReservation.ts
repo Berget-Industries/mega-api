@@ -17,10 +17,11 @@ import {
 } from "../../utils/checkBookingRules.ts";
 import { IReservationDetails } from "../../models/Reservation.ts";
 import convertToUTC from "../../utils/convertToUTC.ts";
+import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
 
 import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
 
-router.post("/reservation/create", async (ctx: Context) => {
+router.post("/reservation/create", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
 			await ctx.request.body().value;
