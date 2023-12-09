@@ -15,8 +15,8 @@ router.post(
 	async (ctx: Context) => {
 		try {
 			const {
-				conversationId,
-				organizationId,
+				conversation,
+				organization,
 				contactEmail,
 				contactName,
 				createdAt,
@@ -32,41 +32,41 @@ router.post(
 				});
 			}
 
-			let conversation = await Conversation.findById(conversationId);
-			if (!conversation) {
-				conversation = await Conversation.create({
-					_id: conversationId,
+			let conversationData = await Conversation.findById(conversation);
+			if (!conversationData) {
+				conversationData = await Conversation.create({
+					_id: conversation,
 					messages: [],
 					lastActivity: createdAt,
 				});
 			}
 
 			const messageDoc = await Message.create({
-				conversationId: conversation._id,
-				organizationId,
+				conversationId: conversationData._id,
+				organization,
 				contactId: contact._id,
 				createdAt,
 				input,
 				llmOutput,
 			});
 
-			conversation.organization = organizationId;
-			conversation.contactId = contact._id;
-			conversation.lastActivity = createdAt;
-			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
-			await conversation.save();
+			conversationData.organization = organization;
+			conversationData.contact = contact._id;
+			conversationData.lastActivity = createdAt;
+			conversationData.messages = [...conversationData.messages, messageDoc._id.toString()];
+			await conversationData.save();
 
 			await Organization.updateOne(
-				{ _id: organizationId },
+				{ _id: organization },
 				{
 					$addToSet: {
-						conversations: conversation._id,
+						conversations: conversationData._id,
 						messages: messageDoc._id,
 					},
 				}
 			);
 
-			const newConv = await Conversation.findById({ _id: conversationId })
+			const newConv = await Conversation.findById({ _id: conversation })
 				.populate("messages")
 				.exec();
 			if (!newConv) throw "asd";

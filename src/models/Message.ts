@@ -23,8 +23,8 @@ export interface ILLMOutput {
 
 export interface IMessage {
 	organization: { type: Schema.Types.ObjectId; ref: "Organization" };
-	conversationId: { type: Schema.Types.ObjectId; ref: "Conversation" };
-	contactId: { type: Schema.Types.ObjectId; ref: "Contact" };
+	conversation: { type: Schema.Types.ObjectId; ref: "Conversation" };
+	contact: { type: Schema.Types.ObjectId; ref: "Contact" };
 	createdAt: Date;
 	input: string;
 	llmOutput: ILLMOutput[];
@@ -34,8 +34,8 @@ export default model<IMessage>(
 	"Message",
 	new Schema<IMessage>({
 		organization: { type: Schema.Types.ObjectId, ref: "Organization" },
-		conversationId: { type: Schema.Types.ObjectId, ref: "Conversation" },
-		contactId: { type: Schema.Types.ObjectId, ref: "Contact" },
+		conversation: { type: Schema.Types.ObjectId, ref: "Conversation" },
+		contact: { type: Schema.Types.ObjectId, ref: "Contact" },
 		createdAt: Date,
 		input: String,
 		llmOutput: Array,

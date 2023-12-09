@@ -15,22 +15,22 @@ router.get("/organization/conversations", async (ctx: Context) => {
 		const params = ctx.request.url.searchParams;
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
-		const organizationId = params.get("organizationId");
+		const organization = params.get("organization");
 
-		if (!organizationId) {
+		if (!organization) {
 			const body = getMissingIdErrorMessage();
 			handleResponseSuccess(ctx, body);
 			return;
 		}
 
-		const organization = await Organization.findById(organizationId)
+		const organizationData = await Organization.findById(organization)
 			.populate({
 				path: "conversations",
-				populate: [{ path: "messages" }, { path: "contactId" }],
+				populate: [{ path: "messages" }, { path: "contact" }],
 			})
 			.exec();
 
-		const conversations = organization ? organization.conversations : [];
+		const conversations = organizationData ? organizationData.conversations : [];
 
 		const body = { conversations };
 		handleResponseSuccess(ctx, body);

@@ -7,13 +7,13 @@ interface checkAvailableDatesInput {
 }
 
 interface addReservationToDateInput {
-	reservationId: string;
+	reservation: string;
 	date: Date;
 	time: string;
 }
 
 interface editReservationFromDateInput {
-	reservationId: string;
+	reservation: string;
 	date: Date;
 	time: string;
 }
@@ -24,7 +24,7 @@ interface getAvailableChambreDatesInput {
 }
 
 interface deleteReservationFromDateInput {
-	reservationId: string;
+	reservation: string;
 }
 
 const getKeyToUpdateByTime = (time: string) => {
@@ -69,11 +69,7 @@ export async function checkAvailableDates({
 	}
 }
 
-export async function addReservationToDate({
-	reservationId,
-	date,
-	time,
-}: addReservationToDateInput) {
+export async function addReservationToDate({ reservation, date, time }: addReservationToDateInput) {
 	const startOfDay = moment(date).startOf("day");
 	const endOfDay = moment(date).endOf("day");
 	const keyToUpdate = getKeyToUpdateByTime(time);
@@ -98,23 +94,23 @@ export async function addReservationToDate({
 		{
 			$set: {
 				[keyToUpdate]: {
-					_id: reservationId,
+					_id: reservation,
 					isAvailable: false,
 				},
 			},
 		}
 	);
-	console.log(`Added reservation ${reservationId} to ${date} - ${keyToUpdate}`);
+	console.log(`Added reservation ${reservation} to ${date} - ${keyToUpdate}`);
 }
 
-export async function deleteReservationFromDate({ reservationId }: deleteReservationFromDateInput) {
+export async function deleteReservationFromDate({ reservation }: deleteReservationFromDateInput) {
 	const dateDocumentToUpdate = await AvailableDates.findOne({
-		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
+		$or: [{ "lunch._id": reservation }, { "dinner._id": reservation }],
 	});
 	const keyToUpdate =
-		reservationId === dateDocumentToUpdate?.lunch._id
+		reservation === dateDocumentToUpdate?.lunch._id
 			? "lunch"
-			: reservationId === dateDocumentToUpdate?.dinner._id
+			: reservation === dateDocumentToUpdate?.dinner._id
 			? "dinner"
 			: "error";
 
@@ -131,18 +127,18 @@ export async function deleteReservationFromDate({ reservationId }: deleteReserva
 
 	await dateDocumentToUpdate.save();
 	console.log(
-		`Removed reservation ${reservationId} from ${dateDocumentToUpdate.date} - ${keyToUpdate}`
+		`Removed reservation ${reservation} from ${dateDocumentToUpdate.date} - ${keyToUpdate}`
 	);
 }
 
 export async function editReservationFromDate({
-	reservationId,
+	reservation,
 	date,
 	time,
 }: editReservationFromDateInput) {
 	const isNewDateAvailable = await checkAvailableDates({ date, time });
 	const dateDocumentToUpdate = await AvailableDates.findOne({
-		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
+		$or: [{ "lunch._id": reservation }, { "dinner._id": reservation }],
 	});
 
 	if (!dateDocumentToUpdate) {
@@ -151,8 +147,8 @@ export async function editReservationFromDate({
 	if (!isNewDateAvailable) {
 		throw new Error("The new date is not available for booking!");
 	}
-	await deleteReservationFromDate({ reservationId });
-	await addReservationToDate({ date, time, reservationId });
+	await deleteReservationFromDate({ reservation });
+	await addReservationToDate({ date, time, reservation });
 }
 
 export async function getAvilableDates({ startDate, endDate }: getAvailableChambreDatesInput) {

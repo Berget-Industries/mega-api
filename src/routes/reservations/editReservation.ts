@@ -23,7 +23,7 @@ import {
 const router = new Router();
 router.post("/reservation/edit", async (ctx: Context) => {
 	try {
-		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
+		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =
 			await ctx.request.body().value;
 
 		const input = {
@@ -85,11 +85,11 @@ ${JSON.stringify(isAvailableMessage)}
 
 		const reservationDetails = await Reservation.findOneAndUpdate(
 			{ _id },
-			{ $set: updateData, $addToSet: { conversations: conversationId } },
+			{ $set: updateData, $addToSet: { conversations: conversation } },
 			{ new: true }
 		);
 		editReservationFromDate({
-			reservationId: _id,
+			reservation: _id,
 			date,
 			time,
 		});

@@ -19,7 +19,7 @@ import {
 const router = new Router();
 router.post("/reservation/create", async (ctx: Context) => {
 	try {
-		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
+		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
 
 		const input: IReservationDetails = {
@@ -31,7 +31,7 @@ router.post("/reservation/create", async (ctx: Context) => {
 			phone,
 			comment,
 			menu: undefined,
-			conversations: [conversationId],
+			conversations: [conversation],
 		};
 
 		const missingInformation = Object.entries({
@@ -90,7 +90,7 @@ ${JSON.stringify(isAvailableMessage)}
 		await addReservationToDate({
 			date,
 			time,
-			reservationId: reservationDetails._id.toString(),
+			reservation: reservationDetails._id.toString(),
 		});
 
 		// let conversation = await ConversationModel.findById(conversationId);

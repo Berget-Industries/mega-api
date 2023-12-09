@@ -32,7 +32,7 @@ router.post("/reservation/delete", async (ctx: Context) => {
 		}
 
 		deleteReservationFromDate({
-			reservationId: _id,
+			reservation: _id,
 		});
 
 		const body = getDeleteReservationSuccessMessage(reservationDetails);

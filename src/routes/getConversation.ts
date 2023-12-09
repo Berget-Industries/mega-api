@@ -12,17 +12,17 @@ import {
 const router = new Router();
 router.get("/organization/conversation", async (ctx: Context) => {
 	try {
-		const conversationId = ctx.request.url.searchParams.get("conversationId");
-		if (!conversationId) {
+		const conversation = ctx.request.url.searchParams.get("conversation");
+		if (!conversation) {
 			const body = getMissingIdErrorMessage();
 			handleResponseSuccess(ctx, body);
 			return;
 		}
-		const conversation = await Conversation.findById(conversationId)
-			.populate("messages contactId")
+		const conversationData = await Conversation.findById(conversation)
+			.populate("messages contact")
 			.exec();
 
-		const body = { conversation };
+		const body = { conversationData };
 		handleResponseSuccess(ctx, body);
 	} catch (error) {
 		console.error(error);

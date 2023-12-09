@@ -16,17 +16,17 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 		const params = ctx.request.url.searchParams;
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
-		const organizationId = params.get("organizationId");
+		const organization = params.get("organization");
 		console.log(endDate, startDate);
 
-		if (!organizationId) throw "missing-id";
+		if (!organization) throw "missing-id";
 		if (!startDate) throw "missing-startDate";
 		if (!endDate) throw "missing-endDate;";
 
-		const organization = await Organization.findById(organizationId)
+		const organizationData = await Organization.findById(organization)
 			.populate({
 				path: "messages",
-				populate: "contactId",
+				populate: "contact",
 				match: {
 					createdAt: {
 						$gte: decodeURIComponent(startDate),
@@ -36,7 +36,7 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 			})
 			.exec();
 
-		const messages = organization?.messages;
+		const messages = organizationData?.messages;
 
 		const body = { messages };
 		handleResponseSuccess(ctx, body);
