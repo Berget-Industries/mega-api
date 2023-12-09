@@ -30,7 +30,7 @@ router.get("/organization/conversations", async (ctx: Context) => {
 		const conversations = organization ? organization.conversations : [];
 		handleResponseSuccess(ctx, {
 			status: "success",
-			message: "Lyckades hitta konversationen.",
+			message: "Lyckades hitta konversationerna.",
 			conversations,
 		});
 	} catch (error) {
