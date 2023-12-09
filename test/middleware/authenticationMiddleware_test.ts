@@ -3,37 +3,7 @@ import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import authenticationMiddleware from "../../src/middleware/authenticationMiddleware.ts";
 import { sessionStore } from "../../src/utils/sessionStore.ts";
-import * as jwt from "https://deno.land/x/djwt/mod.ts";
-
-// Hjälpfunktion för att skapa JWT-token
-async function createJwtToken(payload: jwt.Payload) {
-	const jwtSecretBase64 = Deno.env.get("JWT_SECRET");
-	if (!jwtSecretBase64) return "";
-
-	const jwtSecretArrayBuffer = atob(jwtSecretBase64)
-		.split("")
-		.map((c) => c.charCodeAt(0));
-	const jwtSecretUint8Array = new Uint8Array(jwtSecretArrayBuffer);
-
-	// Importera som en CryptoKey
-	const jwtSecretKey = await crypto.subtle.importKey(
-		"raw",
-		jwtSecretUint8Array,
-		{ name: "HMAC", hash: { name: "SHA-256" } },
-		false,
-		["verify"]
-	);
-	const header = {
-		alg: "HS256",
-	} as jwt.Header;
-
-	payload = {
-		...payload,
-		exp: jwt.getNumericDate(60 * 60), // Sätter token att utgå om en timme
-	} as jwt.Payload;
-
-	return await jwt.create(header, payload, jwtSecretKey);
-}
+import { createJwtToken } from "../../src/utils/jwt.ts";
 
 // Skapa en sinon sandbox
 const sandbox = sinon.createSandbox();
