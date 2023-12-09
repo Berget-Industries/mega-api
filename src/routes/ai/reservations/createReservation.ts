@@ -9,6 +9,9 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../utils/checkBookingRules.ts";
+import { IReservationDetails } from "../../models/Reservation.ts";
+import convertToUTC from "../../utils/convertToUTC.ts";
+import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
 
 const router = new Router();
 router.post("/reservation/create", aiAuthenticationMiddleware, async (ctx: Context) => {

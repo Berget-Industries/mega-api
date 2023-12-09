@@ -9,8 +9,8 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../../utils/checkBookingRules.ts";
-
 const router = new Router();
+
 router.post("/reservation/edit", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =

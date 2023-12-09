@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 
@@ -23,7 +24,7 @@ router.post(
 
 			let contactDoc = await Contact.findOne({ email: contactEmail });
 			if (!contactDoc) {
-				contactcontactDoc = await Contact.create({
+				contactDoc = await Contact.create({
 					email: contactEmail,
 					name: contactName,
 				});
@@ -47,11 +48,11 @@ router.post(
 				llmOutput,
 			});
 
-			conversationDoc.organization = ctx.state.organization;
-			conversationDoc.contact = contactDoc._id;
-			conversationDoc.lastActivity = createdAt;
-			conversationDoc.messages = [...conversationDoc.messages, messageDoc._id.toString()];
-			await conversationDoc.save();
+			conversation.organizationId = ctx.state.organization;
+			conversation.contactId = contactDoc._id;
+			conversation.lastActivity = createdAt;
+			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
+			await conversation.save();
 
 			await Organization.updateOne(
 				{ _id: organization },
