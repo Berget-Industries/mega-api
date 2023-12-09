@@ -1,6 +1,8 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../../models/index.ts";
 import mongoose from "mongoose";
+import { Reservation } from "../../models/index.ts";
+import { deleteReservationFromDate } from "../../utils/availableDates.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import {
 	getDeleteReservationErrorMessage,
 	getMissingIdErrorMessage,
@@ -8,11 +10,7 @@ import {
 	getInvalidIdErrorMessage,
 } from "../../utils/errorMessages.ts";
 
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { deleteReservationFromDate } from "../../utils/availableDates.ts";
-
 const router = new Router();
-
 router.post("/reservation/delete", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
@@ -32,6 +30,7 @@ router.post("/reservation/delete", async (ctx: Context) => {
 			handleResponseSuccess(ctx, body);
 			return;
 		}
+
 		deleteReservationFromDate({
 			reservationId: _id,
 		});

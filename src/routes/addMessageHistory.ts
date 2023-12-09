@@ -1,16 +1,14 @@
+import mongoose from "mongoose";
+import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Conversation, Message, Contact, Organization } from "../models/index.ts";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
-import mongoose from "mongoose";
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
-
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 
 const router = new Router();
-
 router.post(
 	"/addMessageHistory",
 	//authenticationMiddleware,
@@ -52,7 +50,7 @@ router.post(
 				llmOutput,
 			});
 
-			conversation.organizationId = organizationId;
+			conversation.organization = organizationId;
 			conversation.contactId = contact._id;
 			conversation.lastActivity = createdAt;
 			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
@@ -71,7 +69,6 @@ router.post(
 			const newConv = await Conversation.findById({ _id: conversationId })
 				.populate("messages")
 				.exec();
-
 			if (!newConv) throw "asd";
 
 			const body = { conversation: newConv.toJSON() };

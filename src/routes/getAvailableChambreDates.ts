@@ -1,14 +1,15 @@
+import { getAvilableDates } from "../utils/availableDates.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import {
 	getMissingInformationErrorMessage,
 	getAvailableChambreDatesSuccessMessage,
 	getAvailableChambreDatesErrorMessage,
 } from "../utils/errorMessages.ts";
-import { getAvilableDates } from "../utils/availableDates.ts";
-
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
+router.post("/getAvailableChambreDates", getAvailableChambreDates);
+
 async function getAvailableChambreDates(ctx: Context) {
 	try {
 		let { startDate, endDate } = await ctx.request.body().value;
@@ -19,7 +20,6 @@ async function getAvailableChambreDates(ctx: Context) {
 		})
 			.filter(([k, v]) => v == null || v === "")
 			.map(([k, v]) => k);
-
 		if (missingInformation.length > 0) {
 			const body = getMissingInformationErrorMessage(missingInformation.toString());
 			handleResponseSuccess(ctx, body);
@@ -39,7 +39,5 @@ async function getAvailableChambreDates(ctx: Context) {
 		handleResponseError(ctx, body);
 	}
 }
-
-router.post("/getAvailableChambreDates", getAvailableChambreDates);
 
 export default router;

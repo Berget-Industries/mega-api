@@ -1,22 +1,25 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import mongoose from "mongoose";
 import { Contact } from "../models/index.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
+import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import {
 	getInvalidIdErrorMessage,
 	getEditReservationErrorMessage,
 } from "../utils/errorMessages.ts";
-import mongoose from "mongoose";
-
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
+router.post(
+	"/updateContact",
+	//authenticationMiddleware,
+	updateContact
+);
 
 async function updateContact(ctx: Context) {
 	try {
 		const {
 			contact: { status, role, email, name, lastActivity, address, avatarUrl, phoneNumber },
 		} = await ctx.request.body().value;
-
 		let contact = await Contact.findOneAndUpdate(
 			{ email },
 			{
@@ -33,7 +36,6 @@ async function updateContact(ctx: Context) {
 			},
 			{ new: true }
 		);
-
 		if (!contact) {
 			contact = await Contact.create({
 				status,
@@ -46,7 +48,6 @@ async function updateContact(ctx: Context) {
 				phoneNumber,
 			});
 		}
-
 		console.log(contact.toObject());
 
 		const body = "success";
@@ -62,11 +63,5 @@ async function updateContact(ctx: Context) {
 		handleResponseError(ctx, body);
 	}
 }
-
-router.post(
-	"/updateContact",
-	//authenticationMiddleware,
-	updateContact
-);
 
 export default router;

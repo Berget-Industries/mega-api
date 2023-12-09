@@ -1,13 +1,7 @@
+import mongoose from "mongoose";
+import convertToUTC from "../../utils/convertToUTC.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../models/index.ts";
-import mongoose from "mongoose";
-import {
-	getEditReservationErrorMessage,
-	getEditReservationSuccessMessage,
-	getInvalidIdErrorMessage,
-	getEditReservationNoChangeMessage,
-} from "../../utils/errorMessages.ts";
-import convertToUTC from "../../utils/convertToUTC.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { checkAvailableDates, editReservationFromDate } from "../../utils/availableDates.ts";
 import {
@@ -19,9 +13,14 @@ import {
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
 } from "../../utils/errorMessages.ts";
+import {
+	getEditReservationErrorMessage,
+	getEditReservationSuccessMessage,
+	getInvalidIdErrorMessage,
+	getEditReservationNoChangeMessage,
+} from "../../utils/errorMessages.ts";
 
 const router = new Router();
-
 router.post("/reservation/edit", async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
@@ -49,16 +48,15 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		}
 
 		const chambre = (await Reservation.findById(_id))?.chambre;
-
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
 			: checkNormalBookingRules({ ...input, time });
 		const brokenRulesMessage =
 			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
-
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
+
 		const isAvailable =
 			date && time && isDateAndTimeRulesBroken === 0
 				? chambre

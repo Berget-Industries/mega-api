@@ -7,7 +7,6 @@ export async function getJwtSecret() {
 	if (!jwtSecretBase64) {
 		throw "JWT_SECRET not set!";
 	}
-
 	const jwtSecretArrayBuffer = atob(jwtSecretBase64)
 		.split("")
 		.map((c) => c.charCodeAt(0));
@@ -26,11 +25,9 @@ export async function getJwtSecret() {
 
 export async function createJwtToken(data: object) {
 	const jwtSecretKey = await getJwtSecret();
-
 	const header = {
 		alg: "HS256",
 	} as jwt.Header;
-
 	const payload = {
 		...data,
 		exp: jwt.getNumericDate(60 * 60),
@@ -41,7 +38,6 @@ export async function createJwtToken(data: object) {
 
 export async function verify(token: string) {
 	const jwtSecretKey = await getJwtSecret();
-
 	const payload = jwt.verify(token, jwtSecretKey);
 
 	return payload;

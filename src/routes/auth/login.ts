@@ -1,10 +1,9 @@
+import * as bcrypt from "npm:bcrypt-ts";
+import { User } from "../../models/index.ts";
+import { sessionStore } from "../../utils/sessionStore.ts";
+import { createJwtToken } from "../../utils/jwt.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { User } from "../../models/index.ts";
-import * as bcrypt from "npm:bcrypt-ts";
-import { sessionStore } from "../../utils/sessionStore.ts";
-
-import { createJwtToken } from "../../utils/jwt.ts";
 
 const router = new Router();
 
@@ -16,18 +15,16 @@ async function validateUser(email: string, password: string): Promise<any> {
 
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(password, salt);
-	console.log(hashedPassword);
-
 	const passwordMatch = await bcrypt.compare(password, user.password);
-	console.log(passwordMatch);
-
 	const formatUser = () => {
 		let { password, _id, ...rest } = user.toObject();
 		let formattedUser = { id: _id, ...rest };
 		return formattedUser;
 	};
-
 	const res = formatUser();
+
+	console.log(hashedPassword);
+	console.log(passwordMatch);
 
 	return res;
 }
@@ -35,18 +32,15 @@ async function validateUser(email: string, password: string): Promise<any> {
 router.post("/login", async (ctx: Context) => {
 	try {
 		const { email, password } = await ctx.request.body().value;
-		// Validera användarnamn och lösenord...
-
 		const user = await validateUser(email, password);
+		const token = await createJwtToken({ email });
+
 		if (!user) {
 			ctx.response.status = 401;
 			ctx.response.body = { message: "Unauthorized" };
 			return;
 		}
 
-		const token = await createJwtToken({ email });
-
-		// Skapa en session och spara den i session store
 		sessionStore.createSession(user, token, Date.now() + 2 * 60 * 60 * 1000);
 
 		const body = {

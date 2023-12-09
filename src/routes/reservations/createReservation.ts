@@ -1,7 +1,13 @@
+import convertToUTC from "../../utils/convertToUTC.ts";
+import { IReservationDetails } from "../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../models/index.ts";
-import moment from "npm:moment-timezone";
-const router = new Router();
+import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
+import { checkAvailableDates, addReservationToDate } from "../../utils/availableDates.ts";
+import {
+	checkChambreBookingRules,
+	checkNormalBookingRules,
+} from "../../utils/checkBookingRules.ts";
 import {
 	getCreateReservationSuccessMessage,
 	getCreateReservationErrorMessage,
@@ -10,16 +16,7 @@ import {
 	getBrokenRulesErrorMessage,
 } from "../../utils/errorMessages.ts";
 
-import { checkAvailableDates, addReservationToDate } from "../../utils/availableDates.ts";
-import {
-	checkChambreBookingRules,
-	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
-import { IReservationDetails } from "../../models/Reservation.ts";
-import convertToUTC from "../../utils/convertToUTC.ts";
-
-import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
-
+const router = new Router();
 router.post("/reservation/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
@@ -57,10 +54,10 @@ router.post("/reservation/create", async (ctx: Context) => {
 			: checkNormalBookingRules({ ...input, time });
 		const brokenRulesMessage =
 			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
-
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
+
 		const isAvailable =
 			date && time && isDateAndTimeRulesBroken === 0
 				? chambre
