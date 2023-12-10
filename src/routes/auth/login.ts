@@ -23,9 +23,6 @@ async function validateUser(email: string, password: string): Promise<any> {
 	};
 	const res = formatUser();
 
-	console.log(hashedPassword);
-	console.log(passwordMatch);
-
 	return res;
 }
 
@@ -33,7 +30,6 @@ router.post("/login", async (ctx: Context) => {
 	try {
 		const { email, password } = await ctx.request.body().value;
 		const user = await validateUser(email, password);
-		const token = await createJwtToken({ email });
 
 		if (!user) {
 			ctx.response.status = 401;
@@ -41,6 +37,7 @@ router.post("/login", async (ctx: Context) => {
 			return;
 		}
 
+		const token = await createJwtToken({ email });
 		sessionStore.createSession(user, token, Date.now() + 2 * 60 * 60 * 1000);
 
 		const body = {

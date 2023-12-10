@@ -9,13 +9,7 @@ import {
 } from "../utils/errorMessages.ts";
 
 const router = new Router();
-router.post(
-	"/updateContact",
-	//authenticationMiddleware,
-	updateContact
-);
-
-async function updateContact(ctx: Context) {
+router.post("/updateContact", async (ctx: Context) => {
 	try {
 		const {
 			contact: { status, role, email, name, lastActivity, address, avatarUrl, phoneNumber },
@@ -62,6 +56,6 @@ async function updateContact(ctx: Context) {
 		const body = getEditReservationErrorMessage(error);
 		handleResponseError(ctx, body);
 	}
-}
+});
 
 export default router;

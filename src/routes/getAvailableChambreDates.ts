@@ -8,9 +8,7 @@ import {
 } from "../utils/errorMessages.ts";
 
 const router = new Router();
-router.post("/getAvailableChambreDates", getAvailableChambreDates);
-
-async function getAvailableChambreDates(ctx: Context) {
+router.post("/getAvailableChambreDates", async (ctx: Context) => {
 	try {
 		let { startDate, endDate } = await ctx.request.body().value;
 
@@ -38,6 +36,6 @@ async function getAvailableChambreDates(ctx: Context) {
 		const body = getAvailableChambreDatesErrorMessage(error);
 		handleResponseError(ctx, body);
 	}
-}
+});
 
 export default router;

@@ -10,9 +10,7 @@ import {
 } from "../utils/errorMessages.ts";
 
 const router = new Router();
-router.post("/getReservationData", getReservationData);
-
-async function getReservationData(ctx: Context) {
+router.post("/getReservationData", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		if (!_id) {
@@ -36,6 +34,6 @@ async function getReservationData(ctx: Context) {
 		const body = getReservationDataErrorMessage(error);
 		handleResponseError(ctx, body);
 	}
-}
+});
 
 export default router;
