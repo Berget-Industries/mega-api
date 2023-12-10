@@ -1,27 +1,27 @@
 import mongoose from "mongoose";
-import convertToUTC from "../../utils/convertToUTC.ts";
+import convertToUTC from "../../../utils/convertToUTC.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../models/index.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { checkAvailableDates, editReservationFromDate } from "../../utils/availableDates.ts";
+import { Reservation, Conversation } from "../../../models/index.ts";
+import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
+import { checkAvailableDates, editReservationFromDate } from "../../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
+} from "../../../utils/checkBookingRules.ts";
 import {
 	getBrokenRulesErrorMessage,
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
-} from "../../utils/errorMessages.ts";
+} from "../../../utils/errorMessages.ts";
 import {
 	getEditReservationErrorMessage,
 	getEditReservationSuccessMessage,
 	getInvalidIdErrorMessage,
 	getEditReservationNoChangeMessage,
-} from "../../utils/errorMessages.ts";
+} from "../../../utils/errorMessages.ts";
 
 const router = new Router();
-router.post("/reservation/edit", async (ctx: Context) => {
+router.post("/ai/reservation/edit", async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =
 			await ctx.request.body().value;

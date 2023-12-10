@@ -1,23 +1,23 @@
-import convertToUTC from "../../utils/convertToUTC.ts";
-import { IReservationDetails } from "../../models/Reservation.ts";
+import convertToUTC from "../../../utils/convertToUTC.ts";
+import { IReservationDetails } from "../../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../models/index.ts";
-import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
-import { checkAvailableDates, addReservationToDate } from "../../utils/availableDates.ts";
+import { Reservation, Conversation } from "../../../models/index.ts";
+import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
+import { checkAvailableDates, addReservationToDate } from "../../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
+} from "../../../utils/checkBookingRules.ts";
 import {
 	getCreateReservationSuccessMessage,
 	getCreateReservationErrorMessage,
 	getMissingInformationErrorMessage,
 	getNotAvailableErrorMessage,
 	getBrokenRulesErrorMessage,
-} from "../../utils/errorMessages.ts";
+} from "../../../utils/errorMessages.ts";
 
 const router = new Router();
-router.post("/reservation/create", async (ctx: Context) => {
+router.post("/ai/reservation/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
