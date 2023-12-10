@@ -1,9 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Conversation, Message, Contact, Organization } from "../models/index.ts";
-import {
-	getInvalidIdErrorMessage,
-	getEditReservationErrorMessage,
-} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 
@@ -74,18 +70,24 @@ router.post(
 				.exec();
 
 			if (!newConv) throw "asd";
-
-			const body = { conversation: newConv.toJSON() };
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta konversationen. ID:et är ogiltigt.",
+				conversation: newConv.toJSON(),
+			});
 		} catch (error) {
 			console.error(error);
 			if (error instanceof mongoose.Error.CastError) {
-				const body = getInvalidIdErrorMessage();
-				handleResponseError(ctx, body);
+				handleResponseError(ctx, {
+					status: "error",
+					message: "Nånting gick fel.",
+				});
 				return;
 			}
-			const body = getEditReservationErrorMessage(error);
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "internal-error",
+				message: "Tekniskt fel.",
+			});
 		}
 	}
 );

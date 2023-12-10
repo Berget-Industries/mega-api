@@ -1,9 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Contact } from "../models/index.ts";
-import {
-	getInvalidIdErrorMessage,
-	getEditReservationErrorMessage,
-} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
@@ -33,7 +29,6 @@ async function updateContact(ctx: Context) {
 			},
 			{ new: true }
 		);
-
 		if (!contact) {
 			contact = await Contact.create({
 				status,
@@ -46,20 +41,21 @@ async function updateContact(ctx: Context) {
 				phoneNumber,
 			});
 		}
-
 		console.log(contact.toObject());
-
-		const body = "success";
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, "success");
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-		const body = getEditReservationErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 }
 
