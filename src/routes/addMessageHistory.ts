@@ -17,15 +17,9 @@ router.post(
 	aiAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const {
-				conversationId,
-				organizationId,
-				contactEmail,
-				contactName,
-				createdAt,
-				input,
-				llmOutput,
-			} = await ctx.request.body().value;
+			const { conversationId, contactEmail, contactName, createdAt, input, llmOutput } =
+				await ctx.request.body().value;
+			const organizationId = ctx.state.organization;
 
 			let contact = await Contact.findOne({ email: contactEmail });
 			if (!contact) {

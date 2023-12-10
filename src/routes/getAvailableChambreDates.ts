@@ -40,6 +40,6 @@ async function getAvailableChambreDates(ctx: Context) {
 	}
 }
 
-router.post("/getAvailableChambreDates", getAvailableChambreDates, aiAuthenticationMiddleware);
+router.post("/getAvailableChambreDates", aiAuthenticationMiddleware, getAvailableChambreDates);
 
 export default router;

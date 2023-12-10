@@ -18,7 +18,7 @@ router.get("/organization/conversations", aiAuthenticationMiddleware, async (ctx
 
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
-		const organizationId = params.get("organizationId");
+		const organizationId = ctx.state.organization;
 
 		if (!organizationId) {
 			const body = getMissingIdErrorMessage();

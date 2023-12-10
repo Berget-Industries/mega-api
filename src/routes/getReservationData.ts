@@ -39,6 +39,6 @@ async function getReservationData(ctx: Context) {
 	}
 }
 
-router.post("/getReservationData", getReservationData, aiAuthenticationMiddleware);
+router.post("/getReservationData", aiAuthenticationMiddleware, getReservationData);
 
 export default router;

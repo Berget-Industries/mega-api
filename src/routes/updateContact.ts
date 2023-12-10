@@ -66,8 +66,8 @@ async function updateContact(ctx: Context) {
 router.post(
 	"/updateContact",
 	//authenticationMiddleware,
-	updateContact,
-	aiAuthenticationMiddleware
+	aiAuthenticationMiddleware,
+	updateContact
 );
 
 export default router;

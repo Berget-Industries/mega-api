@@ -22,7 +22,7 @@ router.get("/getMessages", aiAuthenticationMiddleware, async (ctx: Context) => {
 
 		console.log(endDate, startDate);
 
-		const organizationId = params.get("organizationId");
+		const organizationId = ctx.state.organization;
 
 		if (!organizationId) throw "missing-id";
 		if (!startDate) throw "missing-startDate";
