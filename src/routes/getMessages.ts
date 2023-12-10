@@ -23,7 +23,7 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 		if (!startDate) throw "missing-startDate";
 		if (!endDate) throw "missing-endDate;";
 
-		const organizationData = await Organization.findById(organization)
+		const organizationDoc = await Organization.findById(organization)
 			.populate({
 				path: "messages",
 				populate: "contact",
@@ -36,7 +36,7 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 			})
 			.exec();
 
-		const messages = organizationData?.messages;
+		const messages = organizationDoc?.messages;
 
 		const body = { messages };
 		handleResponseSuccess(ctx, body);

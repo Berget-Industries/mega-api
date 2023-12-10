@@ -18,11 +18,11 @@ router.get("/organization/conversation", async (ctx: Context) => {
 			handleResponseSuccess(ctx, body);
 			return;
 		}
-		const conversationData = await Conversation.findById(conversation)
+		const conversationDoc = await Conversation.findById(conversation)
 			.populate("messages contact")
 			.exec();
 
-		const body = { conversationData };
+		const body = { conversationDoc };
 		handleResponseSuccess(ctx, body);
 	} catch (error) {
 		console.error(error);

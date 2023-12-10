@@ -32,9 +32,9 @@ router.post(
 				});
 			}
 
-			let conversationData = await Conversation.findById(conversation);
-			if (!conversationData) {
-				conversationData = await Conversation.create({
+			let conversationDoc = await Conversation.findById(conversation);
+			if (!conversationDoc) {
+				conversationDoc = await Conversation.create({
 					_id: conversation,
 					messages: [],
 					lastActivity: createdAt,
@@ -42,25 +42,25 @@ router.post(
 			}
 
 			const messageDoc = await Message.create({
-				conversationId: conversationData._id,
+				conversation: conversationDoc._id,
 				organization,
-				contactId: contact._id,
+				contact: contact._id,
 				createdAt,
 				input,
 				llmOutput,
 			});
 
-			conversationData.organization = organization;
-			conversationData.contact = contact._id;
-			conversationData.lastActivity = createdAt;
-			conversationData.messages = [...conversationData.messages, messageDoc._id.toString()];
-			await conversationData.save();
+			conversationDoc.organization = organization;
+			conversationDoc.contact = contact._id;
+			conversationDoc.lastActivity = createdAt;
+			conversationDoc.messages = [...conversationDoc.messages, messageDoc._id.toString()];
+			await conversationDoc.save();
 
 			await Organization.updateOne(
 				{ _id: organization },
 				{
 					$addToSet: {
-						conversations: conversationData._id,
+						conversations: conversationDoc._id,
 						messages: messageDoc._id,
 					},
 				}

@@ -23,14 +23,14 @@ router.get("/organization/conversations", async (ctx: Context) => {
 			return;
 		}
 
-		const organizationData = await Organization.findById(organization)
+		const organizationDoc = await Organization.findById(organization)
 			.populate({
 				path: "conversations",
 				populate: [{ path: "messages" }, { path: "contact" }],
 			})
 			.exec();
 
-		const conversations = organizationData ? organizationData.conversations : [];
+		const conversations = organizationDoc ? organizationDoc.conversations : [];
 
 		const body = { conversations };
 		handleResponseSuccess(ctx, body);
