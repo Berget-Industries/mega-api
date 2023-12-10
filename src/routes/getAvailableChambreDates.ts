@@ -18,7 +18,7 @@ async function getAvailableChambreDates(ctx: Context) {
 			handleResponseSuccess(ctx, {
 				status: "missing-information",
 				message:
-					"Det gick inte att hitta lediga tider mellan dessa datum eftersom följande information saknas: " +
+					"Start eller slutdatum finns inte eftersom följande information saknas: " +
 					missingInformation.toString(),
 			});
 			return;
