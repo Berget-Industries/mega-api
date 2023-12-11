@@ -1,11 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Conversation, Organization } from "../models/index.ts";
-import {
-	getMissingIdErrorMessage,
-	getReservationDataErrorMessage,
-	getInvalidIdErrorMessage,
-	getReservationDataSuccessMessage,
-} from "../utils/errorMessages.ts";
 import mongoose from "mongoose";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
@@ -15,14 +9,15 @@ const router = new Router();
 router.get("/organization/conversations", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
-
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
 		const organizationId = ctx.state.organization;
 
 		if (!organizationId) {
-			const body = getMissingIdErrorMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseError(ctx, {
+				status: "missing-id",
+				message: "Saknar reservations id:et.",
+			});
 			return;
 		}
 
@@ -34,19 +29,24 @@ router.get("/organization/conversations", aiAuthenticationMiddleware, async (ctx
 			.exec();
 
 		const conversations = organization ? organization.conversations : [];
-
-		const body = { conversations };
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Lyckades hitta konversationerna.",
+			conversations,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta konversationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 
