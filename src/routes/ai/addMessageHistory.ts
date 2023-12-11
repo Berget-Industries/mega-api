@@ -42,11 +42,11 @@ router.post(
 				llmOutput,
 			});
 
-			conversation.organization = organization;
-			conversation.contact = contactDoc._id;
-			conversation.lastActivity = createdAt;
-			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
-			await conversation.save();
+			conversationDoc.organization = organization;
+			conversationDoc.contact = contactDoc._id;
+			conversationDoc.lastActivity = createdAt;
+			conversationDoc.messages = [...conversationDoc.messages, messageDoc._id];
+			await conversationDoc.save();
 
 			await Organization.updateOne(
 				{ _id: organization },
