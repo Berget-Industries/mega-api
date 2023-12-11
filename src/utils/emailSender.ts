@@ -1,6 +1,5 @@
 // emailSender.ts
 import generateResetPasswordToken from "./generateResetPasswordToken.ts";
-
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
 async function sendMail(to: string, subject: string, content: string) {

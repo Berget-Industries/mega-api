@@ -1,11 +1,5 @@
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import {
-	getMissingInformationErrorMessage,
-	getAvailableChambreDatesSuccessMessage,
-	getAvailableChambreDatesErrorMessage,
-} from "../utils/errorMessages.ts";
 import { getAvilableDates } from "../utils/availableDates.ts";
-
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
@@ -21,22 +15,39 @@ async function getAvailableChambreDates(ctx: Context) {
 			.map(([k, v]) => k);
 
 		if (missingInformation.length > 0) {
-			const body = getMissingInformationErrorMessage(missingInformation.toString());
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "missing-information",
+				message:
+					"Start eller slutdatum finns inte eftersom följande information saknas: " +
+					missingInformation.toString(),
+			});
 			return;
 		}
 
 		startDate = new Date(startDate);
 		endDate = new Date(endDate);
 
-		const availableDates = await getAvilableDates({ startDate, endDate });
+		const availableDates = (await getAvilableDates({ startDate, endDate })).map(
+			({ date, lunch, dinner }) => ({
+				date,
+				lunch: lunch.isAvailable,
+				dinner: dinner.isAvailable,
+			})
+		);
+		const message =
+			availableDates.length > 0 ? "Här är lediga tider för chambre." : "Det är fullbokat.";
 
-		const body = getAvailableChambreDatesSuccessMessage(availableDates);
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message,
+			availableDates,
+		});
 	} catch (error) {
 		console.error(error);
-		const body = getAvailableChambreDatesErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "could-not-get-dates",
+			message: "Något gick fel, kunde inte hitta lediga tider i chambre.",
+		});
 	}
 }
 
