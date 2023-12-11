@@ -1,12 +1,11 @@
-import { model, Schema } from "npm:mongoose";
+import { model, Schema, Types } from "npm:mongoose";
 
 export interface IOrganization {
-	id: string;
 	name: string;
 	logoUrl: string;
-	users: string[];
-	conversations: string[];
-	messages: string[];
+	users: Types.ObjectId[];
+	conversations: Types.ObjectId[];
+	messages: Types.ObjectId[];
 }
 
 export default model<IOrganization>(
@@ -14,8 +13,8 @@ export default model<IOrganization>(
 	new Schema({
 		name: String,
 		logoUrl: String,
-		users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-		conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
-		messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+		users: [{ type: Types.ObjectId, ref: "User" }],
+		conversations: [{ type: Types.ObjectId, ref: "Conversation" }],
+		messages: [{ type: Types.ObjectId, ref: "Message" }],
 	})
 );

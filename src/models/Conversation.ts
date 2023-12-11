@@ -1,18 +1,18 @@
-import { model, Schema } from "npm:mongoose";
+import { model, Schema, Types } from "npm:mongoose";
 
 export interface IConveration {
-	organization: { type: Schema.Types.ObjectId; ref: "Organization" };
-	contact: { type: Schema.Types.ObjectId; ref: "Contact" };
-	messages: string[];
+	organization: Types.ObjectId;
+	contact: Types.ObjectId;
+	messages: Types.ObjectId[];
 	lastActivity: Date;
 }
 
 export default model<IConveration>(
 	"Conversation",
 	new Schema({
-		organization: { type: Schema.Types.ObjectId, ref: "Organization" },
-		contact: { type: Schema.Types.ObjectId, ref: "Contact" },
-		messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+		organization: { type: Types.ObjectId, ref: "Organization" },
+		contact: { type: Types.ObjectId, ref: "Contact" },
+		messages: [{ type: Types.ObjectId, ref: "Message" }],
 		lastActivity: Date,
 	})
 );
