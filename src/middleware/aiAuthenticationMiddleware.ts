@@ -3,7 +3,8 @@ import { AiAccessKey } from "../models/index.ts";
 
 export default async function aiAuthenticationMiddleware(ctx: Context, next: Next) {
 	try {
-		const key = ctx.request.headers.get("AiAuthorization");
+		const key = ctx.request.headers.get("Authorization");
+		console.log(key);
 		const keyDoc = await AiAccessKey.findOne({ key });
 
 		if (!keyDoc) {
