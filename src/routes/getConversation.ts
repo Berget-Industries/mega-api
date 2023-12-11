@@ -4,7 +4,7 @@ import { handleResponseError, handleResponseSuccess } from "../utils/contextHand
 import { Conversation, Organization, Reservation } from "../models/index.ts";
 
 const router = new Router();
-router.get("/organization/conversation", async (ctx: Context) => {
+router.get("/conversation", async (ctx: Context) => {
 	try {
 		const conversation = ctx.request.url.searchParams.get("conversation");
 		if (!conversation) {

@@ -4,7 +4,7 @@ import { Conversation, Organization } from "../models/index.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
-router.get("/organization/conversations", async (ctx: Context) => {
+router.get("/conversations", async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 		const endDate = params.get("endDate");

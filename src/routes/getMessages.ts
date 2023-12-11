@@ -7,7 +7,7 @@ import { handleResponseError, handleResponseSuccess } from "../utils/contextHand
 
 const router = new Router();
 
-router.get("/getMessages", async (ctx: Context) => {
+router.get("/messages", async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 
