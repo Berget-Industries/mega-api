@@ -1,6 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import routes from "../routes/index.ts";
-import dotenv from "dotenv";
+import dotenv from "npm:dotenv";
 dotenv.config();
 
 export function initOakApp() {

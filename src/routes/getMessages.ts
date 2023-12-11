@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "npm:mongoose";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";

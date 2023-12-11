@@ -1,5 +1,5 @@
 import * as jwt from "https://deno.land/x/djwt/mod.ts";
-import dotenv from "dotenv";
+import dotenv from "npm:dotenv";
 dotenv.config();
 
 export async function getJwtSecret() {

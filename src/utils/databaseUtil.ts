@@ -1,5 +1,5 @@
 import mongoose from "npm:mongoose";
-import dotenv from "dotenv";
+import dotenv from "npm:dotenv";
 dotenv.config();
 
 export async function initDatabase() {

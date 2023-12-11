@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "npm:mongoose";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import { Conversation, Organization, Reservation } from "../models/index.ts";

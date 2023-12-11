@@ -1,3 +1,4 @@
+import mongoose from "npm:mongoose";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation } from "../models/index.ts";
 import {
@@ -6,7 +7,6 @@ import {
 	getInvalidIdErrorMessage,
 	getReservationDataSuccessMessage,
 } from "../utils/errorMessages.ts";
-import mongoose from "mongoose";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 

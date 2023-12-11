@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "npm:mongoose";
 import convertToUTC from "../../../utils/convertToUTC.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../../models/index.ts";
