@@ -1,19 +1,18 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../models/index.ts";
 import mongoose from "mongoose";
-import convertToUTC from "../../utils/convertToUTC.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { checkAvailableDates, editReservationFromDate } from "../../utils/availableDates.ts";
+import convertToUTC from "../../../utils/convertToUTC.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Reservation, Conversation } from "../../../models/index.ts";
+import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
+import { checkAvailableDates, editReservationFromDate } from "../../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
+} from "../../../utils/checkBookingRules.ts";
 
 const router = new Router();
-
-router.post("/reservation/edit", async (ctx: Context) => {
+router.post("/ai/reservation/edit", async (ctx: Context) => {
 	try {
-		const { _id, name, email, date, time, numberOfGuests, phone, conversationId } =
+		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =
 			await ctx.request.body().value;
 
 		const input = {
@@ -40,7 +39,6 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		}
 
 		const chambre = (await Reservation.findById(_id))?.chambre;
-
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
 			: checkNormalBookingRules({ ...input, time });
@@ -56,6 +54,7 @@ router.post("/reservation/edit", async (ctx: Context) => {
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
+
 		const isAvailable =
 			date && time && isDateAndTimeRulesBroken === 0
 				? chambre
@@ -87,11 +86,11 @@ ${JSON.stringify(isAvailableMessage)}
 
 		const reservationDetails = await Reservation.findOneAndUpdate(
 			{ _id },
-			{ $set: updateData, $addToSet: { conversations: conversationId } },
+			{ $set: updateData, $addToSet: { conversations: conversation } },
 			{ new: true }
 		);
 		editReservationFromDate({
-			reservationId: _id,
+			reservation: _id,
 			date,
 			time,
 		});

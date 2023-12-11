@@ -10,9 +10,9 @@ export interface Rule {
 }
 
 export type BrokenRule = Record<string, string>;
-
 export function checkBookingRules(input: any, rules: Rule[]): BrokenRule[] {
-
+	
+	const brokenRules: BrokenRule[] = [];
 	const allRules: Rule[] = [
 		{
 			inputKey: "date",
@@ -23,10 +23,8 @@ export function checkBookingRules(input: any, rules: Rule[]): BrokenRule[] {
 		},
 		...rules,
 	];
-
 	console.log(allRules)
 
-	const brokenRules: BrokenRule[] = [];
 	allRules.forEach(({ inputKey, max, min, message, parseValue }: Rule) => {
 		let valueToCheck = input[inputKey];
 		
@@ -39,7 +37,6 @@ export function checkBookingRules(input: any, rules: Rule[]): BrokenRule[] {
 			console.log(brokenRules)
 		}
 	});
-
 	return brokenRules;
 }
 

@@ -1,8 +1,8 @@
+import { AiAccessKey } from "../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../middleware/systemAdminAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import { AiAccessKey } from "../../models/index.ts";
 
 function uuidv4() {
 	return "xxxxxxxx-xxxx-9xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -13,7 +13,6 @@ function uuidv4() {
 }
 
 const router = new Router();
-
 router.post(
 	"/createNewAiAccessKey",
 	authenticationMiddleware,
@@ -21,7 +20,6 @@ router.post(
 	async (ctx: Context) => {
 		try {
 			const { organization } = await ctx.request.body().value;
-
 			const key = uuidv4();
 			const aiAccessKey = await AiAccessKey.create({
 				organization,

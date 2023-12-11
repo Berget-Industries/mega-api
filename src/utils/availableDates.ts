@@ -1,12 +1,37 @@
 import { AvailableDates } from "../models/index.ts";
 import moment from "npm:moment";
 
-const timesOfDay = {
-	lunch: ["11:30", "16:00"],
-	dinner: ["17:00", "21:00"],
-};
+interface checkAvailableDatesInput {
+	date: Date;
+	time: string;
+}
+
+interface addReservationToDateInput {
+	reservation: string;
+	date: Date;
+	time: string;
+}
+
+interface editReservationFromDateInput {
+	reservation: string;
+	date: Date;
+	time: string;
+}
+
+interface getAvailableChambreDatesInput {
+	startDate: Date;
+	endDate: Date;
+}
+
+interface deleteReservationFromDateInput {
+	reservation: string;
+}
 
 const getKeyToUpdateByTime = (time: string) => {
+	const timesOfDay = {
+		lunch: ["11:30", "16:00"],
+		dinner: ["17:00", "21:00"],
+	};
 	const keyToUpdate =
 		time >= timesOfDay.lunch[0] && time <= timesOfDay.lunch[1]
 			? "lunch"
@@ -17,20 +42,16 @@ const getKeyToUpdateByTime = (time: string) => {
 	if (keyToUpdate === "error") {
 		throw new Error("something is wrong with the times");
 	}
-
 	return keyToUpdate;
 };
 
-interface checkAvailableDatesInput {
-	date: Date;
-	time: string;
-}
 export async function checkAvailableDates({
 	date,
 	time,
 }: checkAvailableDatesInput): Promise<boolean> {
 	const startOfDay = moment(date).startOf("day");
 	const endOfDay = moment(date).endOf("day");
+	const keyToCheck = getKeyToUpdateByTime(time);
 	const dateToUpdate = await AvailableDates.findOne({
 		date: {
 			$gte: startOfDay,
@@ -41,9 +62,6 @@ export async function checkAvailableDates({
 	if (!dateToUpdate) {
 		return false;
 	}
-
-	const keyToCheck = getKeyToUpdateByTime(time);
-
 	if (dateToUpdate[keyToCheck].isAvailable) {
 		return true;
 	} else {
@@ -51,18 +69,10 @@ export async function checkAvailableDates({
 	}
 }
 
-interface addReservationToDateInput {
-	reservationId: string;
-	date: Date;
-	time: string;
-}
-export async function addReservationToDate({
-	reservationId,
-	date,
-	time,
-}: addReservationToDateInput) {
+export async function addReservationToDate({ reservation, date, time }: addReservationToDateInput) {
 	const startOfDay = moment(date).startOf("day");
 	const endOfDay = moment(date).endOf("day");
+	const keyToUpdate = getKeyToUpdateByTime(time);
 	const dateToUpdate = await AvailableDates.findOne({
 		date: {
 			$gte: startOfDay,
@@ -74,8 +84,6 @@ export async function addReservationToDate({
 		throw new Error("Could not find date document");
 	}
 
-	const keyToUpdate = getKeyToUpdateByTime(time);
-
 	await AvailableDates.updateOne(
 		{
 			date: {
@@ -86,39 +94,32 @@ export async function addReservationToDate({
 		{
 			$set: {
 				[keyToUpdate]: {
-					_id: reservationId,
+					_id: reservation,
 					isAvailable: false,
 				},
 			},
 		}
 	);
-
-	console.log(`Added reservation ${reservationId} to ${date} - ${keyToUpdate}`);
+	console.log(`Added reservation ${reservation} to ${date} - ${keyToUpdate}`);
 }
 
-interface deleteReservationFromDateInput {
-	reservationId: string;
-}
-export async function deleteReservationFromDate({ reservationId }: deleteReservationFromDateInput) {
+export async function deleteReservationFromDate({ reservation }: deleteReservationFromDateInput) {
 	const dateDocumentToUpdate = await AvailableDates.findOne({
-		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
+		$or: [{ "lunch._id": reservation }, { "dinner._id": reservation }],
 	});
+	const keyToUpdate =
+		reservation === dateDocumentToUpdate?.lunch._id
+			? "lunch"
+			: reservation === dateDocumentToUpdate?.dinner._id
+			? "dinner"
+			: "error";
 
 	if (!dateDocumentToUpdate) {
 		throw new Error("Could not find date document. Could not delete reservation from date");
 	}
-
-	const keyToUpdate =
-		reservationId === dateDocumentToUpdate.lunch._id
-			? "lunch"
-			: reservationId === dateDocumentToUpdate.dinner._id
-			? "dinner"
-			: "error";
-
 	if (keyToUpdate === "error") {
 		throw new Error("ReservationId is not in this date document");
 	}
-
 	dateDocumentToUpdate[keyToUpdate] = {
 		isAvailable: true,
 		_id: null,
@@ -126,42 +127,30 @@ export async function deleteReservationFromDate({ reservationId }: deleteReserva
 
 	await dateDocumentToUpdate.save();
 	console.log(
-		`Removed reservation ${reservationId} from ${dateDocumentToUpdate.date} - ${keyToUpdate}`
+		`Removed reservation ${reservation} from ${dateDocumentToUpdate.date} - ${keyToUpdate}`
 	);
 }
 
-interface editReservationFromDateInput {
-	reservationId: string;
-	date: Date;
-	time: string;
-}
 export async function editReservationFromDate({
-	reservationId,
+	reservation,
 	date,
 	time,
 }: editReservationFromDateInput) {
+	const isNewDateAvailable = await checkAvailableDates({ date, time });
 	const dateDocumentToUpdate = await AvailableDates.findOne({
-		$or: [{ "lunch._id": reservationId }, { "dinner._id": reservationId }],
+		$or: [{ "lunch._id": reservation }, { "dinner._id": reservation }],
 	});
 
 	if (!dateDocumentToUpdate) {
 		throw new Error("Could not find date document that should be updated!");
 	}
-
-	const isNewDateAvailable = await checkAvailableDates({ date, time });
-
 	if (!isNewDateAvailable) {
 		throw new Error("The new date is not available for booking!");
 	}
-
-	await deleteReservationFromDate({ reservationId });
-	await addReservationToDate({ date, time, reservationId });
+	await deleteReservationFromDate({ reservation });
+	await addReservationToDate({ date, time, reservation });
 }
 
-interface getAvailableChambreDatesInput {
-	startDate: Date;
-	endDate: Date;
-}
 export async function getAvilableDates({ startDate, endDate }: getAvailableChambreDatesInput) {
 	const docs = await AvailableDates.find({
 		date: {
@@ -169,6 +158,5 @@ export async function getAvilableDates({ startDate, endDate }: getAvailableChamb
 			$lte: endDate,
 		},
 	});
-
 	return docs;
 }

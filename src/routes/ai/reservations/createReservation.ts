@@ -1,19 +1,18 @@
+import convertToUTC from "../../../utils/convertToUTC.ts";
+import { IReservationDetails } from "../../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../models/index.ts";
-import moment from "npm:moment-timezone";
-const router = new Router();
-import { checkAvailableDates, addReservationToDate } from "../../utils/availableDates.ts";
+import { Reservation, Conversation } from "../../../models/index.ts";
+import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
+import { checkAvailableDates, addReservationToDate } from "../../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
-import { IReservationDetails } from "../../models/Reservation.ts";
-import convertToUTC from "../../utils/convertToUTC.ts";
-import { handleResponseSuccess, handleResponseError } from "../../utils/contextHandler.ts";
+} from "../../../utils/checkBookingRules.ts";
 
-router.post("/reservation/create", async (ctx: Context) => {
+const router = new Router();
+router.post("/ai/reservation/create", async (ctx: Context) => {
 	try {
-		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversationId } =
+		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
 
 		const input: IReservationDetails = {
@@ -25,7 +24,7 @@ router.post("/reservation/create", async (ctx: Context) => {
 			phone,
 			comment,
 			menu: undefined,
-			conversations: [conversationId],
+			conversations: [conversation],
 		};
 
 		const missingInformation = Object.entries({
@@ -64,6 +63,7 @@ router.post("/reservation/create", async (ctx: Context) => {
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
+
 		const isAvailable =
 			date && time && isDateAndTimeRulesBroken === 0
 				? chambre
@@ -99,7 +99,7 @@ ${JSON.stringify(isAvailableMessage)}
 		await addReservationToDate({
 			date,
 			time,
-			reservationId: reservationDetails._id.toString(),
+			reservation: reservationDetails._id.toString(),
 		});
 
 		// let conversation = await ConversationModel.findById(conversationId);

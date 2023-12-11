@@ -1,19 +1,18 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 import mongoose from "mongoose";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 
 const router = new Router();
-
 router.post(
 	"/addMessageHistory",
 	//authenticationMiddleware,
 	async (ctx: Context) => {
 		try {
 			const {
-				conversationId,
-				organizationId,
+				conversation,
+				organization,
 				contactEmail,
 				contactName,
 				createdAt,
@@ -29,44 +28,43 @@ router.post(
 				});
 			}
 
-			let conversation = await Conversation.findById(conversationId);
-			if (!conversation) {
-				conversation = await Conversation.create({
-					_id: conversationId,
+			let conversationDoc = await Conversation.findById(conversation);
+			if (!conversationDoc) {
+				conversationDoc = await Conversation.create({
+					_id: conversation,
 					messages: [],
 					lastActivity: createdAt,
 				});
 			}
 
 			const messageDoc = await Message.create({
-				conversationId: conversation._id,
-				organizationId,
-				contactId: contact._id,
+				conversation: conversationDoc._id,
+				organization,
+				contact: contact._id,
 				createdAt,
 				input,
 				llmOutput,
 			});
 
-			conversation.organizationId = organizationId;
-			conversation.contactId = contact._id;
-			conversation.lastActivity = createdAt;
-			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
-			await conversation.save();
+			conversationDoc.organization = organization;
+			conversationDoc.contact = contact._id;
+			conversationDoc.lastActivity = createdAt;
+			conversationDoc.messages = [...conversationDoc.messages, messageDoc._id.toString()];
+			await conversationDoc.save();
 
 			await Organization.updateOne(
-				{ _id: organizationId },
+				{ _id: organization },
 				{
 					$addToSet: {
-						conversations: conversation._id,
+						conversations: conversationDoc._id,
 						messages: messageDoc._id,
 					},
 				}
 			);
 
-			const newConv = await Conversation.findById({ _id: conversationId })
+			const newConv = await Conversation.findById({ _id: conversation })
 				.populate("messages")
 				.exec();
-
 			if (!newConv) throw "asd";
 			handleResponseSuccess(ctx, {
 				status: "invalid-id",

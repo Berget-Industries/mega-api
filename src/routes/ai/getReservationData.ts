@@ -1,14 +1,12 @@
-import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation } from "../models/index.ts";
 import mongoose from "mongoose";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Reservation } from "../../models/index.ts";
+import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
-
-async function getReservationData(ctx: Context) {
+router.post("/getReservationData", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
-
 		if (!_id) {
 			handleResponseSuccess(ctx, {
 				status: "missing-id",
@@ -37,8 +35,6 @@ async function getReservationData(ctx: Context) {
 			message: "Tekniskt fel.",
 		});
 	}
-}
-
-router.post("/getReservationData", getReservationData);
+});
 
 export default router;

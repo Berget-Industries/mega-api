@@ -1,4 +1,3 @@
-// emailSender.ts
 import generateResetPasswordToken from "./generateResetPasswordToken.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
@@ -21,13 +20,11 @@ async function sendMail(to: string, subject: string, content: string) {
 		subject,
 		content,
 	});
-
 	await client.close();
 }
 
 export const sendResetPasswordMail = async (email: string): Promise<void> => {
 	const token = await generateResetPasswordToken(email);
-
 	const subject = "Återställ lösenord";
 	const content = `Här är din nyckel för att återställa ditt lösenord! Nyckel: ${token}`;
 

@@ -1,28 +1,25 @@
-import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Conversation, Organization, Reservation } from "../models/index.ts";
 import mongoose from "mongoose";
+import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Conversation, Organization, Reservation } from "../models/index.ts";
 
 const router = new Router();
-
 router.get("/organization/conversation", async (ctx: Context) => {
 	try {
-		const conversationId = ctx.request.url.searchParams.get("conversationId");
-		if (!conversationId) {
+		const conversation = ctx.request.url.searchParams.get("conversation");
+		if (!conversation) {
 			handleResponseError(ctx, {
 				status: "missing-id",
 				message: "Saknar reservations id:et.",
 			});
 			return;
 		}
-		const conversation = await Conversation.findById(conversationId)
-			.populate("messages contactId")
+		const conversationDoc = await Conversation.findById(conversation)
+			.populate("messages contact")
 			.exec();
-		handleResponseSuccess(ctx, {
-			status: "success",
-			message: "Lyckades hitta konversation",
-			conversation,
-		});
+
+		const body = { conversationDoc };
+		handleResponseSuccess(ctx, body);
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {

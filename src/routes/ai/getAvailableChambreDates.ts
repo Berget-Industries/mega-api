@@ -1,9 +1,9 @@
+import { getAvilableDates } from "../../utils/availableDates.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { getAvilableDates } from "../utils/availableDates.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
-async function getAvailableChambreDates(ctx: Context) {
+router.post("/getAvailableChambreDates", async (ctx: Context) => {
 	try {
 		let { startDate, endDate } = await ctx.request.body().value;
 
@@ -13,7 +13,6 @@ async function getAvailableChambreDates(ctx: Context) {
 		})
 			.filter(([k, v]) => v == null || v === "")
 			.map(([k, v]) => k);
-
 		if (missingInformation.length > 0) {
 			handleResponseSuccess(ctx, {
 				status: "missing-information",
@@ -49,8 +48,6 @@ async function getAvailableChambreDates(ctx: Context) {
 			message: "Något gick fel, kunde inte hitta lediga tider i chambre.",
 		});
 	}
-}
-
-router.post("/getAvailableChambreDates", getAvailableChambreDates);
+});
 
 export default router;

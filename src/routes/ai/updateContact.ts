@@ -1,17 +1,15 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Contact } from "../models/index.ts";
 import mongoose from "mongoose";
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Contact } from "../../models/index.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
-
-async function updateContact(ctx: Context) {
+router.post("/updateContact", async (ctx: Context) => {
 	try {
 		const {
 			contact: { status, role, email, name, lastActivity, address, avatarUrl, phoneNumber },
 		} = await ctx.request.body().value;
-
 		let contact = await Contact.findOneAndUpdate(
 			{ email },
 			{
@@ -56,12 +54,6 @@ async function updateContact(ctx: Context) {
 			message: "Tekniskt fel.",
 		});
 	}
-}
-
-router.post(
-	"/updateContact",
-	//authenticationMiddleware,
-	updateContact
-);
+});
 
 export default router;
