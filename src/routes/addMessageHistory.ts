@@ -12,15 +12,9 @@ router.post(
 	aiAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const {
-				conversation,
-				organization,
-				contactEmail,
-				contactName,
-				createdAt,
-				input,
-				llmOutput,
-			} = await ctx.request.body().value;
+			const { conversation, contactEmail, contactName, createdAt, input, llmOutput } =
+				await ctx.request.body().value;
+			const organization = ctx.state.organization;
 
 			let contactDoc = await Contact.findOne({ email: contactEmail });
 			if (!contactDoc) {
@@ -48,8 +42,8 @@ router.post(
 				llmOutput,
 			});
 
-			conversation.organizationId = ctx.state.organization;
-			conversation.contactId = contactDoc._id;
+			conversation.organization = organization;
+			conversation.contact = contactDoc._id;
 			conversation.lastActivity = createdAt;
 			conversation.messages = [...conversation.messages, messageDoc._id.toString()];
 			await conversation.save();

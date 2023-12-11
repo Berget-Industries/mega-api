@@ -9,7 +9,7 @@ router.get("/organization/conversations", async (ctx: Context) => {
 		const params = ctx.request.url.searchParams;
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
-		const organization = params.get("organization");
+		const organization = ctx.state.organization;
 
 		if (!organization) {
 			handleResponseError(ctx, {
