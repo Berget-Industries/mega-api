@@ -2,21 +2,21 @@ import convertToUTC from "../../../utils/convertToUTC.ts";
 import { IReservationDetails } from "../../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../../models/index.ts";
-import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
+import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
 import { checkAvailableDates, addReservationToDate } from "../../../utils/availableDates.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
-} from "../../utils/checkBookingRules.ts";
+} from "../../../utils/checkBookingRules.ts";
 
 const router = new Router();
-router.post("/reservation/create", async (ctx: Context) => {
+router.post("/create", async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
 
-		const input: IReservationDetails = {
+		const input = {
 			chambre,
 			name,
 			email,
@@ -103,24 +103,6 @@ ${JSON.stringify(isAvailableMessage)}
 			reservation: reservationDetails._id.toString(),
 		});
 
-		// let conversation = await ConversationModel.findById(conversationId);
-		// if (!conversation) {
-		// 	conversation = await ConversationModel.create({
-		// 		_id: conversationId,
-		// 		lastActivity: new Date(),
-		// 	});
-		// }
-
-		// conversation.actions = [
-		// 	...conversation.actions,
-		// 	{
-		// 		type: chambre ? "createChambreReservation" : "createReservation",
-		// 		docId: conversationId,
-		// 		date: new Date(),
-		// 	},
-		// ];
-
-		// await conversation.save();
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: `Reservationen har bokats med bokningsnummer: ${reservationDetails._id}

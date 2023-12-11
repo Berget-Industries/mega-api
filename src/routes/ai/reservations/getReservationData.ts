@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { Reservation } from "../../models/index.ts";
+import { Reservation } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
 router.post("/getReservationData", async (ctx: Context) => {
