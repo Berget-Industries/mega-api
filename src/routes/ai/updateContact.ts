@@ -43,18 +43,20 @@ router.post("/updateContact", async (ctx: Context) => {
 			});
 		}
 		console.log(contact.toObject());
-
-		const body = "success";
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, "success");
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-		const body = getEditReservationErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

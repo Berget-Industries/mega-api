@@ -14,6 +14,7 @@ const router = new Router();
 router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
+
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
 		const organization = params.get("organization");
@@ -35,21 +36,25 @@ router.get("/getMessages", authenticationMiddleware, async (ctx: Context) => {
 				},
 			})
 			.exec();
-
 		const messages = organizationDoc?.messages;
-
-		const body = { messages };
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Lyckades hitta meddelanden.",
+			messages,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta meddelanden. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

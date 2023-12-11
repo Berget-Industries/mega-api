@@ -18,8 +18,10 @@ router.get("/organization/conversations", async (ctx: Context) => {
 		const organization = params.get("organization");
 
 		if (!organization) {
-			const body = getMissingIdErrorMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseError(ctx, {
+				status: "missing-id",
+				message: "Saknar reservations id:et.",
+			});
 			return;
 		}
 
@@ -31,19 +33,24 @@ router.get("/organization/conversations", async (ctx: Context) => {
 			.exec();
 
 		const conversations = organizationDoc ? organizationDoc.conversations : [];
-
-		const body = { conversations };
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Lyckades hitta konversationerna.",
+			conversations,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta konversationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

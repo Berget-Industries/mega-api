@@ -27,13 +27,16 @@ router.get("/organization/conversation", async (ctx: Context) => {
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

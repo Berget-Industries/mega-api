@@ -14,25 +14,32 @@ router.post("/getReservationData", async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		if (!_id) {
-			const body = getMissingIdErrorMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "missing-id",
+				message: "Saknar reservations id:et.",
+			});
 			return;
 		}
 
 		const reservationDetails = await Reservation.findById(_id);
-
-		const body = getReservationDataSuccessMessage(reservationDetails);
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Reservation har hämtats.",
+			reservationData: reservationDetails,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-
-		const body = getReservationDataErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

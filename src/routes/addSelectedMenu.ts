@@ -15,8 +15,10 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 
 		const reservationDoc = await Reservation.findById(_id);
 		if (!reservationDoc) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseSuccess(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt",
+			});
 			return;
 		}
 
@@ -26,17 +28,24 @@ router.post("/addSelectedMenu", async (ctx: Context) => {
 			{ new: true }
 		);
 
-		const body = getEditReservationSuccessMessage(reservationDetails);
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Menyn för reservationen har uppdaterats.",
+			reservationData: reservationDetails,
+		});
 	} catch (error) {
 		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			const body = getInvalidIdErrorMessage();
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+			});
 			return;
 		}
-		const body = getEditReservationErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 

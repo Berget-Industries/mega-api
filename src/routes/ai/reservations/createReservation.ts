@@ -46,14 +46,27 @@ router.post("/ai/reservation/create", async (ctx: Context) => {
 			.map(([k, v]) => k);
 		const missingInformationMessage =
 			missingInformation.length > 0
-				? getMissingInformationErrorMessage(missingInformation.toString())
-				: "det saknas ingen information";
+				? {
+						status: "missing-information",
+						message:
+							"Det gick inte att skapa reservationen. Följande information saknas: " +
+							missingInformation.toString(),
+				  }
+				: "Det saknas ingen information.";
 
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...input, time })
 			: checkNormalBookingRules({ ...input, time });
 		const brokenRulesMessage =
-			brokenRules.length > 0 ? getBrokenRulesErrorMessage(brokenRules) : "alla regler följs";
+			brokenRules.length > 0
+				? brokenRules
+						.map(
+							({ inputKey, message }) =>
+								`Bruten regel för värde av ${inputKey}: ${message}`
+						)
+						.join("\n")
+				: "Alla regler följs.";
+
 		const isDateAndTimeRulesBroken = brokenRules.filter(
 			(_) => _.inputKey === "time" || "date"
 		).length;
@@ -66,10 +79,13 @@ router.post("/ai/reservation/create", async (ctx: Context) => {
 				: null;
 		const isAvailableMessage =
 			isAvailable === null
-				? "tid och eller datum saknas"
+				? "Tid och eller datum saknas."
 				: isAvailable === false
-				? getNotAvailableErrorMessage()
-				: "önskad tid går att boka";
+				? {
+						status: "not-available",
+						message: "Tiden är inte ledig.",
+				  }
+				: "Önskad tid går att boka.";
 
 		const responseBody = `
 ====
@@ -111,13 +127,31 @@ ${JSON.stringify(isAvailableMessage)}
 		// ];
 
 		// await conversation.save();
-
-		const body = getCreateReservationSuccessMessage(reservationDetails);
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: `Reservationen har bokats med bokningsnummer: ${reservationDetails._id}
+				${
+					numberOfGuests > 12
+						? `Säg till gästen att välja en av våra sällskapsmenyer samt tillhandahållt information om specialkost och andra önskemål.
+Hela sällskapet måste ha gjort ett enat val av sällskapsmeny senast 5 dagar innan ankomst.
+Gästen ska gå in på denna länk för att välja meny: https://setmenuform.berget.industries/${reservationDetails._id}`
+						: ""
+				}
+				`,
+			reservationData: {
+				name,
+				date,
+				time,
+				numberOfGuests,
+				_id: reservationDetails._id,
+			},
+		});
 	} catch (error) {
 		console.error(error);
-		const body = getCreateReservationErrorMessage(error);
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Tekniskt fel.",
+		});
 	}
 });
 
