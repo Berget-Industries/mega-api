@@ -1,12 +1,11 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Conversation, Organization } from "../models/index.ts";
 import mongoose from "mongoose";
-import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 
 const router = new Router();
 
-router.get("/organization/conversations", aiAuthenticationMiddleware, async (ctx: Context) => {
+router.get("/organization/conversations", async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 		const endDate = params.get("endDate");
