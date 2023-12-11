@@ -12,11 +12,9 @@ Deno.test("Reservation Model - Strukturkontroll", async () => {
 
 		const testReservation = new Reservation({
 			chambre: true,
-			name: "Test Guest",
-			email: "test@example.com",
+			contact: new Types.ObjectId("507f191e810c19729de860eb"),
 			date: new Date(),
 			numberOfGuests: 4,
-			phone: "1234567890",
 			comment: "Test comment",
 			menu: { asd: "asd" },
 			conversations: [new Types.ObjectId("507f191e810c19729de860ea")],
@@ -27,15 +25,17 @@ Deno.test("Reservation Model - Strukturkontroll", async () => {
 		const reservationObject = testReservation.toObject();
 
 		assertEquals(typeof reservationObject.chambre, "boolean", "chambre bör vara en boolean");
-		assertEquals(typeof reservationObject.name, "string", "name bör vara en sträng");
-		assertEquals(typeof reservationObject.email, "string", "email bör vara en sträng");
+		assertEquals(
+			reservationObject.contact instanceof Types.ObjectId,
+			true,
+			"contact bör vara en ObjectId"
+		);
 		assertEquals(reservationObject.date instanceof Date, true, "date bör vara ett Date objekt");
 		assertEquals(
 			typeof reservationObject.numberOfGuests,
 			"number",
 			"numberOfGuests bör vara en number"
 		);
-		assertEquals(typeof reservationObject.phone, "string", "phone bör vara en sträng");
 		assertEquals(typeof reservationObject.comment, "string", "comment bör vara en sträng");
 		assertEquals(typeof reservationObject.menu, "object", "menu bör vara ett objekt");
 		assertEquals(
@@ -52,11 +52,9 @@ Deno.test("Reservation Model - Strukturkontroll", async () => {
 		const allowedFields = [
 			"_id",
 			"chambre",
-			"name",
-			"email",
 			"date",
 			"numberOfGuests",
-			"phone",
+			"contact",
 			"comment",
 			"menu",
 			"conversations",
