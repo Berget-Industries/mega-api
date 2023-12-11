@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { Contact } from "../../models/index.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
 router.post("/updateContact", aiAuthenticationMiddleware, async (ctx: Context) => {
