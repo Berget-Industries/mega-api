@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
-import {
-	getInvalidIdErrorMessage,
-	getEditReservationErrorMessage,
-} from "../utils/errorMessages.ts";
 import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 
 const router = new Router();

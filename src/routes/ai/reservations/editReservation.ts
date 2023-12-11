@@ -8,17 +8,6 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../../utils/checkBookingRules.ts";
-import {
-	getBrokenRulesErrorMessage,
-	getMissingInformationErrorMessage,
-	getNotAvailableErrorMessage,
-} from "../../../utils/errorMessages.ts";
-import {
-	getEditReservationErrorMessage,
-	getEditReservationSuccessMessage,
-	getInvalidIdErrorMessage,
-	getEditReservationNoChangeMessage,
-} from "../../../utils/errorMessages.ts";
 
 const router = new Router();
 router.post("/ai/reservation/edit", async (ctx: Context) => {

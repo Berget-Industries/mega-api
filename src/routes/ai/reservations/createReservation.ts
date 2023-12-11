@@ -8,13 +8,6 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../../utils/checkBookingRules.ts";
-import {
-	getCreateReservationSuccessMessage,
-	getCreateReservationErrorMessage,
-	getMissingInformationErrorMessage,
-	getNotAvailableErrorMessage,
-	getBrokenRulesErrorMessage,
-} from "../../../utils/errorMessages.ts";
 
 const router = new Router();
 router.post("/ai/reservation/create", async (ctx: Context) => {

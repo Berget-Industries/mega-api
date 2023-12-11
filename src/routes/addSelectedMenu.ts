@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 import { Reservation } from "../models/index.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
-import {
-	getEditReservationSuccessMessage,
-	getInvalidIdErrorMessage,
-	getEditReservationErrorMessage,
-} from "../utils/errorMessages.ts";
 
 const router = new Router();
 router.post("/addSelectedMenu", async (ctx: Context) => {

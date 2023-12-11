@@ -1,11 +1,6 @@
 import { getAvilableDates } from "../../utils/availableDates.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import {
-	getMissingInformationErrorMessage,
-	getAvailableChambreDatesSuccessMessage,
-	getAvailableChambreDatesErrorMessage,
-} from "../../utils/errorMessages.ts";
 
 const router = new Router();
 router.post("/getAvailableChambreDates", async (ctx: Context) => {
