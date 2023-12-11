@@ -1,7 +1,7 @@
 import { Context, Next } from "https://deno.land/x/oak/mod.ts";
 import { AiAccessKey } from "../models/index.ts";
 
-export default async function authenticationMiddleware(ctx: Context, next: Next) {
+export default async function aiAuthenticationMiddleware(ctx: Context, next: Next) {
 	try {
 		const key = ctx.request.headers.get("AiAuthorization");
 		const keyDoc = await AiAccessKey.findOne({ key });

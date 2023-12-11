@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import authenticationMiddleware from "../middleware/authenticationMiddleware.ts";
+import aiAuthenticationMiddleware from "../middleware/aiAuthenticationMiddleware.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
 import { Conversation, Message, Contact, Organization } from "../models/index.ts";
@@ -8,6 +8,7 @@ const router = new Router();
 router.post(
 	"/addMessageHistory",
 	//authenticationMiddleware,
+	aiAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
 			const {
@@ -20,9 +21,9 @@ router.post(
 				llmOutput,
 			} = await ctx.request.body().value;
 
-			let contact = await Contact.findOne({ email: contactEmail });
-			if (!contact) {
-				contact = await Contact.create({
+			let contactDoc = await Contact.findOne({ email: contactEmail });
+			if (!contactDoc) {
+				contactcontactDoc = await Contact.create({
 					email: contactEmail,
 					name: contactName,
 				});
@@ -40,14 +41,14 @@ router.post(
 			const messageDoc = await Message.create({
 				conversation: conversationDoc._id,
 				organization,
-				contact: contact._id,
+				contact: contactDoc._id,
 				createdAt,
 				input,
 				llmOutput,
 			});
 
-			conversationDoc.organization = organization;
-			conversationDoc.contact = contact._id;
+			conversationDoc.organization = ctx.state.organization;
+			conversationDoc.contact = contactDoc._id;
 			conversationDoc.lastActivity = createdAt;
 			conversationDoc.messages = [...conversationDoc.messages, messageDoc._id.toString()];
 			await conversationDoc.save();
