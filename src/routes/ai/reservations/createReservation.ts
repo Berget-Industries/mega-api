@@ -1,7 +1,7 @@
 import convertToUTC from "../../../utils/convertToUTC.ts";
 import { IReservationDetails } from "../../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../../models/index.ts";
+import { Reservation, Conversation, Contact } from "../../../models/index.ts";
 import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
 import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
 import { checkAvailableDates, addReservationToDate } from "../../../utils/availableDates.ts";
@@ -16,16 +16,23 @@ router.post("/create", async (ctx: Context) => {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
 
+		let contactDoc = await Contact.findOne({ email: email });
+		if (!contactDoc) {
+			contactDoc = await Contact.create({
+				email: email,
+				name: name,
+				phoneNumber: phone,
+			});
+		}
+
 		const input = {
 			chambre,
-			name,
-			email,
 			date: convertToUTC(date, time),
 			numberOfGuests,
-			phone,
 			comment,
 			menu: undefined,
 			conversations: [conversation],
+			contact: contactDoc._id,
 		};
 
 		const missingInformation = Object.entries({
