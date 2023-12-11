@@ -1,11 +1,11 @@
-import { model, Schema } from "npm:mongoose";
+import { model, Schema, Types } from "npm:mongoose";
 
 export interface IUser {
 	name: string;
 	password: string;
 	email: string;
 	avatarUrl: string;
-	organizations: string[];
+	organizations: Types.ObjectId[];
 	systemAdmin: boolean;
 }
 
@@ -16,7 +16,7 @@ export default model<IUser>(
 		password: String,
 		email: { type: String, unique: true },
 		avatarUrl: String,
-		organizations: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
+		organizations: [{ type: Types.ObjectId, ref: "Organization" }],
 		systemAdmin: { type: Boolean, default: false },
 	})
 );

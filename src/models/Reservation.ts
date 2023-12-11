@@ -1,4 +1,4 @@
-import { model, Schema } from "npm:mongoose";
+import { model, Schema, Types } from "npm:mongoose";
 
 export interface IReservationDetails {
 	chambre: boolean;
@@ -9,8 +9,8 @@ export interface IReservationDetails {
 	phone: string;
 	comment: string;
 	menu: object | undefined;
-	conversations: [{ type: Schema.Types.ObjectId; ref: "Conversation" }];
-	organization: { type: Schema.Types.ObjectId; ref: "Organization" };
+	conversations: Types.ObjectId;
+	organization: Types.ObjectId;
 }
 
 export default model<IReservationDetails>(
@@ -24,7 +24,7 @@ export default model<IReservationDetails>(
 		comment: { type: String },
 		phone: { type: String },
 		menu: { type: Object },
-		conversations: [{ type: Schema.Types.ObjectId, ref: "Conversation" }],
-		organization: { type: Schema.Types.ObjectId, ref: "Organization" },
+		conversations: [{ type: Types.ObjectId, ref: "Conversation" }],
+		organization: { type: Types.ObjectId, ref: "Organization" },
 	})
 );

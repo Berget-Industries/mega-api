@@ -1,4 +1,4 @@
-import { model, Schema } from "npm:mongoose";
+import { model, Schema, Types } from "npm:mongoose";
 
 export interface IAction {
 	type: "skapa-reservation" | "redigera-reservation" | "avboka-reservation";
@@ -22,9 +22,9 @@ export interface ILLMOutput {
 }
 
 export interface IMessage {
-	organization: { type: Schema.Types.ObjectId; ref: "Organization" };
-	conversation: { type: Schema.Types.ObjectId; ref: "Conversation" };
-	contact: { type: Schema.Types.ObjectId; ref: "Contact" };
+	organization: Types.ObjectId;
+	conversation: Types.ObjectId;
+	contact: Types.ObjectId;
 	createdAt: Date;
 	input: string;
 	llmOutput: ILLMOutput[];
@@ -33,9 +33,9 @@ export interface IMessage {
 export default model<IMessage>(
 	"Message",
 	new Schema<IMessage>({
-		organization: { type: Schema.Types.ObjectId, ref: "Organization" },
-		conversation: { type: Schema.Types.ObjectId, ref: "Conversation" },
-		contact: { type: Schema.Types.ObjectId, ref: "Contact" },
+		organization: { type: Types.ObjectId, ref: "Organization" },
+		conversation: { type: Types.ObjectId, ref: "Conversation" },
+		contact: { type: Types.ObjectId, ref: "Contact" },
 		createdAt: Date,
 		input: String,
 		llmOutput: Array,
