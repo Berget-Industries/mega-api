@@ -27,7 +27,7 @@ router.post(
 			let conversationDoc = await Conversation.findById(conversation);
 			if (!conversationDoc) {
 				conversationDoc = await Conversation.create({
-					_id: conversation,
+					_id: conversation._id,
 					messages: [],
 					lastActivity: createdAt,
 				});
