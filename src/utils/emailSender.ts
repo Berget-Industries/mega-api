@@ -1,5 +1,5 @@
-import generateResetPasswordToken from "./generateResetPasswordToken.ts";
 import { generateTemplate } from "./generateTemplateUtil.ts";
+import { createJwtToken } from "./jwt.ts";
 
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
@@ -26,7 +26,7 @@ async function sendMail(to: string, subject: string, content: string) {
 }
 
 export const sendResetPasswordMail = async (email: string): Promise<void> => {
-	const token = await generateResetPasswordToken(email);
+	const token = await createJwtToken({ data: email, type: "reset-password" });
 	const subject = "Återställ lösenord";
 
 	const content = generateTemplate(token);
