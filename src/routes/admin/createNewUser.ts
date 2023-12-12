@@ -22,8 +22,11 @@ router.post(
 
 			await sendResetPasswordMail(email);
 
-			const body = { user: userDoc.toObject() };
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "success",
+				message: "Lyckades skapa en användare.",
+				user: userDoc.toObject(),
+			});
 		} catch (error) {
 			console.error(error);
 			const body = "internal server error";

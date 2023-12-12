@@ -26,8 +26,11 @@ router.post(
 				key,
 			});
 
-			const body = { aiAccessKey: aiAccessKey.toObject() };
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "success",
+				message: "Lyckades skapa en access key.",
+				aiAccessKey: aiAccessKey.toObject(),
+			});
 		} catch (error) {
 			console.error(error);
 			const body = "internal server error";
