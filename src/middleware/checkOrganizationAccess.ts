@@ -14,5 +14,6 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 	} else {
 		ctx.response.status = 401;
 		ctx.response.body = { message: "Unauthorized" };
+		return;
 	}
 }
