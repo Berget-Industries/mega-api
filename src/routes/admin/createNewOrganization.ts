@@ -20,8 +20,11 @@ router.post(
 				messages: [],
 			});
 
-			const body = { organization: organizationDoc.toObject() };
-			handleResponseSuccess(ctx, body);
+			handleResponseSuccess(ctx, {
+				status: "success",
+				message: "Lyckades skapa en organization",
+				organization: organizationDoc.toObject(),
+			});
 		} catch (error) {
 			console.error(error);
 			const body = "internal server error";
