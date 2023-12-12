@@ -1,7 +1,7 @@
 import mongoose from "npm:mongoose";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Conversation, Organization } from "../models/index.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { Conversation, Organization } from "../../models/index.ts";
+import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
 router.get("/conversations", async (ctx: Context) => {
