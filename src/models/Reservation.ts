@@ -6,7 +6,7 @@ export interface IReservationDetails {
 	numberOfGuests: number;
 	comment: string;
 	menu: object | undefined;
-	conversations: Types.ObjectId;
+	conversations: Types.ObjectId[];
 	organization: Types.ObjectId;
 	contact: Types.ObjectId;
 }
