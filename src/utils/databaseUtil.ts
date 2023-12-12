@@ -9,6 +9,7 @@ export async function initDatabase() {
 		Deno.exit();
 	}
 	try {
+		console.log("Connecting to database...");
 		await mongoose.connect(uri);
 		console.log("Connected to database successfully");
 	} catch (error) {
