@@ -3,14 +3,7 @@ import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../middleware/systemAdminAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-
-function uuidv4() {
-	return "xxxxxxxx-xxxx-9xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-		const r = (Math.random() * 16) | 0,
-			v = c === "x" ? r : (r & 0x3) | 0x8;
-		return v.toString(16);
-	});
-}
+import uuidv4 from "../../utils/generateAccessToken.ts";
 
 const router = new Router();
 router.post(
