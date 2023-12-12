@@ -1,23 +1,22 @@
 import auth from "./auth/index.ts";
 import admin from "./admin/index.ts";
-import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import aiFunctions from "./ai/index.ts";
 import getMessages from "./getMessages.ts";
-import reservations from "./ai/reservations/index.ts";
 import getConverstaion from "./getConversation.ts";
 import addSelectedMenu from "./addSelectedMenu.ts";
 import getConversations from "./getConversations.ts";
-import aiFunctions from "./ai/index.ts";
+
+import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();
 const routes = [
-	reservations,
-	addSelectedMenu,
 	auth,
 	admin,
+	aiFunctions
+	addSelectedMenu,
 	getConversations,
 	getConverstaion,
 	getMessages,
-	aiFunctions,
 ];
 
 routes.forEach((_) => {
