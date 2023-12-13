@@ -2,7 +2,7 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import Conversation from "../../src/models/Conversation.ts";
-import { Types } from "mongoose";
+import { Types } from "npm:mongoose";
 
 // Skapa en sandbox för att kunna återställa miljön efter testerna
 const sandbox = sinon.createSandbox();

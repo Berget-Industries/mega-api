@@ -2,7 +2,7 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import Message from "../../src/models/Message.ts";
-import { Types } from "mongoose";
+import { Types } from "npm:mongoose";
 
 const sandbox = sinon.createSandbox();
 
