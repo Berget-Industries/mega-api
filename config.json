@@ -26,7 +26,7 @@
 				"inputKey": "time",
 				"max": "22:00",
 				"min": "17.00",
-				"message": "Det går bara att boka bord mellan 17:00 - 22:00"
+				"message": "Det går bara att boka bord mellan 17:00 - 22:00."
 			}
 		]
 	}
