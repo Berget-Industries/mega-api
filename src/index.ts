@@ -1,5 +1,5 @@
-import { initDatabase } from "./utils/databaseUtil.ts";
-import { initOakApp } from "./utils/oakAppUtil.ts";
+import { initDatabase } from "./utils/initDatabase.ts";
+import { initOakApp } from "./utils/initOakApp.ts";
 
 async function init() {
 	try {
