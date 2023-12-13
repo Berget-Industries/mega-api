@@ -2,7 +2,7 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import AiAccessKey from "../../src/models/AiAccessKey.ts"; // Uppdatera sökvägen om nödvändigt
-import { Types } from "mongoose";
+import { Types } from "npm:mongoose";
 
 const sandbox = sinon.createSandbox();
 
