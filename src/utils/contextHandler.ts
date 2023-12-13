@@ -11,3 +11,15 @@ export function handleResponseError(ctx: Context, body: any) {
 	ctx.response.body = body;
 	return;
 }
+
+export function handleResponsePartialContent(ctx: Context, body: any) {
+	ctx.response.status = 206;
+	ctx.response.body = body;
+	return;
+}
+
+export function handleResponseUnauthorized(ctx: Context, body: any) {
+	ctx.response.status = 401;
+	ctx.response.body = body;
+	return;
+}
