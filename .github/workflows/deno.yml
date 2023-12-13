@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             MONGOOSE_CONNECT_URI: ${{ secrets.MONGOOSE_CONNECT_URI }}
-            JWT_SECRET: "hashjasiouibkbndmn,bjioeiuo899r3783hg"
+            JWT_SECRET: "hashjasiouibkbndmnbjioeiuo899r3783hg"
             IMAP_USERNAME: ${{ secrets.IMAP_USERNAME }}
             IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
         steps:
