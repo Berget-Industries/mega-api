@@ -1,13 +1,13 @@
 import mongoose from "npm:mongoose";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
-import aiAuthenticationMiddleware from "../../middleware/aiAuthenticationMiddleware.ts";
+import checkOrganizationAccess from "../../middleware/checkOrganizationAccess.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Message, Organization } from "../../models/index.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
 
-router.get("/messages", async (ctx: Context) => {
+router.get("/messages", authenticationMiddleware, checkOrganizationAccess, async (ctx: Context) => {
 	try {
 		const params = ctx.request.url.searchParams;
 
