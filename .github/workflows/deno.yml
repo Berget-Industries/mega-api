@@ -1,42 +1,49 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will install Deno then run `deno lint` and `deno test`.
-# For more information see: https://github.com/denoland/setup-deno
-
-name: Deno
+name: Deno with Docker
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
+        env:
+            MONGOOSE_CONNECT_URI: ${{ secrets.MONGOOSE_CONNECT_URI }}
+            JWT_SECRET: "hashjasiouibkbndmn,bjioeiuo899r3783hg"
+            IMAP_USERNAME: ${{ secrets.IMAP_USERNAME }}
+            IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+        steps:
+            - name: Setup repo
+              uses: actions/checkout@v3
 
-    steps:
-      - name: Setup repo
-        uses: actions/checkout@v3
+            - name: Setup Deno
+              uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 # v1.1.2
+              with:
+                  deno-version: v1.x
 
-      - name: Setup Deno
-        # uses: denoland/setup-deno@v1
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31  # v1.1.2
-        with:
-          deno-version: v1.x
+            - name: Run tests
+              run: deno test -A
+    build-and-push:
+        needs: test
+        runs-on: ubuntu-latest
 
-      # Uncomment this step to verify the use of 'deno fmt' on each commit.
-      # - name: Verify formatting
-      #   run: deno fmt --check
+        steps:
+            - name: Setup repo
+              uses: actions/checkout@v3
 
-      # - name: Run linter
-      #   run: deno lint
+            - name: Build Docker image
+              run: docker build . -t willebergh/mega-api:latest
 
-      - name: Run tests
-        run: deno test -A
+            - name: Login to Docker Hub
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+            - name: Push Docker image
+              run: docker push willebergh/mega-api:latest
