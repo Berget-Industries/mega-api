@@ -13,7 +13,7 @@ router.get("/messages", async (ctx: Context) => {
 
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
-		const organization = params.get("organization");
+		const organization = ctx.state.organization;
 		console.log(endDate, startDate);
 
 		if (!organization) throw "missing-id";

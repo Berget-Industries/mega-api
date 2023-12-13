@@ -16,6 +16,7 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 		organizationDoc &&
 		userOrganizations.includes(requestedOrganization)
 	) {
+		ctx.state.organization = requestedOrganization;
 		await next();
 	} else {
 		ctx.response.status = 404;
