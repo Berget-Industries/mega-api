@@ -24,7 +24,7 @@ router.get(
 				.populate("messages contact")
 				.exec();
 
-			const body = { conversationDoc };
+			const body = { conversation: conversationDoc };
 			handleResponseSuccess(ctx, body);
 		} catch (error) {
 			console.error(error);

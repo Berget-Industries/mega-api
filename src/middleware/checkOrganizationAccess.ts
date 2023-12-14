@@ -14,6 +14,11 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 
 	const organizationDoc = await Organization.findById(requestedOrganization);
 	if (!organizationDoc) {
+		ctx.response.status = 404;
+		ctx.response.body = {
+			status: "error",
+			message: "Invalid organization",
+		};
 		return;
 	}
 
