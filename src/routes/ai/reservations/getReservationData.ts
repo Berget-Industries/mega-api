@@ -2,9 +2,10 @@ import mongoose from "npm:mongoose";
 import { Reservation } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
+import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
 
 const router = new Router();
-router.post("/getReservationData", async (ctx: Context) => {
+router.post("/getReservationData", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { _id } = await ctx.request.body().value;
 		if (!_id) {

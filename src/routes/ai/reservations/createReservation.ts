@@ -11,7 +11,7 @@ import {
 } from "../../../utils/checkBookingRules.ts";
 
 const router = new Router();
-router.post("/create", async (ctx: Context) => {
+router.post("/create", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
