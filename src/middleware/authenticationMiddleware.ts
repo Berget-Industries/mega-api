@@ -1,6 +1,6 @@
 import { Context, Next } from "https://deno.land/x/oak/mod.ts";
 
-import { sessionStore } from "../utils/sessionStore.ts";
+import { getSession } from "../utils/sessionStore.ts";
 import { verify } from "../utils/jwt.ts";
 
 export default async function authenticationMiddleware(ctx: Context, next: Next) {
@@ -14,7 +14,7 @@ export default async function authenticationMiddleware(ctx: Context, next: Next)
 
 	try {
 		const payload = await verify(token);
-		const session = sessionStore.getSession(token);
+		const session = await getSession(token);
 		if (!session || session.user.email !== payload.email) {
 			throw new Error("Invalid session");
 		}
