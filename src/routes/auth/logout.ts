@@ -1,4 +1,4 @@
-import { deleteSession } from "../../utils/sessionStore.ts";
+import sessionStore from "../../utils/sessionStore.ts";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
@@ -8,7 +8,7 @@ router.post("/logout", authenticationMiddleware, async (ctx: Context) => {
 	try {
 		const token = ctx.request.headers.get("Authorization")?.replace("Bearer ", "");
 		if (token) {
-			await deleteSession(token);
+			await sessionStore.deleteSession(token);
 		}
 
 		const body = { message: "Logged out successfully" };
