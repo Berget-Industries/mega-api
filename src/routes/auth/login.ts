@@ -1,6 +1,6 @@
 import * as bcrypt from "npm:bcrypt-ts";
 import { User } from "../../models/index.ts";
-import { sessionStore } from "../../utils/sessionStore.ts";
+import sessionStore from "../../utils/sessionStore.ts";
 import { createJwtToken } from "../../utils/jwt.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
@@ -38,7 +38,7 @@ router.post("/login", async (ctx: Context) => {
 		}
 
 		const token = await createJwtToken({ email });
-		sessionStore.createSession(user, token, Date.now() + 2 * 60 * 60 * 1000);
+		await sessionStore.createSession(user.id, token, Date.now() + 2 * 60 * 60 * 1000);
 
 		const body = {
 			accessToken: token,

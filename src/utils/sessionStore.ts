@@ -1,24 +1,42 @@
-interface Session {
-	user: any;
-	token: string;
-	expiry: number;
-}
+import { Session } from "../models/index.ts";
+import { Types } from "npm:mongoose";
+import { IUser } from "../models/User.ts";
 
 class SessionStore {
-	private sessions: Map<string, Session> = new Map();
+	async createSession(user: Types.ObjectId, token: string, expiry: number) {
+		const session = await Session.create({ user, token, expiry });
+		await session.save();
 
-	createSession(user: any, token: string, expiry: number) {
-		this.sessions.set(token, { user, token, expiry });
+		const sessionWithUser = await Session.findById(session._id)
+			.populate({
+				path: "user",
+				select: "-password",
+			})
+			.exec();
+
+		return {
+			...sessionWithUser,
+			user: sessionWithUser?.user as IUser,
+		};
 	}
 
-	getSession(token: string): Session | undefined {
-		return this.sessions.get(token);
+	async getSession(token: string) {
+		const session = await Session.findOne({ token })
+			.populate({
+				path: "user",
+				select: "-password",
+			})
+			.exec();
+
+		return {
+			...session,
+			user: session?.user as IUser,
+		};
 	}
 
-	deleteSession(token: string) {
-		this.sessions.delete(token);
+	async deleteSession(token: string) {
+		await Session.deleteOne({ token }).exec();
 	}
 }
 
-const sessionStore = new SessionStore();
-export { sessionStore };
+export default new SessionStore();

@@ -2,7 +2,7 @@ import { Context } from "https://deno.land/x/oak/mod.ts";
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import authenticationMiddleware from "../../src/middleware/authenticationMiddleware.ts";
-import { sessionStore } from "../../src/utils/sessionStore.ts";
+import sessionStore from "../../src/utils/sessionStore.ts";
 import { createJwtToken } from "../../src/utils/jwt.ts";
 
 // Skapa en sinon sandbox
