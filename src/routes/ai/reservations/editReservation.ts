@@ -81,7 +81,7 @@ ${JSON.stringify(isAvailableMessage)}
 `;
 
 		if (brokenRules.length > 0 || !isAvailable) {
-			handleResponseError(ctx, responseBody);
+			handleResponseSuccess(ctx, responseBody);
 			return;
 		}
 
