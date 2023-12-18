@@ -14,7 +14,7 @@ Denna fil representerar de environment variablerna du behöver om du ska kunna a
 
 ```env
 MONGOOSE_CONNECT_URI = "mongodb://username:password@host:port/database"
-JWT_SECRET = "slumpmässig siffor eller bokstavskombination"
+JWT_SECRET = "Måste vara en base64 sträng men den kan vara slumpmässig"
 PORT = ""
 IMAP_USERNAME = "username"
 IMAP_PASSWORD = "password"
@@ -116,8 +116,6 @@ Detta endpoint används för att skapa en ny reservation med tillhörande kund- 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/ai/reservation/delete`
 
 Denna används för att ta bort en specifik reservation.
@@ -152,8 +150,6 @@ Denna används för att ta bort en specifik reservation.
 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `POST /api/ai/reservation/edit`
 
@@ -202,8 +198,6 @@ Detta endpoint används för att uppdatera information om en specifik reservatio
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/ai/reservation/getAvailableChambreDates`
 
 Detta endpoint används för att kontrollera tillgänglighet för chambre-bokningar mellan två datum.
@@ -238,8 +232,6 @@ Detta endpoint används för att kontrollera tillgänglighet för chambre-boknin
 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `POST /api/ai/reservation/getReservationData`
 
@@ -311,8 +303,6 @@ Detta endpoint används för att hämta detaljerad information om en enskild kon
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `GET /api/dashboard/conversations`
 
 Detta endpoint används för att hämta alla konversationer som är kopplade till en specifik organisation.
@@ -351,8 +341,6 @@ Detta endpoint används för att hämta alla konversationer som är kopplade til
 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `GET /api/dashboard/messages`
 
@@ -394,8 +382,6 @@ Detta endpoint används för att hämta meddelanden för en specifik organisatio
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
 ## Icke Kategoriserade Endpoints
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `POST /api/addSelectedMenu`
 
@@ -469,8 +455,6 @@ Detta endpoint används för att generera en ny accessnyckel för AI för en giv
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/admin/createNewOrganization`
 
 Detta endpoint används för att skapa en ny organisation med tillhörande information.
@@ -507,8 +491,6 @@ Detta endpoint används för att skapa en ny organisation med tillhörande infor
 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `POST /api/admin/createNewUser`
 
@@ -586,8 +568,6 @@ Detta endpoint används för att ändra en användares lösenord baserat på en 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/auth/login`
 
 Detta endpoint används för att autentisera en användare och generera en JWT-accessnyckel för sessionen.
@@ -623,8 +603,6 @@ Detta endpoint används för att autentisera en användare och generera en JWT-a
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/auth/logout`
 
 Detta endpoint används för att logga ut en användare genom att avsluta deras session.
@@ -648,8 +626,6 @@ Detta endpoint används för att logga ut en användare genom att avsluta deras 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-**-----------------------------------------------------------------------------------------------------------------------------------------**
-
 ### Endpoint `POST /api/auth/me`
 
 Detta endpoint används för att hämta information om den aktuellt autentiserade användaren.
@@ -668,8 +644,6 @@ Detta endpoint används för att hämta information om den aktuellt autentiserad
 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
-
-**-----------------------------------------------------------------------------------------------------------------------------------------**
 
 ### Endpoint `POST /api/auth/resetPassword`
 
