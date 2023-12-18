@@ -2,7 +2,6 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import { createJwtToken, verify, getJwtSecret } from "../../src/utils/jwt.ts"; // Ersätt med sökvägen till din modul
-import * as jwt from "https://deno.land/x/djwt/mod.ts";
 
 const sandbox = sinon.createSandbox();
 
