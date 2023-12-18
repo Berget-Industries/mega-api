@@ -6,11 +6,27 @@
 
 #### Denna dokumentation är till användning för samtliga som använder vårat API för att lättare förstå hur den fungerar.
 
+### Default Environment File
+
+Denna fil representerar de environment variablerna du behöver om du ska kunna använda systemet utan några problem.
+
+#### Exempel:
+
+```env
+MONGOOSE_CONNECT_URI = "mongodb://username:password@host:port/database"
+JWT_SECRET = "slumpmässig siffor eller bokstavskombination"
+PORT = ""
+IMAP_USERNAME = "username"
+IMAP_PASSWORD = "password"
+```
+
 ## AI Endpoints
 
 ### Endpoint `POST /api/ai/addMessageHistory`
 
 Detta endpoint används för att lägga till meddelanden till en specifik konversation.
+
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
 
 #### Request:
 
@@ -20,6 +36,19 @@ Detta endpoint används för att lägga till meddelanden till en specifik konver
 -   `createdAt`: (`Date`, obligatorisk) - Datum och tid när meddelandet skapades.
 -   `input`: (`string`, obligatorisk) - Input-texten från användaren.
 -   `llmOutput`: (`string`, obligatorisk) - Utsvaret från LLM.
+
+#### Exempel: 
+
+```json
+{
+    "conversation": "123456789101112131415",
+    "contactEmail": "johndoe@example.com",
+    "contactName": "John Doe",
+    "createdAt": "2023-12-24",
+    "input": "John wants some pizza",
+    "llmOutput": []
+}
+```
 
 #### Response:
 
@@ -35,33 +64,13 @@ Detta endpoint används för att lägga till meddelanden till en specifik konver
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-### Endpoint `POST /api/ai/updateContact`
-
-Detta endpoint används för att uppdatera eller skapa en ny kontakt i databasen.
-
-#### Request:
-
--   `contact` (`object`, obligatorisk) - Ett objekt som innehåller kontaktinformation som ska uppdateras, inklusive `status`, `role`, `email`, `name`, `lastActivity`, `address`, `avatarUrl` och `phoneNumber`.
-
-#### Response:
-
--   `status` (`string`) - Status för begäran.
-
-#### Felhantering:
-
--   Om kontakten inte hittas eller något annat fel uppstår, returneras ett felmeddelande.
--   För övriga interna fel returneras ett generellt tekniskt felmeddelande.
-
-#### Status koder:
-
--   `200(OK)` - Allting gick som det skulle.
--   `500(Internal-error)` - Det inträffade ett internt server fel.
-
 ## Reservation Endpoints
 
 ### Endpoint `POST /api/ai/reservation/create`
 
 Detta endpoint används för att skapa en ny reservation med tillhörande kund- och konversationsinformation.
+
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
 
 #### Request:
 
@@ -74,6 +83,21 @@ Detta endpoint används för att skapa en ny reservation med tillhörande kund- 
 -   `phone` (`string`, obligatorisk) - Telefonnummer till gästen.
 -   `comment` (`string`, valfri) - Kommentar relaterad till reservationen.
 -   `conversation` (`ObjectId`, valfri) - Identifierare för relaterad konversation.
+
+#### Exempel:
+
+```json
+{
+    "chambre": false,
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "date": "2023-06-18",
+    "time": "18:00",
+    "numberOfGuests": 5,
+    "phone": "123456789",
+    "comment": "God dryck önskas till maten."
+}
+```
 
 #### Response:
 
@@ -92,13 +116,25 @@ Detta endpoint används för att skapa en ny reservation med tillhörande kund- 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/ai/reservation/delete`
 
 Denna används för att ta bort en specifik reservation.
 
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
+
 #### Request:
 
 -   `_id` (`ObjectId`, obligatorisk) - Identifieraren för den reservation som ska tas bort.
+
+#### Exempel:
+
+```json
+{
+    "_id": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -117,9 +153,13 @@ Denna används för att ta bort en specifik reservation.
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/ai/reservation/edit`
 
 Detta endpoint används för att uppdatera information om en specifik reservation.
+
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
 
 #### Request:
 
@@ -130,6 +170,20 @@ Detta endpoint används för att uppdatera information om en specifik reservatio
 -   `time` (`string`, valfri) - Tiden för reservationen.
 -   `numberOfGuests` (`number`, valfri) - Antalet gäster.
 -   `phone` (`string`, valfri) - Telefonnummer till gästen.
+
+#### Exempel:
+
+```json
+{
+    "_id": "123456789101112131415",
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "date": "2023-06-18",
+    "time": "17:00",
+    "numberOfGuests": 7,
+    "phone": "123456789",
+}
+```
 
 #### Response:
 
@@ -148,14 +202,27 @@ Detta endpoint används för att uppdatera information om en specifik reservatio
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/ai/reservation/getAvailableChambreDates`
 
 Detta endpoint används för att kontrollera tillgänglighet för chambre-bokningar mellan två datum.
+
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
 
 #### Request
 
 -   `startDate` (`string`, obligatorisk): Startdatumet för tidsintervallet som ska kontrolleras.
 -   `endDate` (`string`, obligatorisk): Slutdatumet för tidsintervallet som ska kontrolleras.
+
+#### Exempel:
+
+```json
+{
+    "startDate": "2023-06-15",
+    "endDate": "2023-06-17"
+}
+```
 
 #### Response:
 
@@ -172,13 +239,25 @@ Detta endpoint används för att kontrollera tillgänglighet för chambre-boknin
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/ai/reservation/getReservationData`
 
 Detta endpoint används för att hämta information om en specifik reservation baserat på dess ID.
 
+**För att kunna använda detta endpoint så behövs det en giltig ai accesskey i HEADER.**
+
 #### Request:
 
 `_id` (`ObjectId`, obligatorisk): Identifieraren för den reservation som ska hämtas.
+
+#### Exempel:
+
+```json
+{
+    "_id": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -203,9 +282,19 @@ Detta endpoint används för att hämta information om en specifik reservation b
 
 Detta endpoint används för att hämta detaljerad information om en enskild konversation.
 
+**För att kunna använda detta endpoint så behövs det en giltig bearer token.**
+
 #### Request:
 
 -   `conversation` (`ObjectId`, obligatorisk): Identifieraren för den konversation som ska hämtas.
+
+#### Exempel:
+
+```json
+{
+    "conversation": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -222,15 +311,29 @@ Detta endpoint används för att hämta detaljerad information om en enskild kon
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `GET /api/dashboard/conversations`
 
 Detta endpoint används för att hämta alla konversationer som är kopplade till en specifik organisation.
+
+**För att kunna använda detta endpoint så behövs det en giltig bearer token.**
 
 #### Request:
 
 -   `startDate` (`string`, obligatorisk): Startdatum för att filtrera meddelanden.
 -   `endDate` (`string`, obligatorisk): Slutdatum för att filtrera meddelanden.
 -   `organization` (`ObjectId`, obligatorisk): Identifieraren för den organisation som meddelandena tillhör.
+
+#### Exempel:
+
+```json
+{
+    "startDate": "2023-10-14",
+    "endDate": "2023-10-16",
+    "organization": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -249,15 +352,29 @@ Detta endpoint används för att hämta alla konversationer som är kopplade til
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `GET /api/dashboard/messages`
 
 Detta endpoint används för att hämta meddelanden för en specifik organisation inom ett angivet datumintervall.
+
+**För att kunna använda detta endpoint så behövs det en giltig bearer token.**
 
 #### Request:
 
 -   `startDate` (`string`, obligatorisk): Startdatum för att filtrera meddelanden.
 -   `endDate` (`string`, obligatorisk): Slutdatum för att filtrera meddelanden.
 -   `organization` (`ObjectId`, obligatorisk): Identifieraren för den organisation som meddelandena tillhör.
+
+#### Exempel
+
+```json
+{
+    "startDate": "2023-10-14",
+    "endDate": "2023-10-16",
+    "organization": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -278,7 +395,9 @@ Detta endpoint används för att hämta meddelanden för en specifik organisatio
 
 ## Icke Kategoriserade Endpoints
 
-#### Endpoint `POST /api/addSelectedMenu`
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
+### Endpoint `POST /api/addSelectedMenu`
 
 Detta endpoint används för att lägga till eller uppdatera menyn för en specifik reservation.
 
@@ -286,6 +405,17 @@ Detta endpoint används för att lägga till eller uppdatera menyn för en speci
 
 -   `_id` (`ObjectId`, obligatorisk): Identifieraren för den reservation som ska uppdateras.
 -   `menu` (`object`, obligatorisk): Ett objekt som innehåller menyn som ska läggas till i reservationen
+
+#### Exempel
+
+```json
+{
+    "_id": "123456789101112131415",
+    "menu": {
+      "Menyn skrivs här"
+    }
+}
+```
 
 #### Response:
 
@@ -310,9 +440,19 @@ Detta endpoint används för att lägga till eller uppdatera menyn för en speci
 
 Detta endpoint används för att generera en ny accessnyckel för AI för en given organisation
 
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
+
 #### Request:
 
 -   `organization` (`ObjectId`, obligatorisk): Identifieraren för den organisation som accessnyckeln ska skapas för.
+
+#### Exempel: 
+
+```json
+{
+    "organization": "123456789101112131415"
+}
+```
 
 #### Response:
 
@@ -329,15 +469,29 @@ Detta endpoint används för att generera en ny accessnyckel för AI för en giv
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/admin/createNewOrganization`
 
 Detta endpoint används för att skapa en ny organisation med tillhörande information.
+
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
 
 #### Request:
 
 -   `name` (`string`, obligatorisk): Namnet på organisationen.
 -   `logoUrl` (`string`, valfri): URL till organisationens logotyp.
 -   `users` (`array`, valfri): En lista av användar-ID:n som tillhör organisationen.
+
+#### Exempel: 
+
+```json
+{
+    "name": "John's Kebab",
+    "logoUrl": "",
+    "users": []
+}
+```
 
 #### Response:
 
@@ -354,9 +508,13 @@ Detta endpoint används för att skapa en ny organisation med tillhörande infor
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/admin/createNewUser`
 
 Detta endpoint används för att skapa en ny användare med angivna attribut.
+
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
 
 #### Request:
 
@@ -364,6 +522,17 @@ Detta endpoint används för att skapa en ny användare med angivna attribut.
 -   `email` (`string`, obligatorisk): E-postadresssen till användaren.
 -   `avatarUrl` (`string`, valfri): URL till användarens avatarbild.
 -   `organizations` (`array`, valfri): En lista av organisationer som användaren tillhör.
+
+#### Exempel: 
+
+```json
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "avatarUrl": "",
+    "organizations": []
+}
+```
 
 #### Response:
 
@@ -387,10 +556,21 @@ Detta endpoint används för att skapa en ny användare med angivna attribut.
 
 Detta endpoint används för att ändra en användares lösenord baserat på en giltig verifieringstoken.
 
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
+
 #### Request:
 
 -   `newPassword` (`string`, obligatorisk): Det nya lösenordet som användaren vill ställa in.
 -   `token` (`string`, obligatorisk): En verifieringstoken som används för att validera lösenordsändringsbegäran.
+
+#### Exempel: 
+
+```json
+{
+    "newPassword": "johndoe123",
+    "token": "9876543210"
+}
+```
 
 #### Response:
 
@@ -406,14 +586,27 @@ Detta endpoint används för att ändra en användares lösenord baserat på en 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/auth/login`
 
 Detta endpoint används för att autentisera en användare och generera en JWT-accessnyckel för sessionen.
+
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
 
 #### Request:
 
 -   `email` (`string`, obligatorisk): E-postadressen till användaren.
 -   `password` (`string`, obligatorisk): Användarens lösenord.
+
+#### Exempel: 
+
+```json
+{
+    "email": "johndoe@example.com",
+    "password": "johndoe123"
+}
+```
 
 #### Response:
 
@@ -430,9 +623,13 @@ Detta endpoint används för att autentisera en användare och generera en JWT-a
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/auth/logout`
 
 Detta endpoint används för att logga ut en användare genom att avsluta deras session.
+
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
 
 #### Request:
 
@@ -451,9 +648,13 @@ Detta endpoint används för att logga ut en användare genom att avsluta deras 
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/auth/me`
 
 Detta endpoint används för att hämta information om den aktuellt autentiserade användaren.
+
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
 
 #### Request:
 
@@ -468,13 +669,25 @@ Detta endpoint används för att hämta information om den aktuellt autentiserad
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
+**-----------------------------------------------------------------------------------------------------------------------------------------**
+
 ### Endpoint `POST /api/auth/resetPassword`
 
 Detta endpoint används för att skicka ett e-postmeddelande för lösenordåterställning till en specificerad användare.
 
+**För att kunna använda denna endpoint behövs det en giltig bearer token.**
+
 #### Request:
 
 -   `email` (`string`, obligatorisk): E-postadressen till användaren som begär lösenordåterställning.
+
+#### Exempel: 
+
+```json
+{
+    "email": "johndoe@example.com"
+}
+```
 
 #### Response:
 
