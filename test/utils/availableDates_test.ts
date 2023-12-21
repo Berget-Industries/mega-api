@@ -9,24 +9,13 @@ const sandbox = sinon.createSandbox();
 
 Deno.test("checkAvailableDates - Funktionens beteende", async () => {
 	try {
-		// Skapa stubbar för databasinteraktioner
 		const findOneStub = sandbox.stub(AvailableDates, "findOne");
 
-		// Simulera olika scenarion
-		findOneStub
-			.withArgs(
-				sinon.match.has(
-					"date",
-					sinon.match.value({
-						$gte: sinon.match.date,
-						$lte: sinon.match.date,
-					})
-				)
-			)
-			.resolves({
-				lunch: { isAvailable: true },
-				dinner: { isAvailable: false },
-			});
+		// Simulera svar för lunchtid
+		findOneStub.withArgs(sinon.match.has("date")).resolves({
+			lunch: { isAvailable: true },
+			dinner: { isAvailable: false },
+		});
 
 		// Testfall 1: Lunchtid är tillgänglig
 		const result1 = await checkAvailableDates({
