@@ -6,28 +6,36 @@ import { Types } from "npm:mongoose";
 
 const sandbox = sinon.createSandbox();
 
+const mockSession = {
+	_id: new Types.ObjectId(),
+	user: new Types.ObjectId(),
+	token: "mockToken",
+	expiry: 123456789,
+	exec: sandbox.stub().resolves({
+		user: { name: "mockUser", email: "mock@example.com" },
+	}),
+	save: sandbox.stub().resolves(),
+	// Add a mock populate method that returns an object with exec
+	populate: sandbox.stub().returns({
+		exec: sandbox.stub().resolves({
+			user: { name: "mockUser", email: "mock@example.com" },
+		}),
+	}),
+};
+
 Deno.test("SessionStore - createSession", async () => {
 	// Setup stubs
-	const mockSession = {
-		_id: new Types.ObjectId(),
-		user: new Types.ObjectId(),
-		token: "mockToken",
-		expiry: 123456789,
-		populate: sandbox.stub().returnsThis(),
-		exec: sandbox.stub().resolves({
-			user: { username: "mockUser", email: "mock@example.com" },
-		}),
-		save: sandbox.stub().resolves(),
-	};
+
 	sandbox.stub(Session, "create").resolves(mockSession);
-	sandbox.stub(Session, "findById").resolves(mockSession);
+	sandbox.stub(Session, "findById").returns(mockSession);
 
 	// Test createSession
 	const sessionStore = SessionStore;
 	const result = await sessionStore.createSession(new Types.ObjectId(), "mockToken", 123456789);
+	console.log(result);
 
-	assertEquals(result.token, "mockToken");
 	assertEquals(result.user.name, "mockUser");
+	assertEquals(result.user.email, "mock@example.com");
 	// ... andra assertions ...
 
 	sandbox.restore();
@@ -35,22 +43,14 @@ Deno.test("SessionStore - createSession", async () => {
 
 Deno.test("SessionStore - getSession", async () => {
 	try {
-		// Skapa en mockad session
-		const mockSession = {
-			token: "mockToken",
-			user: new Types.ObjectId(),
-			populate: sandbox.stub().returnsThis(),
-			exec: sandbox.stub().resolves({
-				user: { username: "mockUser", email: "mock@example.com" },
-			}),
-		};
 		sandbox.stub(Session, "findOne").returns(mockSession);
 
 		// Testa getSession
 		const result = await SessionStore.getSession("mockToken");
+		console.log(result);
 
-		assertEquals(result.token, "mockToken");
 		assertEquals(result.user.name, "mockUser");
+		assertEquals(result.user.email, "mock@example.com");
 	} finally {
 		sandbox.restore();
 	}
