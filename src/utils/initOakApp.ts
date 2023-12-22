@@ -20,7 +20,12 @@ export function initOakApp() {
 	app.use(router.routes());
 	app.use(router.allowedMethods());
 
+	const controller = new AbortController();
+	const { signal } = controller;
+
 	console.log("Loading Oak...");
-	app.listen({ port: parsedPORT });
+	app.listen({ port: parsedPORT, signal });
 	console.log(`Oak loaded successfully on PORT: ${PORT}`);
+
+	return controller;
 }

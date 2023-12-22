@@ -31,12 +31,14 @@ async function sendMail(to: string, subject: string, content: string) {
 	});
 	await client.close();
 }
-
-export const sendResetPasswordMail = async (email: string): Promise<void> => {
-	const token = await createJwtToken({ data: email, type: "reset-password" });
+// I din emailSender.ts
+export const sendResetPasswordMail = async (
+	email: string,
+	dependencies = { createJwtToken, generateTemplate, sendMail }
+): Promise<void> => {
+	const token = await dependencies.createJwtToken({ data: email, type: "reset-password" });
 	const subject = "Återställ lösenord";
+	const content = dependencies.generateTemplate(token);
 
-	const content = generateTemplate(token);
-
-	await sendMail(email, subject, content);
+	await dependencies.sendMail(email, subject, content);
 };
