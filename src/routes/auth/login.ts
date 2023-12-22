@@ -10,20 +10,21 @@ const router = new Router();
 async function validateUser(email: string, password: string): Promise<any> {
 	const user = await User.findOne({ email });
 	if (!user) {
-		return null; // Användaren finns inte
+		return null;
 	}
 
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(password, salt);
 	const passwordMatch = await bcrypt.compare(password, user.password);
+	if (!passwordMatch) {
+		return null;
+	}
+
 	const formatUser = () => {
 		let { password, _id, ...rest } = user.toObject();
 		let formattedUser = { id: _id, ...rest };
 		return formattedUser;
 	};
-	const res = formatUser();
 
-	return res;
+	return formatUser();
 }
 
 router.post("/login", async (ctx: Context) => {
