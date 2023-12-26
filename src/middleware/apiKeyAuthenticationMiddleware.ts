@@ -1,11 +1,11 @@
 import { Context, Next } from "https://deno.land/x/oak/mod.ts";
-import { AiAccessKey } from "../models/index.ts";
+import { ApiKey } from "../models/index.ts";
 
-export default async function aiAuthenticationMiddleware(ctx: Context, next: Next) {
+export default async function apiKeyAuthenticationMiddleware(ctx: Context, next: Next) {
 	try {
 		const key = ctx.request.headers.get("Authorization");
 		console.log(key);
-		const keyDoc = await AiAccessKey.findOne({ key });
+		const keyDoc = await ApiKey.findOne({ key });
 
 		if (!keyDoc) {
 			ctx.response.status = 401;
