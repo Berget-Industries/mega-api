@@ -1,8 +1,8 @@
 import { Context } from "https://deno.land/x/oak/mod.ts";
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import * as sinon from "npm:sinon";
-import aiAuthenticationMiddleware from "../../src/middleware/aiAuthenticationMiddleware.ts";
-import { AiAccessKey } from "../../src/models/index.ts";
+import apiKeyAuthenticationMiddleware from "../../src/middleware/apiKeyAuthenticationMiddleware.ts";
+import { ApiKey } from "../../src/models/index.ts";
 
 // Skapa en sinon sandbox
 const sandbox = sinon.createSandbox();
@@ -21,10 +21,10 @@ function createMockContext(key: string | null): Context {
 }
 
 Deno.test("Ai Authentication Middleware - Valid Access Key", async () => {
-	sandbox.stub(AiAccessKey, "findOne").resolves({ organization: "Test Organization" });
+	sandbox.stub(ApiKey, "findOne").resolves({ organization: "Test Organization" });
 
 	const ctx = createMockContext("valid_key");
-	await aiAuthenticationMiddleware(ctx, () => Promise.resolve());
+	await apiKeyAuthenticationMiddleware(ctx, () => Promise.resolve());
 
 	assertEquals(ctx.response.status, 0);
 	assertEquals(ctx.state.organization, "Test Organization");
@@ -33,10 +33,10 @@ Deno.test("Ai Authentication Middleware - Valid Access Key", async () => {
 });
 
 Deno.test("Ai Authentication Middleware - Invalid Access Key", async () => {
-	sandbox.stub(AiAccessKey, "findOne").resolves(null);
+	sandbox.stub(ApiKey, "findOne").resolves(null);
 
 	const ctx = createMockContext("invalid_key");
-	await aiAuthenticationMiddleware(ctx, () => Promise.resolve());
+	await apiKeyAuthenticationMiddleware(ctx, () => Promise.resolve());
 
 	assertEquals(ctx.response.status, 401);
 	assertEquals(ctx.response.body, { message: "Unauthorized" });
@@ -45,10 +45,10 @@ Deno.test("Ai Authentication Middleware - Invalid Access Key", async () => {
 });
 
 Deno.test("Ai Authentication Middleware - Exception Handling", async () => {
-	const findOneStub = sandbox.stub(AiAccessKey, "findOne").throws(new Error("Database error"));
+	const findOneStub = sandbox.stub(ApiKey, "findOne").throws(new Error("Database error"));
 
 	const ctx = createMockContext("valid_key");
-	await aiAuthenticationMiddleware(ctx, () => Promise.resolve());
+	await apiKeyAuthenticationMiddleware(ctx, () => Promise.resolve());
 
 	assertEquals(ctx.response.status, 401);
 	assertEquals(ctx.response.body, { message: "Invalid key!" });

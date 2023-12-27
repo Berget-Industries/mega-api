@@ -2,7 +2,7 @@ import convertToUTC from "../../../utils/convertToUTC.ts";
 import { IReservationDetails } from "../../../models/Reservation.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation, Contact } from "../../../models/index.ts";
-import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
+import apiKeyAuthenticationMiddleware from "../../../middleware/apiKeyAuthenticationMiddleware.ts";
 import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
 import { checkAvailableDates, addReservationToDate } from "../../../utils/availableDates.ts";
 import {
@@ -11,7 +11,7 @@ import {
 } from "../../../utils/checkBookingRules.ts";
 
 const router = new Router();
-router.post("/create", aiAuthenticationMiddleware, async (ctx: Context) => {
+router.post("/create", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { chambre, name, email, date, time, numberOfGuests, phone, comment, conversation } =
 			await ctx.request.body().value;
