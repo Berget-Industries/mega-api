@@ -37,16 +37,16 @@ Detta endpoint används för att lägga till meddelanden till en specifik konver
 -   `input`: (`string`, obligatorisk) - Input-texten från användaren.
 -   `llmOutput`: (`string`, obligatorisk) - Utsvaret från LLM.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "conversation": "123456789101112131415",
-    "contactEmail": "johndoe@example.com",
-    "contactName": "John Doe",
-    "createdAt": "2023-12-24",
-    "input": "John wants some pizza",
-    "llmOutput": []
+	"conversation": "123456789101112131415",
+	"contactEmail": "johndoe@example.com",
+	"contactName": "John Doe",
+	"createdAt": "2023-12-24",
+	"input": "John wants some pizza",
+	"llmOutput": []
 }
 ```
 
@@ -88,14 +88,14 @@ Detta endpoint används för att skapa en ny reservation med tillhörande kund- 
 
 ```json
 {
-    "chambre": false,
-    "name": "John Doe",
-    "email": "johndoe@example.com",
-    "date": "2023-06-18",
-    "time": "18:00",
-    "numberOfGuests": 5,
-    "phone": "123456789",
-    "comment": "God dryck önskas till maten."
+	"chambre": false,
+	"name": "John Doe",
+	"email": "johndoe@example.com",
+	"date": "2023-06-18",
+	"time": "18:00",
+	"numberOfGuests": 5,
+	"phone": "123456789",
+	"comment": "God dryck önskas till maten."
 }
 ```
 
@@ -130,7 +130,7 @@ Denna används för att ta bort en specifik reservation.
 
 ```json
 {
-    "_id": "123456789101112131415"
+	"_id": "123456789101112131415"
 }
 ```
 
@@ -171,13 +171,13 @@ Detta endpoint används för att uppdatera information om en specifik reservatio
 
 ```json
 {
-    "_id": "123456789101112131415",
-    "name": "John Doe",
-    "email": "johndoe@example.com",
-    "date": "2023-06-18",
-    "time": "17:00",
-    "numberOfGuests": 7,
-    "phone": "123456789",
+	"_id": "123456789101112131415",
+	"name": "John Doe",
+	"email": "johndoe@example.com",
+	"date": "2023-06-18",
+	"time": "17:00",
+	"numberOfGuests": 7,
+	"phone": "123456789"
 }
 ```
 
@@ -213,8 +213,8 @@ Detta endpoint används för att kontrollera tillgänglighet för chambre-boknin
 
 ```json
 {
-    "startDate": "2023-06-15",
-    "endDate": "2023-06-17"
+	"startDate": "2023-06-15",
+	"endDate": "2023-06-17"
 }
 ```
 
@@ -247,7 +247,7 @@ Detta endpoint används för att hämta information om en specifik reservation b
 
 ```json
 {
-    "_id": "123456789101112131415"
+	"_id": "123456789101112131415"
 }
 ```
 
@@ -284,7 +284,7 @@ Detta endpoint används för att hämta detaljerad information om en enskild kon
 
 ```json
 {
-    "conversation": "123456789101112131415"
+	"conversation": "123456789101112131415"
 }
 ```
 
@@ -319,9 +319,9 @@ Detta endpoint används för att hämta alla konversationer som är kopplade til
 
 ```json
 {
-    "startDate": "2023-10-14",
-    "endDate": "2023-10-16",
-    "organization": "123456789101112131415"
+	"startDate": "2023-10-14",
+	"endDate": "2023-10-16",
+	"organization": "123456789101112131415"
 }
 ```
 
@@ -358,9 +358,9 @@ Detta endpoint används för att hämta meddelanden för en specifik organisatio
 
 ```json
 {
-    "startDate": "2023-10-14",
-    "endDate": "2023-10-16",
-    "organization": "123456789101112131415"
+	"startDate": "2023-10-14",
+	"endDate": "2023-10-16",
+	"organization": "123456789101112131415"
 }
 ```
 
@@ -382,6 +382,26 @@ Detta endpoint används för att hämta meddelanden för en specifik organisatio
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
 ## Icke Kategoriserade Endpoints
+
+### Endpoint `GET /api/ping`
+
+Detta endpoint används för att kolla om API är online eller offline.
+
+Behövs ingen body i requesten, man behöver endast göra en `GET` förfrågan.
+
+#### Response:
+
+-   `status` (`string`): Status för begäran.
+-   `message` (`string`): Ett meddelande som beskriver utfallet.
+
+#### Felhantering:
+
+-   Om de har skett ett internt fel returneras ett generellt tekniskt felmeddelande.
+
+#### Status koder:
+
+-   `200(OK)` - Allting gick som det skulle.
+-   `500(Internal-error)` - Det inträffade ett internt server fel.
 
 ### Endpoint `POST /api/addSelectedMenu`
 
@@ -432,11 +452,11 @@ Detta endpoint används för att generera en ny accessnyckel för AI för en giv
 
 -   `organization` (`ObjectId`, obligatorisk): Identifieraren för den organisation som accessnyckeln ska skapas för.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "organization": "123456789101112131415"
+	"organization": "123456789101112131415"
 }
 ```
 
@@ -467,13 +487,13 @@ Detta endpoint används för att skapa en ny organisation med tillhörande infor
 -   `logoUrl` (`string`, valfri): URL till organisationens logotyp.
 -   `users` (`array`, valfri): En lista av användar-ID:n som tillhör organisationen.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "name": "John's Kebab",
-    "logoUrl": "",
-    "users": []
+	"name": "John's Kebab",
+	"logoUrl": "",
+	"users": []
 }
 ```
 
@@ -505,14 +525,14 @@ Detta endpoint används för att skapa en ny användare med angivna attribut.
 -   `avatarUrl` (`string`, valfri): URL till användarens avatarbild.
 -   `organizations` (`array`, valfri): En lista av organisationer som användaren tillhör.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "name": "John Doe",
-    "email": "johndoe@example.com",
-    "avatarUrl": "",
-    "organizations": []
+	"name": "John Doe",
+	"email": "johndoe@example.com",
+	"avatarUrl": "",
+	"organizations": []
 }
 ```
 
@@ -545,12 +565,12 @@ Detta endpoint används för att ändra en användares lösenord baserat på en 
 -   `newPassword` (`string`, obligatorisk): Det nya lösenordet som användaren vill ställa in.
 -   `token` (`string`, obligatorisk): En verifieringstoken som används för att validera lösenordsändringsbegäran.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "newPassword": "johndoe123",
-    "token": "9876543210"
+	"newPassword": "johndoe123",
+	"token": "9876543210"
 }
 ```
 
@@ -579,12 +599,12 @@ Detta endpoint används för att autentisera en användare och generera en JWT-a
 -   `email` (`string`, obligatorisk): E-postadressen till användaren.
 -   `password` (`string`, obligatorisk): Användarens lösenord.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "email": "johndoe@example.com",
-    "password": "johndoe123"
+	"email": "johndoe@example.com",
+	"password": "johndoe123"
 }
 ```
 
@@ -655,11 +675,11 @@ Detta endpoint används för att skicka ett e-postmeddelande för lösenordåter
 
 -   `email` (`string`, obligatorisk): E-postadressen till användaren som begär lösenordåterställning.
 
-#### Exempel: 
+#### Exempel:
 
 ```json
 {
-    "email": "johndoe@example.com"
+	"email": "johndoe@example.com"
 }
 ```
 
