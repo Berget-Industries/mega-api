@@ -41,15 +41,18 @@ router.post("/login", async (ctx: Context) => {
 		const token = await createJwtToken({ email });
 		await sessionStore.createSession(user.id, token, Date.now() + 2 * 60 * 60 * 1000);
 
-		const body = {
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Inloggningen lyckades.",
 			accessToken: token,
-			user,
-		};
-		handleResponseSuccess(ctx, body);
+			user: user,
+		});
 	} catch (error) {
 		console.error(error);
-		const body = { message: "Internal Server Error" };
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Ett internt fel har uppstått.",
+		});
 	}
 });
 

@@ -29,8 +29,10 @@ router.post(
 			});
 		} catch (error) {
 			console.error(error);
-			const body = "internal server error";
-			handleResponseError(ctx, body);
+			handleResponseError(ctx, {
+				status: "internal-error",
+				message: "Ett internt fel har uppstått.",
+			});
 		}
 	}
 );

@@ -19,10 +19,16 @@ router.post("/changePasswordWithToken", async (ctx: Context) => {
 		const hashedPassword = await bcrypt.hash(newPassword, salt);
 		await User.findOneAndUpdate({ email: payload.email }, { password: hashedPassword });
 
-		handleResponseSuccess(ctx, { message: "Password successfully changed" });
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Ändringen av lösenordet lyckades.",
+		});
 	} catch (error) {
 		console.error(error);
-		handleResponseError(ctx, "Failed to change password");
+		handleResponseError(ctx, {
+			status: "error",
+			message: "Något gick fel, det gick inte att ändra lösenordet.",
+		});
 	}
 });
 
