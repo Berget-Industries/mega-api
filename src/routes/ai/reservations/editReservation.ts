@@ -1,7 +1,7 @@
 import mongoose from "npm:mongoose";
 import convertToUTC from "../../../utils/convertToUTC.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { Reservation, Conversation } from "../../../models/index.ts";
+import { Reservation, Conversation, Contact } from "../../../models/index.ts";
 import apiKeyAuthenticationMiddleware from "../../../middleware/apiKeyAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
 import { checkAvailableDates, editReservationFromDate } from "../../../utils/availableDates.ts";
@@ -16,18 +16,27 @@ router.post("/edit", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =
 			await ctx.request.body().value;
 
-		const input = {
+		const input: any = {
 			name,
 			email,
+			phone,
 			date: convertToUTC(date, time),
 			numberOfGuests,
-			phone,
 		};
 
 		const updateData: Record<string, any> = {};
 		for (const [key, value] of Object.entries(input)) {
 			if (key !== "_id" && value !== null && value !== "") {
 				updateData[key] = value;
+			}
+		}
+
+		const updateContact: Record<string, any> = {};
+		const keysToInclude: string[] = ["name", "email", "phone"];
+		for (const key of keysToInclude) {
+			const value = input[key];
+			if (value !== undefined && value !== null && value !== "") {
+				updateContact[key] = value;
 			}
 		}
 
@@ -95,6 +104,11 @@ ${JSON.stringify(isAvailableMessage)}
 			date,
 			time,
 		});
+
+		await Contact.findOneAndUpdate(
+			{ _id: reservationDetails?.contact },
+			{ $set: updateContact }
+		);
 
 		// let conversation = await ConversationModel.findById(conversationId);
 		// if (!conversation) {
