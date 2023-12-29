@@ -34,6 +34,7 @@ router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Contex
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "Kontakten har skapats.",
+			contact,
 		});
 	} catch (error) {
 		console.error(error);
