@@ -383,6 +383,26 @@ Detta endpoint används för att hämta meddelanden för en specifik organisatio
 
 ## Icke Kategoriserade Endpoints
 
+### Endpoint `GET /api/ping`
+
+Detta endpoint används för att kolla om API är online eller offline.
+
+Behövs ingen body i requesten, man behöver endast göra en `GET` förfrågan.
+
+#### Response:
+
+-   `status` (`string`): Status för begäran.
+-   `message` (`string`): Ett meddelande som beskriver utfallet.
+
+#### Felhantering:
+
+-   Om de har skett ett internt fel returneras ett generellt tekniskt felmeddelande.
+
+#### Status koder:
+
+-   `200(OK)` - Allting gick som det skulle.
+-   `500(Internal-error)` - Det inträffade ett internt server fel.
+
 ### Endpoint `POST /api/addSelectedMenu`
 
 Detta endpoint används för att lägga till eller uppdatera menyn för en specifik reservation.
