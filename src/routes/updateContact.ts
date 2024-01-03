@@ -7,10 +7,9 @@ import apiKeyAuthenticationMiddleware from "../middleware/apiKeyAuthenticationMi
 const router = new Router();
 router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const {
-			contact: { name, email, phone, avatarUrl },
-		} = await ctx.request.body().value;
-		let contact = await Contact.findOneAndUpdate(
+		let { contact } = await ctx.request.body().value;
+		const { name, email, phone, avatarUrl } = contact;
+		contact = await Contact.findOneAndUpdate(
 			{ email },
 			{
 				$set: {
@@ -37,9 +36,8 @@ router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Contex
 			contact,
 		});
 	} catch (error) {
-		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
-			handleResponseSuccess(ctx, {
+			handleResponseError(ctx, {
 				status: "could-not-find",
 				message: "Kunde inte hitta kontakten.",
 			});
