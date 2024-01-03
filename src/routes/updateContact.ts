@@ -7,9 +7,9 @@ import apiKeyAuthenticationMiddleware from "../middleware/apiKeyAuthenticationMi
 const router = new Router();
 router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		let { contact } = await ctx.request.body().value;
+		const { contact } = await ctx.request.body().value;
 		const { name, email, phone, avatarUrl } = contact;
-		contact = await Contact.findOneAndUpdate(
+		let updatedContact = await Contact.findOneAndUpdate(
 			{ email },
 			{
 				$set: {
@@ -21,19 +21,19 @@ router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Contex
 			},
 			{ new: true }
 		);
-		if (!contact) {
-			contact = await Contact.create({
+		if (!updatedContact) {
+			updatedContact = await Contact.create({
 				email,
 				name,
 				avatarUrl,
 				phone,
 			});
 		}
-		console.log(contact.toObject());
+		console.log(updatedContact.toObject());
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "Kontakten har skapats.",
-			contact,
+			contact: updatedContact,
 		});
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
