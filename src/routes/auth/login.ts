@@ -10,20 +10,21 @@ const router = new Router();
 async function validateUser(email: string, password: string): Promise<any> {
 	const user = await User.findOne({ email });
 	if (!user) {
-		return null; // Användaren finns inte
+		return null;
 	}
 
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(password, salt);
 	const passwordMatch = await bcrypt.compare(password, user.password);
+	if (!passwordMatch) {
+		return null;
+	}
+
 	const formatUser = () => {
 		let { password, _id, ...rest } = user.toObject();
 		let formattedUser = { id: _id, ...rest };
 		return formattedUser;
 	};
-	const res = formatUser();
 
-	return res;
+	return formatUser();
 }
 
 router.post("/login", async (ctx: Context) => {
@@ -40,15 +41,18 @@ router.post("/login", async (ctx: Context) => {
 		const token = await createJwtToken({ email });
 		await sessionStore.createSession(user.id, token, Date.now() + 2 * 60 * 60 * 1000);
 
-		const body = {
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Inloggningen lyckades.",
 			accessToken: token,
-			user,
-		};
-		handleResponseSuccess(ctx, body);
+			user: user,
+		});
 	} catch (error) {
 		console.error(error);
-		const body = { message: "Internal Server Error" };
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Ett internt fel har uppstått.",
+		});
 	}
 });
 

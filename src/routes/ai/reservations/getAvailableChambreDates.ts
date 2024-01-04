@@ -1,10 +1,10 @@
 import { getAvilableDates } from "../../../utils/availableDates.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
-import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
+import apiKeyAuthenticationMiddleware from "../../../middleware/apiKeyAuthenticationMiddleware.ts";
 
 const router = new Router();
-router.post("/getAvailableChambreDates", aiAuthenticationMiddleware, async (ctx: Context) => {
+router.post("/getAvailableChambreDates", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		let { startDate, endDate } = await ctx.request.body().value;
 
