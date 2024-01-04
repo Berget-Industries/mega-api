@@ -3,7 +3,7 @@ import { createJwtToken } from "./jwt.ts";
 
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-async function sendMail(to: string, subject: string, content: string) {
+async function sendMail(to: string, subject: string, html: string) {
 	const client = new SMTPClient({
 		connection: {
 			hostname: "smtp.gmail.com",
@@ -20,7 +20,7 @@ async function sendMail(to: string, subject: string, content: string) {
 		from: Deno.env.get("IMAP_USERNAME"),
 		to,
 		subject,
-		content,
+		html,
 	});
 	await client.close();
 }
@@ -29,7 +29,7 @@ export const sendResetPasswordMail = async (email: string): Promise<void> => {
 	const token = await createJwtToken({ data: email, type: "reset-password" });
 	const subject = "Återställ lösenord";
 
-	const content = generateTemplate(token);
+	const html = generateTemplate(token);
 
-	await sendMail(email, subject, content);
+	await sendMail(email, subject, html);
 };
