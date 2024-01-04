@@ -29,13 +29,13 @@ router.post("/updateContact", apiKeyAuthenticationMiddleware, async (ctx: Contex
 				phone,
 			});
 		}
-		console.log(updatedContact.toObject());
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "Kontakten har skapats.",
 			contact: updatedContact,
 		});
 	} catch (error) {
+		console.error(error);
 		if (error instanceof mongoose.Error.CastError) {
 			handleResponseError(ctx, {
 				status: "could-not-find",
