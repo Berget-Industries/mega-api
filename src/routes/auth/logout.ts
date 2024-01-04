@@ -11,12 +11,16 @@ router.post("/logout", authenticationMiddleware, async (ctx: Context) => {
 			await sessionStore.deleteSession(token);
 		}
 
-		const body = { message: "Logged out successfully" };
-		handleResponseSuccess(ctx, body);
+		handleResponseSuccess(ctx, {
+			status: "success",
+			message: "Lyckades logga ut.",
+		});
 	} catch (error) {
 		console.error(error);
-		const body = { message: "Internal Server Error" };
-		handleResponseError(ctx, body);
+		handleResponseError(ctx, {
+			status: "internal-error",
+			message: "Ett internt fel har uppstått.",
+		});
 	}
 });
 

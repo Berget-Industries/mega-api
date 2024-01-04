@@ -21,8 +21,8 @@ router.post("/requestPasswordChange", authenticationMiddleware, async (ctx: Cont
 		await sendResetPasswordMail(userDoc.email);
 
 		handleResponseSuccess(ctx, {
-			status: "succes",
-			message: "Password reset email sent",
+			status: "success",
+			message: "Återställningslänken för lösenordet har skickats.",
 		});
 	} catch (error) {
 		console.error(error);

@@ -4,10 +4,11 @@ import { handleResponseError, handleResponseSuccess } from "../../utils/contextH
 
 const router = new Router();
 router.get("/me", authenticationMiddleware, async (ctx: Context) => {
-	const body = {
+	handleResponseSuccess(ctx, {
+		status: "success",
+		message: "Lyckades hämta nuvarande användare.",
 		user: ctx.state.session.user,
-	};
-	handleResponseSuccess(ctx, body);
+	});
 });
 
 export default router;

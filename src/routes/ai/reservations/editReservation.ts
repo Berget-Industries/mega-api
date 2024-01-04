@@ -2,7 +2,7 @@ import mongoose from "npm:mongoose";
 import convertToUTC from "../../../utils/convertToUTC.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Reservation, Conversation } from "../../../models/index.ts";
-import aiAuthenticationMiddleware from "../../../middleware/aiAuthenticationMiddleware.ts";
+import apiKeyAuthenticationMiddleware from "../../../middleware/apiKeyAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
 import { checkAvailableDates, editReservationFromDate } from "../../../utils/availableDates.ts";
 import {
@@ -11,7 +11,7 @@ import {
 } from "../../../utils/checkBookingRules.ts";
 
 const router = new Router();
-router.post("/edit", aiAuthenticationMiddleware, async (ctx: Context) => {
+router.post("/edit", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
 		const { _id, name, email, date, time, numberOfGuests, phone, conversation } =
 			await ctx.request.body().value;
