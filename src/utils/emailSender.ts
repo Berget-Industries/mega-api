@@ -3,7 +3,7 @@ import { createJwtToken } from "./jwt.ts";
 
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-async function sendMail(to: string, subject: string, content: string) {
+async function sendMail(to: string, subject: string, html: string) {
 	const username = Deno.env.get("IMAP_USERNAME");
 	const password = Deno.env.get("IMAP_PASSWORD");
 
