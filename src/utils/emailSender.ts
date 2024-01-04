@@ -3,21 +3,28 @@ import { createJwtToken } from "./jwt.ts";
 
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-async function sendMail(to: string, subject: string, html: string) {
+async function sendMail(to: string, subject: string, content: string) {
+	const username = Deno.env.get("IMAP_USERNAME");
+	const password = Deno.env.get("IMAP_PASSWORD");
+
+	if (!username || !password) {
+		throw new Error("IMAP_USERNAME, IMAP_PASSWORD not set.");
+	}
+
 	const client = new SMTPClient({
 		connection: {
 			hostname: "smtp.gmail.com",
 			port: 465,
 			tls: true,
 			auth: {
-				username: Deno.env.get("IMAP_USERNAME"),
-				password: Deno.env.get("IMAP_PASSWORD"),
+				username,
+				password,
 			},
 		},
 	});
 
 	await client.send({
-		from: Deno.env.get("IMAP_USERNAME"),
+		from: username,
 		to,
 		subject,
 		html,
