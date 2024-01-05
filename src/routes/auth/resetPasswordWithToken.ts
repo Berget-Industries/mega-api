@@ -1,11 +1,12 @@
 import * as bcrypt from "npm:bcrypt-ts";
 import { verify } from "../../utils/jwt.ts";
 import { User } from "../../models/index.ts";
+import ResetPasswordToken from "../../models/ResetPasswordToken.ts";
 import { Context, Router } from "https://deno.land/x/oak/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();
-router.post("/changePasswordWithToken", async (ctx: Context) => {
+router.post("/resetPasswordWithToken", async (ctx: Context) => {
 	try {
 		const { newPassword, token } = await ctx.request.body().value;
 
@@ -18,6 +19,7 @@ router.post("/changePasswordWithToken", async (ctx: Context) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(newPassword, salt);
 		await User.findOneAndUpdate({ email: payload.email }, { password: hashedPassword });
+		await ResetPasswordToken.findOneAndDelete({ token: token });
 
 		handleResponseSuccess(ctx, {
 			status: "success",
