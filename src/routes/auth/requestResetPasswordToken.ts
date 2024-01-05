@@ -2,12 +2,11 @@ import { User } from "../../models/index.ts";
 import { sendResetPasswordMail } from "../../utils/emailSender.ts";
 import { Context, Router } from "https://deno.land/x/oak/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 
 const router = new Router();
-router.post("/requestPasswordChange", authenticationMiddleware, async (ctx: Context) => {
+router.post("/requestResetPasswordToken", async (ctx: Context) => {
 	try {
-		const { email } = await ctx.state.session.user.email;
+		const { email } = await ctx.state.session.user;
 		const userDoc = await User.findOne({ email });
 
 		if (!userDoc) {
