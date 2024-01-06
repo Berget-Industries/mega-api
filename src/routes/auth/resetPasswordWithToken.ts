@@ -16,6 +16,14 @@ router.post("/resetPasswordWithToken", async (ctx: Context) => {
 			return;
 		}
 
+		const doc = await ResetPasswordToken.findOne({ token: token });
+		if (!doc) {
+			handleResponseError(ctx, {
+				status: "error",
+				message: "Unauthorized",
+			});
+		}
+
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(newPassword, salt);
 		await User.findOneAndUpdate({ email: payload.email }, { password: hashedPassword });
