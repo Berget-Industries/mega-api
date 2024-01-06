@@ -554,7 +554,7 @@ Detta endpoint används för att skapa en ny användare med angivna attribut.
 
 ## Authentication Endpoints
 
-### Endpoint `POST /api/auth/changePassword`
+### Endpoint `POST /api/auth/resetPasswordWithToken`
 
 Detta endpoint används för att ändra en användares lösenord baserat på en giltig verifieringstoken.
 
@@ -665,7 +665,7 @@ Detta endpoint används för att hämta information om den aktuellt autentiserad
 -   `200(OK)` - Allting gick som det skulle.
 -   `500(Internal-error)` - Det inträffade ett internt server fel.
 
-### Endpoint `POST /api/auth/resetPassword`
+### Endpoint `POST /api/auth/requestResetPasswordToken`
 
 Detta endpoint används för att skicka ett e-postmeddelande för lösenordåterställning till en specificerad användare.
 

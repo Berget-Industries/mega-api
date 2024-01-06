@@ -3,11 +3,11 @@ import resetPasswordWithToken from "./resetPasswordWithToken.ts";
 import login from "./login.ts";
 import logout from "./logout.ts";
 import me from "./me.ts";
-import resetPasswoord from "./resetPassword.ts";
+import requestResetPasswordToken from "./requestResetPasswordToken.ts";
 
 const router = new Router();
 const basePath = "/auth";
-const routes = [resetPasswordWithToken, login, logout, me, resetPasswoord];
+const routes = [resetPasswordWithToken, login, logout, me, requestResetPasswordToken];
 
 routes.forEach((_) => {
 	router.use(basePath, _.routes());
