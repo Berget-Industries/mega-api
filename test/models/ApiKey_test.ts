@@ -12,20 +12,14 @@ Deno.test("ApiKey Model - Strukturkontroll", async () => {
 
 		const testApiKey = new ApiKey({
 			key: "someUniqueKey",
-			organization: new Types.ObjectId("507f191e810c19729de860ea"),
 		});
 
 		await testApiKey.save();
 		const apiKeyObject = testApiKey.toObject();
 
 		assertEquals(typeof apiKeyObject.key, "string", "key bör vara en sträng");
-		assertEquals(
-			apiKeyObject.organization instanceof Types.ObjectId,
-			true,
-			"organization bör vara en ObjectId"
-		);
 
-		const allowedFields = ["_id", "key", "organization"];
+		const allowedFields = ["_id", "key"];
 		Object.keys(apiKeyObject).forEach((key) => {
 			assertEquals(allowedFields.includes(key), true, `Oväntat fält: ${key}`);
 		});
