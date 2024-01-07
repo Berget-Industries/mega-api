@@ -39,11 +39,7 @@ Deno.test("Organization Model - Strukturkontroll", async () => {
 			true,
 			"messages bör vara en array av ObjectId"
 		);
-		assertEquals(
-			Array.isArray(organizationObject.agentConfig),
-			true,
-			"agentConfig bör vara en array"
-		);
+		assertEquals(typeof organizationObject.agentConfig, "agentConfig bör vara ett objekt");
 
 		const allowedFields = [
 			"_id",
