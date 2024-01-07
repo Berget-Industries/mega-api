@@ -27,7 +27,6 @@ Deno.test("Ai Authentication Middleware - Valid Access Key", async () => {
 	await apiKeyAuthenticationMiddleware(ctx, () => Promise.resolve());
 
 	assertEquals(ctx.response.status, 0);
-	assertEquals(ctx.state.organization, "Test Organization");
 
 	sandbox.restore();
 });

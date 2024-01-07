@@ -8,9 +8,15 @@ import { Conversation, Message, Contact, Organization } from "../../models/index
 const router = new Router();
 router.post("/addMessageHistory", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { conversation, contactEmail, contactName, createdAt, input, llmOutput } =
-			await ctx.request.body().value;
-		const organization = ctx.state.organization;
+		const {
+			organization,
+			conversation,
+			contactEmail,
+			contactName,
+			createdAt,
+			input,
+			llmOutput,
+		} = await ctx.request.body().value;
 
 		let contactDoc = await Contact.findOne({ email: contactEmail });
 		if (!contactDoc) {

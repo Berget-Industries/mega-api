@@ -4,7 +4,6 @@ import { ApiKey } from "../models/index.ts";
 export default async function apiKeyAuthenticationMiddleware(ctx: Context, next: Next) {
 	try {
 		const key = ctx.request.headers.get("Authorization");
-		console.log(key);
 		const keyDoc = await ApiKey.findOne({ key });
 
 		if (!keyDoc) {
@@ -12,8 +11,6 @@ export default async function apiKeyAuthenticationMiddleware(ctx: Context, next:
 			ctx.response.body = { message: "Unauthorized" };
 			return;
 		}
-
-		ctx.state.organization = keyDoc.organization;
 
 		await next();
 	} catch (error) {
