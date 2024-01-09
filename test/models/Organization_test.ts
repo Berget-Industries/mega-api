@@ -16,8 +16,8 @@ Deno.test("Organization Model - Strukturkontroll", async () => {
 			users: [new Types.ObjectId("507f191e810c19729de860ec")],
 			conversations: [new Types.ObjectId("507f191e810c19729de860ed")],
 			messages: [new Types.ObjectId("507f191e810c19729de860ee")],
-			agentConfig: {},
-			mailerConfig: {},
+			agentConfig: { manualFilter: "tjena" },
+			mailerConfig: { mainInbox: "tjena" },
 		});
 
 		await testOrganization.save();
