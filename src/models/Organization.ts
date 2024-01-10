@@ -1,25 +1,8 @@
 import { model, Schema, Types } from "npm:mongoose";
 
-interface IMailerConfig {
-	imapConfig: object;
-	mainInbox: string;
-	manualFilter: boolean;
-}
-
-interface IAgentConfig {
-	manualFilter: {
-		active: boolean;
-		systemPrompt: string;
-	};
-	alex: {
-		active: boolean;
-		systemPrompt: string;
-		tools: string[];
-	};
-	eva: {
-		active: boolean;
-		systemPrompt: string;
-	};
+interface IPlugin {
+	name: string;
+	config: object;
 }
 
 export interface IOrganization {
@@ -28,8 +11,7 @@ export interface IOrganization {
 	users: Types.ObjectId[];
 	conversations: Types.ObjectId[];
 	messages: Types.ObjectId[];
-	agentConfig: IAgentConfig;
-	mailerConfig: IMailerConfig;
+	plugins: IPlugin[];
 }
 
 export default model<IOrganization>(
@@ -40,7 +22,6 @@ export default model<IOrganization>(
 		users: [{ type: Types.ObjectId, ref: "User" }],
 		conversations: [{ type: Types.ObjectId, ref: "Conversation" }],
 		messages: [{ type: Types.ObjectId, ref: "Message" }],
-		agentConfig: Object,
-		mailerConfig: Object,
+		plugins: Array,
 	})
 );
