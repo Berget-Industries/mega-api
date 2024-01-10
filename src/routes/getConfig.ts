@@ -46,8 +46,8 @@ router.post("/getConfig", aiAuthenticationMiddleware, async (ctx: Context) => {
 
 		handleResponseSuccess(ctx, {
 			status: "success",
-			message: "Organisationens plugins har hämtats.",
-			plugins: organizationDoc.plugins,
+			message: "Organisationens plugin har hämtats.",
+			plugin: plugin,
 		});
 	} catch (error) {
 		console.error(error);
