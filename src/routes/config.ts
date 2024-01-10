@@ -8,7 +8,7 @@ const router = new Router();
 
 router.post("/getConfig", aiAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const plugin = ctx.request.url.searchParams.get("plugin");
+		const pluginName = ctx.request.url.searchParams.get("plugin");
 		const organization = ctx.request.url.searchParams.get("organization");
 
 		if (!organization) {
@@ -19,10 +19,10 @@ router.post("/getConfig", aiAuthenticationMiddleware, async (ctx: Context) => {
 			return;
 		}
 
-		if (!plugin) {
+		if (!pluginName) {
 			handleResponseError(ctx, {
-				status: "plugin-not-found",
-				message: "Pluginet kunde inte hittas.",
+				status: "plugin-missing",
+				message: "Pluginet saknas.",
 			});
 		}
 
@@ -35,10 +35,19 @@ router.post("/getConfig", aiAuthenticationMiddleware, async (ctx: Context) => {
 			return;
 		}
 
+		const plugin = organizationDoc.plugins.find((_) => _.name === pluginName);
+		if (!plugin) {
+			handleResponseError(ctx, {
+				status: "plugin-not-found",
+				message: "Pluginet kunde inte hittas.",
+			});
+			return;
+		}
+
 		handleResponseSuccess(ctx, {
 			status: "success",
-			message: "Organisationens config har hämtats.",
-			plugin: organizationDoc.plugin,
+			message: "Organisationens plugins har hämtats.",
+			plugins: organizationDoc.plugins,
 		});
 	} catch (error) {
 		console.error(error);
