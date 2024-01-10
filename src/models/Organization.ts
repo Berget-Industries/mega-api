@@ -1,5 +1,11 @@
 import { model, Schema, Types } from "npm:mongoose";
 
+interface IMailerConfig {
+	imapConfig: object;
+	mainInbox: string;
+	manualFilter: boolean;
+}
+
 interface IAgentConfig {
 	manualFilter: {
 		active: boolean;
@@ -23,6 +29,7 @@ export interface IOrganization {
 	conversations: Types.ObjectId[];
 	messages: Types.ObjectId[];
 	agentConfig: IAgentConfig;
+	mailerConfig: IMailerConfig;
 }
 
 export default model<IOrganization>(
@@ -34,5 +41,6 @@ export default model<IOrganization>(
 		conversations: [{ type: Types.ObjectId, ref: "Conversation" }],
 		messages: [{ type: Types.ObjectId, ref: "Message" }],
 		agentConfig: Object,
+		mailerConfig: Object,
 	})
 );
