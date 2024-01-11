@@ -18,6 +18,7 @@ router.post(
 				users: [...users],
 				conversations: [],
 				messages: [],
+				plugins: [],
 			});
 
 			handleResponseSuccess(ctx, {
