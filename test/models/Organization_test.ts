@@ -16,8 +16,7 @@ Deno.test("Organization Model - Strukturkontroll", async () => {
 			users: [new Types.ObjectId("507f191e810c19729de860ec")],
 			conversations: [new Types.ObjectId("507f191e810c19729de860ed")],
 			messages: [new Types.ObjectId("507f191e810c19729de860ee")],
-			agentConfig: { manualFilter: "tjena" },
-			mailerConfig: { mainInbox: "tjena" },
+			plugins: [],
 		});
 
 		await testOrganization.save();
@@ -40,16 +39,7 @@ Deno.test("Organization Model - Strukturkontroll", async () => {
 			true,
 			"messages bör vara en array av ObjectId"
 		);
-		assertEquals(
-			typeof organizationObject.agentConfig,
-			"object",
-			"agentConfig bör vara ett objekt"
-		);
-		assertEquals(
-			typeof organizationObject.mailerConfig,
-			"object",
-			"mailerConfig bör vara ett objekt"
-		);
+		assertEquals(Array.isArray(organizationObject.plugins), true, "plugins bör vara en array");
 
 		const allowedFields = [
 			"_id",
@@ -58,8 +48,7 @@ Deno.test("Organization Model - Strukturkontroll", async () => {
 			"users",
 			"conversations",
 			"messages",
-			"agentConfig",
-			"mailerConfig",
+			"plugins",
 		];
 		Object.keys(organizationObject).forEach((key) => {
 			assertEquals(allowedFields.includes(key), true, `Oväntat fält: ${key}`);
