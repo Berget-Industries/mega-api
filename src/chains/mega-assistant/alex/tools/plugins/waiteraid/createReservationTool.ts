@@ -2,15 +2,16 @@ import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { z } from "zod";
 import CallbackHandler from "../../../../../callbackHandler.ts";
-import Reservation from "../../../../../../models/Reservation.ts";
-import Contact from "../../../../../../models/Contact.ts";
+import { Reservation, Contact } from "../../../../../../models/index.ts";
 import convertToUTC from "../../../../../../utils/convertToUTC.ts";
 import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../../../../../utils/checkBookingRules.ts";
-import { checkAvailableDates } from "../../../../../../utils/availableDates.ts";
-import { addReservationToDate } from "../../../../../../utils/availableDates.ts";
+import {
+	checkAvailableDates,
+	addReservationToDate,
+} from "../../../../../../utils/availableDates.ts";
 
 export const createReservationToolInputZod = z.object({
 	chambre: z.boolean().describe("Chambre eller inte"),
@@ -21,12 +22,12 @@ export const createReservationToolInputZod = z.object({
 	time: z.string().describe("Tid"),
 	numberOfGuests: z.number().describe("Antalet gäster"),
 	comment: z.string().describe("Kommentar"),
-	conversation: z.string().describe("Konversation"),
 });
 
 const runFunction = async (
 	input: z.infer<typeof createReservationToolInputZod>,
-	_runManager: CallbackManagerForToolRun | undefined
+	_runManager: CallbackManagerForToolRun | undefined,
+	conversation: string
 ) => {
 	try {
 		let contactDoc = await Contact.findOne({ email: input.email });
@@ -47,27 +48,26 @@ const runFunction = async (
 			numberOfGuests: input.numberOfGuests,
 			comment: input.comment,
 			menu: undefined,
-			conversations: [input.conversation],
-			contact: contactDoc._id,
+			conversations: [conversation],
 		};
 
 		const missingInformation = Object.entries(reservationInput)
 			.filter(([_, v]) => v == null || v === "")
 			.map(([k, _]) => k);
 		if (missingInformation.length > 0) {
-			return `Saknad information: ${missingInformation.join(", ")}`;
+			return Promise.resolve(`Saknad information: ${missingInformation.join(", ")}`);
 		}
 
 		const brokenRules = input.chambre
 			? checkChambreBookingRules(reservationInput)
 			: checkNormalBookingRules(reservationInput);
 		if (brokenRules.length > 0) {
-			return `Bruten regel: ${brokenRules.map((r) => r.message).join(", ")}`;
+			return Promise.resolve(`Bruten regel: ${brokenRules.map((r) => r.message).join(", ")}`);
 		}
 
 		const isAvailable = await checkAvailableDates({ date: input.date, time: input.time });
 		if (!isAvailable) {
-			return "Det valda datumet och tiden är inte tillgängliga.";
+			return Promise.resolve("Det valda datumet och tiden är inte tillgängliga.");
 		}
 
 		const reservationDetails = await Reservation.create(reservationInput);
@@ -77,10 +77,12 @@ const runFunction = async (
 			reservation: reservationDetails._id.toString(),
 		});
 
-		return `Reservationen har bokats med bokningsnummer: ${reservationDetails._id}`;
+		return Promise.resolve(
+			`Reservationen har bokats med bokningsnummer: ${reservationDetails._id}`
+		);
 	} catch (error) {
 		console.error(error);
-		return "Tekniskt fel. Kunde inte skapa reservation.";
+		return Promise.resolve("Tekniskt fel. Kunde inte skapa reservation.");
 	}
 };
 
