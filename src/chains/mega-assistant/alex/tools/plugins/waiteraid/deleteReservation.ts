@@ -31,7 +31,7 @@ const runFunction = async (
 	}
 };
 
-export function deleteReservationTool({ tags }: { tags: string[] }): StructuredTool {
+export default function deleteReservationTool({ tags }: { tags: string[] }): StructuredTool {
 	return new DynamicStructuredTool({
 		verbose: false,
 		schema: deleteReservationToolInputZod,
