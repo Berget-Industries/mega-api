@@ -8,8 +8,10 @@ import {
 	checkChambreBookingRules,
 	checkNormalBookingRules,
 } from "../../../../../../utils/checkBookingRules.ts";
-import { checkAvailableDates } from "../../../../../../utils/availableDates.ts";
-import { editReservationFromDate } from "../../../../../../utils/availableDates.ts";
+import {
+	checkAvailableDates,
+	editReservationFromDate,
+} from "../../../../../../utils/availableDates.ts";
 
 export const editReservationToolInputZod = z.object({
 	_id: z.string().describe("Bokningsnummer"),
@@ -76,7 +78,10 @@ const runFunction = async (
 
 		const reservationDetails = await Reservation.findOneAndUpdate(
 			{ _id: input._id },
-			{ $set: updateData },
+			{
+				$set: updateData,
+				$addToSet: { conversations: conversationId },
+			},
 			{ new: true }
 		);
 
@@ -86,21 +91,21 @@ const runFunction = async (
 			time: input.time,
 		});
 
-		return Promise.resolve(`Reservationen har uppdaterats: ${reservationDetails?._id}`);
+		return Promise.resolve(`Reservationen har lyckats uppdaterats: ${reservationDetails?._id}`);
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Tekniskt fel! Kunde inte uppdatera reservation!");
 	}
 };
 
-export const editReservationTool = ({
+export default function editReservationTool({
 	tags,
 	conversationId,
 }: {
 	tags: string[];
 	conversationId: string;
-}): StructuredTool =>
-	new DynamicStructuredTool({
+}): StructuredTool {
+	return new DynamicStructuredTool({
 		verbose: false,
 		schema: editReservationToolInputZod,
 		name: "redigera-reservation",
@@ -110,5 +115,4 @@ export const editReservationTool = ({
 		callbacks: [new CallbackHandler()],
 		tags,
 	});
-
-export default editReservationTool;
+}
