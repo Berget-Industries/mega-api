@@ -1,5 +1,5 @@
 // Test för ResetPasswordToken.ts
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import ResetPasswordToken from "../../src/models/ResetPasswordToken.ts"; // Uppdatera sökvägen om nödvändigt
 

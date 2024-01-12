@@ -1,5 +1,5 @@
 // Test för sendResetPasswordMail funktionen
-import { assert, assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assert, assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import { sendResetPasswordMail } from "../../src/utils/emailSender.ts";
 import ResetPasswordToken from "../../src/models/ResetPasswordToken.ts";

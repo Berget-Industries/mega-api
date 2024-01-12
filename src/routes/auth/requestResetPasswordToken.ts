@@ -1,6 +1,6 @@
 import { User } from "../../models/index.ts";
 import { sendResetPasswordMail } from "../../utils/emailSender.ts";
-import { Context, Router } from "https://deno.land/x/oak/mod.ts";
+import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 
 const router = new Router();

@@ -1,5 +1,5 @@
 // Test för User.ts
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import User from "../../src/models/User.ts";
 import { Types } from "npm:mongoose";

@@ -1,6 +1,6 @@
-import { assertEquals, assert } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals, assert } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import systemAdminAuthenticationMiddleware from "../../src/middleware/systemAdminAuthenticationMiddleware.ts";
-import { Context } from "https://deno.land/x/oak/mod.ts";
+import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 Deno.test("SystemAdmin Authentication Middleware - Allows system admin", async () => {
 	const mockContext = {
