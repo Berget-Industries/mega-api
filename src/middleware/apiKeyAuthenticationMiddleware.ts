@@ -1,4 +1,4 @@
-import { Context, Next } from "https://deno.land/x/oak/mod.ts";
+import { Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ApiKey } from "../models/index.ts";
 
 export default async function apiKeyAuthenticationMiddleware(ctx: Context, next: Next) {

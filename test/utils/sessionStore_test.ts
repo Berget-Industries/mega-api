@@ -1,5 +1,5 @@
 import * as sinon from "npm:sinon";
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import SessionStore from "../../src/utils/sessionStore.ts"; // Justera sökvägen efter behov
 import Session from "../../src/models/Session.ts"; // Justera sökvägen efter behov
 import { Types } from "npm:mongoose";

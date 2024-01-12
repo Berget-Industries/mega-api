@@ -1,5 +1,5 @@
 // Test för checkAvailableDates funktionen
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import { checkAvailableDates } from "../../src/utils/availableDates.ts"; // Ersätt med sökvägen till din modul
 import AvailableDates from "../../src/models/AvailableDates.ts";

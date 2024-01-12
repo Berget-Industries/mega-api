@@ -1,4 +1,4 @@
-import { Context, Next } from "https://deno.land/x/oak/mod.ts";
+import { Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { Organization } from "../models/index.ts";
 import { Types } from "npm:mongoose";
 

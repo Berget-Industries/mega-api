@@ -1,5 +1,5 @@
 // Test för JWT-funktioner
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import { createJwtToken, verify, getJwtSecret } from "../../src/utils/jwt.ts"; // Ersätt med sökvägen till din modul
 

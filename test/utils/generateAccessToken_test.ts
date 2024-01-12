@@ -1,5 +1,5 @@
 // Test för uuidv4 funktionen
-import { assertMatch } from "https://deno.land/std/testing/asserts.ts";
+import { assertMatch } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import uuidv4 from "../../src/utils/generateAccessToken.ts"; // Ersätt med sökvägen till din modul
 
 Deno.test("uuidv4 generates a valid UUID", () => {

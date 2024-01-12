@@ -1,5 +1,5 @@
 // Test för AiAccessKey.ts
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.211.0/testing/asserts.ts";
 import * as sinon from "npm:sinon";
 import ApiKey from "../../src/models/ApiKey.ts"; // Uppdatera sökvägen om nödvändigt
 import { Types } from "npm:mongoose";
