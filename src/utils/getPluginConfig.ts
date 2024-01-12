@@ -1,6 +1,6 @@
 import { Organization } from "../models/index.ts";
 
-export default async function getConfig(pluginName: string, organizationId: string) {
+export default async function getPluginConfig(pluginName: string, organizationId: string) {
 	if (!organizationId) {
 		throw new Error("Organisationens id saknas.");
 	}
@@ -19,5 +19,5 @@ export default async function getConfig(pluginName: string, organizationId: stri
 		throw new Error("Pluginet kunde inte hittas.");
 	}
 
-	return plugin;
+	return plugin.config;
 }
