@@ -5,7 +5,7 @@ import aiFunctions from "./ai/index.ts";
 import addSelectedMenu from "./addSelectedMenu.ts";
 import dashboard from "./dashboard/index.ts";
 import updateContact from "./updateContact.ts";
-import getConfig from "./getConfig.ts";
+import getConfig from "../utils/getConfig.ts";
 import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();

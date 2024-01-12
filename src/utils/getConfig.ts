@@ -1,7 +1,7 @@
 import mongoose from "npm:mongoose";
 import { Organization } from "../models/index.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { handleResponseError, handleResponseSuccess } from "../utils/contextHandler.ts";
+import { handleResponseError, handleResponseSuccess } from "./contextHandler.ts";
 import aiAuthenticationMiddleware from "../middleware/apiKeyAuthenticationMiddleware.ts";
 
 const router = new Router();
