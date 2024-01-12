@@ -27,7 +27,7 @@ export const createReservationToolInputZod = z.object({
 const runFunction = async (
 	input: z.infer<typeof createReservationToolInputZod>,
 	_runManager: CallbackManagerForToolRun | undefined,
-	conversation: string
+	conversationId: string
 ) => {
 	try {
 		let contactDoc = await Contact.findOne({ email: input.email });
@@ -48,7 +48,7 @@ const runFunction = async (
 			numberOfGuests: input.numberOfGuests,
 			comment: input.comment,
 			menu: undefined,
-			conversations: [conversation],
+			conversations: [conversationId],
 		};
 
 		const missingInformation = Object.entries(reservationInput)
