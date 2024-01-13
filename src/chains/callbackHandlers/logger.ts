@@ -1,12 +1,12 @@
 import colors from "colors";
-import { Serialized } from "langchain/load/serializable";
-import { BaseCallbackHandler } from "langchain/callbacks";
-import { AgentAction, AgentFinish, ChainValues } from "langchain/schema";
+import { Serialized } from "npm:langchain@^0.0.159/load/serializable";
+import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
+import { AgentAction, AgentFinish, ChainValues } from "npm:langchain@^0.0.159/schema";
 
 colors.bgBlack("");
 
-export default class AgentCallbackHandler extends BaseCallbackHandler {
-	name = "AgentCallbackHandler";
+export default class LoggerCallbackHandler extends BaseCallbackHandler {
+	name = "LoggerCallbackHandler";
 
 	// CHAIN
 	async handleChainStart(
