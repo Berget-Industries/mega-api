@@ -11,13 +11,13 @@ interface IPluginConfigWaterAid {
 }
 
 export default function initPluginWaiterAid(config: IPluginConfigWaterAid, tags: string[]) {
-	return {
-		waiterAidEditReservation: editReservationTool({ tags, ...config }),
-		waiterAidCreateReservation: createReservationTool({ tags, ...config }),
-		waiterAidDeleteReservation: deleteReservationTool({ tags, ...config }),
-		waiterAidGetAvailableChambreReservations: getAvailableChambreReservationsTool({
-			tags,
+	return [
+		editReservationTool({ tags: [...tags, "editReservationTool"], ...config }),
+		createReservationTool({ tags: [...tags, "createReservationTool"], ...config }),
+		deleteReservationTool({ tags: [...tags, "deleteReservationTool"], ...config }),
+		getAvailableChambreReservationsTool({
+			tags: [...tags, "getAvailableChambreReservationsTool"],
 			...config,
 		}),
-	};
+	];
 }
