@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { promise, z } from "zod";
 import CallbackHandler from "../../../../../callbackHandler.ts";
 import { Reservation } from "../../../../../../models/index.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
@@ -20,11 +20,11 @@ const runFunction = async (
 			reservation: input._id,
 		});
 
-		return Promise.resolve(
-			reservationDetails
-				? "Reservationen är borttagen!"
-				: "Kunde inte hitta reservation med det angivna id:t!"
-		);
+		if (!reservationDetails) {
+			return Promise.resolve("Kunde inte hitta reservation med det angivna id:et");
+		} else {
+			return Promise.resolve(`Det lyckades! Ändrat dokument: ${reservationDetails._id}`);
+		}
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Tekniskt fel! Kunde inte ta bort reservation!");

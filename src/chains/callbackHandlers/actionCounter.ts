@@ -57,18 +57,15 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 		}
 	}
 
-	handleToolEnd(
-		output: string,
-		runId: string,
-		parentRunId?: string | undefined,
-		tags?: string[] | undefined
-	) {
-		const res = JSON.parse(output);
+	handleToolEnd(output: string, runId: string, parentRunId?: string | undefined) {
 		if (parentRunId && Object.keys(this.actions).includes(parentRunId)) {
-			if (res.status === "success") {
+			if (output.startsWith("Det lyckades!")) {
+				const parts = output.split(": ");
+				const docId = parts[parts.length - 1];
+
 				this.actions[parentRunId] = {
 					...this.actions[parentRunId],
-					docId: res.reservationData._id,
+					docId: docId,
 					date: new Date(),
 				};
 			} else {
