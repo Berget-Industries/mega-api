@@ -56,6 +56,7 @@ export default async function runEva({
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
+	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
 		responseTime,
