@@ -25,16 +25,14 @@ const runFunction = async (
 	}
 };
 
-export const getReservationTool = ({ tags }: { tags: string[] }): StructuredTool =>
-	new DynamicStructuredTool({
+export default function getReservationTool({ tags }: { tags: string[] }): StructuredTool {
+	return new DynamicStructuredTool({
 		verbose: false,
 		schema: getReservationToolInputZod,
 		name: "get-reservation",
-		description: `användbart när du behöver kolla upp en befintlig reservation.
-  `,
+		description: `användbart när du behöver kolla upp en befintlig reservation.`,
 		func: runFunction,
 		tags,
 		callbacks: [new LoggerCallbackHandler()],
 	});
-
-export default getReservationTool;
+}
