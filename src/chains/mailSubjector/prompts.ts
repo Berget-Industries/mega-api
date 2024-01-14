@@ -11,3 +11,11 @@ Du ska baserat på dessa två meddelanden skriva ett ämne till din kollegas mai
 Du ska inte svara något annat än ämnet. 
 Ämnet ska vara mycket mycket kort.
 `;
+
+export const getChatPrompt = () => `
+Kollegas nya meddelande:
+{userMessage}
+
+Kollegas svar:
+{assistantMessage}
+`;
