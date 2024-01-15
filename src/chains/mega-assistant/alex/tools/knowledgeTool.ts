@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MongoClient } from "npm:mongodb";
-import CallbackHandler from "../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import { OpenAIEmbeddings } from "npm:langchain@^0.0.159/embeddings/openai";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { MongoDBAtlasVectorSearch } from "npm:langchain@^0.0.159/vectorstores/mongodb_atlas";
@@ -47,7 +47,7 @@ export default function knowledgeTool({ tags }: { tags: string[] }): StructuredT
 		description:
 			"användbart när du behöver veta något om trattorian. Här finns all din kunskap om trattorian",
 		func: runFunction,
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 		tags,
 	});
 }

@@ -1,7 +1,7 @@
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { z } from "zod";
-import CallbackHandler from "../../../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import Reservation from "../../../../../../models/Reservation.ts";
 import convertToUTC from "../../../../../../utils/convertToUTC.ts";
 import {
@@ -112,7 +112,7 @@ export default function editReservationTool({
 		description: `användbart när du vill uppdatera information i en vanlig bordsbokning eller en reservation i chambre (La Cucina).
   `,
 		func: (input, _runManager) => runFunction(input, _runManager, conversationId),
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 		tags,
 	});
 }

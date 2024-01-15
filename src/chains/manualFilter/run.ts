@@ -1,5 +1,5 @@
 import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
-import AgentCallbackHandler from "../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
 import { systemPrompt } from "./prompts.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
@@ -40,7 +40,7 @@ export default async function runManualFilterChain({
 	]);
 
 	const chain = new LLMChain({
-		callbacks: [new AgentCallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 		outputKey: "output",
 		prompt: chatPrompt,
 		tags: [agentName],

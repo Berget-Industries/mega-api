@@ -1,8 +1,8 @@
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { z } from "zod";
-import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
-import { Reservation } from "../../../../models/index.ts";
+import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
+import { Reservation } from "../../../../../../models/index.ts";
 
 export const getReservationToolInputZod = z.object({
 	_id: z.string().describe("Bokningsnummer"),

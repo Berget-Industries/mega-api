@@ -1,5 +1,5 @@
 import { z } from "zod";
-import CallbackHandler from "../../../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { Reservation } from "../../../../../../models/index.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { deleteReservationFromDate } from "../../../../../../utils/availableDates.ts";
@@ -39,7 +39,7 @@ export default function deleteReservationTool({ tags }: { tags: string[] }): Str
 		description:
 			"användbart när du vill avboka en vanlig bordsbokning eller reservaion i chambre (La Cucina)",
 		func: runFunction,
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 		tags,
 	});
 }
