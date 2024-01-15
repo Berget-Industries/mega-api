@@ -35,7 +35,7 @@ export default async function runManualFilterChain({
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt(organizationSystemPrompt)],
+		["system", systemPrompt()],
 		["human", getChatPrompt()],
 	]);
 
@@ -49,6 +49,7 @@ export default async function runManualFilterChain({
 
 	const { output } = await chain.call({
 		message,
+		organizationSystemPrompt,
 	});
 
 	return Promise.resolve({

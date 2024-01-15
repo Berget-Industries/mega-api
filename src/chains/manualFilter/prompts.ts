@@ -1,6 +1,6 @@
-export const systemPrompt = (organizationSystemPrompt: string) => `
+export const systemPrompt = () => `
 Du kommer att få läsa igen ett meddelande.
-${organizationSystemPrompt}
+{organizationSystemPrompt}
 
 Baserat på listan med uppgifter, kan du hjälpa till med ärendet eller inte?
 Svara NEJ! om du kan hjälpa till. Svara JA! om ärendet ska hanteras manuellt av annan person.
