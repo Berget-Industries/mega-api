@@ -80,15 +80,15 @@ const createMemory = (sessionId: string) => {
 interface IAgentAlexConfig {
 	input: string;
 	conversationId: string;
-	systemPrompt: string;
-	plugins: IPlugin[];
+	organizationSystemPrompt: string;
+	organizationPlugins: IPlugin[];
 }
 
 export default async function initAgentAlex({
 	input,
 	conversationId,
-	systemPrompt,
-	plugins,
+	organizationSystemPrompt,
+	organizationPlugins,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
 
@@ -97,11 +97,11 @@ export default async function initAgentAlex({
 		modelName: "gpt-4-1106-preview",
 	});
 
-	const tools = createTools(agentName, plugins);
+	const tools = createTools(agentName, organizationPlugins);
 	const memory = createMemory(conversationId);
 
 	const agentArgs = {
-		systemMessage: getSystemMessage(systemPrompt),
+		systemMessage: getSystemMessage(organizationSystemPrompt),
 	};
 
 	const usedTokens = {
