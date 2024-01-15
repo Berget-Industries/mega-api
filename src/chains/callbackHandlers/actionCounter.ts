@@ -65,8 +65,6 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 	) {
 		if (parentRunId && Object.keys(this.actions).includes(parentRunId)) {
 			if (output.startsWith("Det lyckades!")) {
-				const parts = output.split(": ");
-				const idAndMessage = parts[parts.length - 1].split(" ");
 				const docId = `${output}`.replace("Det lyckades! Dokument Id: ", "").split(": ")[0];
 
 				this.actions[parentRunId] = {
