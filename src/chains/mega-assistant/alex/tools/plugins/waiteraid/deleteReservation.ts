@@ -23,7 +23,7 @@ const runFunction = async (
 		if (!reservationDetails) {
 			return Promise.resolve("Kunde inte hitta reservation med det angivna id:et");
 		} else {
-			return Promise.resolve(`Det lyckades! Ändrat dokument: ${reservationDetails._id}`);
+			return Promise.resolve(`Det lyckades! Dokument Id: ${reservationDetails._id}`);
 		}
 	} catch (error) {
 		console.error(error);
