@@ -1,6 +1,6 @@
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
-import CallbackHandler from "../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import moment from "npm:moment";
 
 const runFunction = async (input: string, _runManager: CallbackManagerForToolRun | undefined) => {
@@ -26,6 +26,6 @@ export default function getCurrentDateAndTimeTool({ tags }: { tags: string[] }):
   `,
 		func: runFunction,
 		tags,
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 	});
 }

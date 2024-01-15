@@ -1,5 +1,5 @@
 import { z } from "zod";
-import CallbackHandler from "../../../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { getAvilableDates } from "../../../../../../utils/availableDates.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
@@ -59,7 +59,7 @@ export const getAvailableChambreDatesTool = ({ tags }: { tags: string[] }): Stru
 		description: `användbart när du behöver kolla upp vilka tider som är lediga i chambre mellan två datum. glöm inte att kolla dages datum. det är superviktigt att året blir rätt. Input ska vara ett start datum och ett slut datum. Resultatet innehåller en lista med alla bokningstillfällen från och med start datum till slut datum. Detta verktyg kan bara kolla upp lediga tider för chambre INTE vanliga bordbokningar.`,
 		func: runFunction,
 		tags,
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 	});
 
 export default getAvailableChambreDatesTool;

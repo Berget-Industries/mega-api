@@ -1,7 +1,7 @@
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { z } from "zod";
-import CallbackHandler from "../../../../../callbackHandler.ts";
+import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { Reservation, Contact } from "../../../../../../models/index.ts";
 import convertToUTC from "../../../../../../utils/convertToUTC.ts";
 import {
@@ -97,7 +97,7 @@ Tänk på att du alltid måste kolla upp datumet just nu med verktyget (get-curr
   `,
 		func: runFunction,
 		tags,
-		callbacks: [new CallbackHandler()],
+		callbacks: [new LoggerCallbackHandler()],
 	});
 
 export default createReservationTool;
