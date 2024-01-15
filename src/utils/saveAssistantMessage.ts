@@ -6,7 +6,7 @@ interface ISaveAssistantMessageInput {
 	conversationId: string;
 	contactEmail: string;
 	contactName: string;
-	createdAt: string;
+	createdAt: Date;
 	llmOutput: ILLMOutput[];
 	input: string;
 }
