@@ -11,3 +11,8 @@ JA!
 eller
 NEJ!
 `;
+
+export const getChatPrompt = () => `
+Meddelande:
+{message}
+`;
