@@ -1,6 +1,7 @@
 import runAlex from "./alex/run.ts";
 import runEva from "./eva/run.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
+import saveAssistantMessage from "../../utils/saveAssistantMessage.ts";
 
 interface IRunMegaAssistantConfig {
 	organizationId: string;
@@ -33,7 +34,7 @@ export default async function runMegaAssistant({
 		nameOfUser: contactName,
 	});
 
-	const saveMessageInput = {
+	await saveAssistantMessage({
 		organizationId,
 		conversationId,
 		contactEmail,
@@ -41,5 +42,5 @@ export default async function runMegaAssistant({
 		createdAt: Date.now(),
 		llmOutput: [alex, eva],
 		input,
-	};
+	});
 }
