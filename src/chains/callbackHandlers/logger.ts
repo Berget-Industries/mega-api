@@ -1,4 +1,4 @@
-import colors from "colors";
+import colors from "npm:colors";
 import { Serialized } from "npm:langchain@^0.0.159/load/serializable";
 import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
 import { AgentAction, AgentFinish, ChainValues } from "npm:langchain@^0.0.159/schema";
