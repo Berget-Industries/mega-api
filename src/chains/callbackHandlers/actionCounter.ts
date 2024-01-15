@@ -72,6 +72,8 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 					docId,
 					date: new Date(),
 				};
+
+				this.onAction(this.actions[parentRunId]);
 			} else {
 				delete this.actions[parentRunId];
 			}
