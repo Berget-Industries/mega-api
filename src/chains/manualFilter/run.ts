@@ -23,17 +23,6 @@ export default async function runManualFilterChain({
 	const llm = new ChatOpenAI({
 		modelName: "gpt-4-1106-preview",
 		temperature: 0,
-		callbacks: [
-			{
-				handleLLMEnd: (output, runId, parentRunId?, tags?) => {
-					const { completionTokens, promptTokens, totalTokens } =
-						output.llmOutput?.tokenUsage;
-					usedTokens.output += completionTokens ?? 0;
-					usedTokens.input += promptTokens ?? 0;
-					usedTokens.total += totalTokens ?? 0;
-				},
-			},
-		],
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
