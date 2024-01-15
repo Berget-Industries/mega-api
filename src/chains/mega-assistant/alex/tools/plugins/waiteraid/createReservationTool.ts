@@ -77,9 +77,7 @@ const runFunction = async (
 			reservation: reservationDetails._id.toString(),
 		});
 
-		return Promise.resolve(
-			`Reservationen har bokats med bokningsnummer: ${reservationDetails._id}`
-		);
+		return Promise.resolve(`Det lyckades! Dokument Id: ${reservationDetails._id}`);
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Tekniskt fel. Kunde inte skapa reservation.");

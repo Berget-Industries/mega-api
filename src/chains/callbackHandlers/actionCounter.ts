@@ -63,12 +63,13 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 		parentRunId?: string | undefined,
 		tags?: string[] | undefined
 	) {
-		const res = JSON.parse(output);
 		if (parentRunId && Object.keys(this.actions).includes(parentRunId)) {
-			if (res.status === "success") {
+			if (output.startsWith("Det lyckades!")) {
+				const docId = `${output}`.replace("Det lyckades! Dokument Id: ", "").split(": ")[0];
+
 				this.actions[parentRunId] = {
 					...this.actions[parentRunId],
-					docId: res.reservationData._id,
+					docId,
 					date: new Date(),
 				};
 			} else {

@@ -20,11 +20,11 @@ const runFunction = async (
 			reservation: input._id,
 		});
 
-		return Promise.resolve(
-			reservationDetails
-				? "Reservationen är borttagen!"
-				: "Kunde inte hitta reservation med det angivna id:t!"
-		);
+		if (!reservationDetails) {
+			return Promise.resolve("Kunde inte hitta reservation med det angivna id:et");
+		} else {
+			return Promise.resolve(`Det lyckades! Dokument Id: ${reservationDetails._id}`);
+		}
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Tekniskt fel! Kunde inte ta bort reservation!");

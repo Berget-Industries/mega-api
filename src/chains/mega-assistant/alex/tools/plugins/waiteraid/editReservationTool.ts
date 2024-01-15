@@ -91,7 +91,7 @@ const runFunction = async (
 			time: input.time,
 		});
 
-		return Promise.resolve(`Reservationen har lyckats uppdaterats: ${reservationDetails?._id}`);
+		return Promise.resolve(`Det lyckades! Dokument Id: ${reservationDetails?._id}`);
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Tekniskt fel! Kunde inte uppdatera reservation!");
