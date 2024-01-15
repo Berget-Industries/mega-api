@@ -3,6 +3,7 @@ import AgentCallbackHandler from "../callbackHandler.ts";
 import { systemPrompt } from "./prompts.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
+import { getChatPrompt } from "./prompts.ts";
 
 type agentInput = {
 	message: string;
@@ -34,14 +35,8 @@ export default async function runManualFilterChain({
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt(organizationSystemPrompt)],
-		[
-			"human",
-			`
-Meddelande:
-{message}
-`,
-		],
+		["system", systemPrompt()],
+		["human", getChatPrompt()],
 	]);
 
 	const chain = new LLMChain({
@@ -54,6 +49,7 @@ Meddelande:
 
 	const { output } = await chain.call({
 		message,
+		organizationSystemPrompt,
 	});
 
 	return Promise.resolve({
