@@ -1,4 +1,4 @@
-import { promise, z } from "zod";
+import { z } from "zod";
 import CallbackHandler from "../../../../../callbackHandler.ts";
 import { Reservation } from "../../../../../../models/index.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";

@@ -57,15 +57,21 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 		}
 	}
 
-	handleToolEnd(output: string, runId: string, parentRunId?: string | undefined) {
+	handleToolEnd(
+		output: string,
+		runId: string,
+		parentRunId?: string | undefined,
+		tags?: string[] | undefined
+	) {
 		if (parentRunId && Object.keys(this.actions).includes(parentRunId)) {
 			if (output.startsWith("Det lyckades!")) {
 				const parts = output.split(": ");
-				const docId = parts[parts.length - 1];
+				const idAndMessage = parts[parts.length - 1].split(" ");
+				const docId = idAndMessage[0];
 
 				this.actions[parentRunId] = {
 					...this.actions[parentRunId],
-					docId: docId,
+					docId,
 					date: new Date(),
 				};
 			} else {
