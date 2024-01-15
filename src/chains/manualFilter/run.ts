@@ -3,7 +3,9 @@ import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
 import { systemPrompt } from "./prompts.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
+import TokenCounter from "../../utils/TokenCounter.ts";
 import { getChatPrompt } from "./prompts.ts";
+import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
 
 type agentInput = {
 	message: string;
@@ -39,8 +41,13 @@ export default async function runManualFilterChain({
 		["human", getChatPrompt()],
 	]);
 
+	const tokenCounter = new TokenCounter();
+
 	const chain = new LLMChain({
-		callbacks: [new LoggerCallbackHandler()],
+		callbacks: [
+			new LoggerCallbackHandler(),
+			new TokenCounterCallbackHandler(tokenCounter.updateCount),
+		],
 		outputKey: "output",
 		prompt: chatPrompt,
 		tags: [agentName],
