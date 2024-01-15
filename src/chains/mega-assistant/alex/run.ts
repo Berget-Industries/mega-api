@@ -1,3 +1,5 @@
+import { IAction } from "../../../models/Message.ts";
+import TokenCounter from "../../../utils/tokenCounter.ts";
 import { MongoClient } from "npm:mongodb";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { IUsedTokens } from "../../../models/Message.ts";
@@ -7,6 +9,7 @@ import { getSystemMessage } from "./prompts.ts";
 import { MongoDBChatMessageHistory } from "npm:langchain@^0.0.159/stores/message/mongodb";
 import { initializeAgentExecutorWithOptions } from "npm:langchain@^0.0.159/agents";
 import {
+	ActionCounterCallbackHandler,
 	TokenCounterCallbackHandler,
 	LoggerCallbackHandler,
 } from "../../callbackHandlers/index.ts";
@@ -104,20 +107,16 @@ export default async function initAgentAlex({
 		systemMessage: getSystemMessage(systemPrompt),
 	};
 
-	const usedTokens = {
-		input: 0,
-		output: 0,
-		total: 0,
-	};
-	const handleOnNewCount = (_: IUsedTokens) => {
-		usedTokens.input += _.input;
-		usedTokens.output += _.output;
-		usedTokens.total += _.total;
-	};
+	const tokenCounter = new TokenCounter();
+	const actions: IAction[] = [];
 
 	const agent = await initializeAgentExecutorWithOptions(tools, model, {
 		handleParsingErrors: "Please try again, paying close attention to the allowed enum values",
-		callbacks: [new LoggerCallbackHandler(), new TokenCounterCallbackHandler(handleOnNewCount)],
+		callbacks: [
+			new LoggerCallbackHandler(),
+			new TokenCounterCallbackHandler(tokenCounter.updateCount),
+			new ActionCounterCallbackHandler(actions.push),
+		],
 		agentType: "openai-functions",
 		tags: [agentName],
 		verbose: false,
@@ -130,11 +129,12 @@ export default async function initAgentAlex({
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
+	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
 		responseTime,
 		usedTokens,
-		actions: [],
+		actions,
 		output,
 	});
 }
