@@ -1,5 +1,6 @@
 import { Conversation, Message, Contact, Organization } from "../models/index.ts";
 import { ILLMOutput } from "../models/Message.ts";
+import { Types } from "npm:mongoose";
 
 interface ISaveAssistantMessageInput {
 	organizationId: string;
@@ -48,7 +49,7 @@ export default async function saveAssistantMessage({
 
 		conversationDoc.contact = contactDoc._id;
 		conversationDoc.lastActivity = createdAt;
-		conversationDoc.organization = organizationId;
+		conversationDoc.organization = new Types.ObjectId(organizationId);
 		conversationDoc.messages = [...conversationDoc.messages, messageDoc._id];
 		await conversationDoc.save();
 

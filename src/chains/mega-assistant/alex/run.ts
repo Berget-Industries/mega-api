@@ -132,6 +132,7 @@ export default async function initAgentAlex({
 	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
+		name: "mega-assistant-alex",
 		responseTime,
 		usedTokens,
 		actions,
