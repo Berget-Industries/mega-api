@@ -1,6 +1,7 @@
 import { IAction } from "../../../models/Message.ts";
+import mongoose from "npm:mongoose";
+import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { MongoClient } from "npm:mongodb";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { IUsedTokens } from "../../../models/Message.ts";
 import { BufferMemory } from "npm:langchain@^0.0.159/memory";
@@ -59,14 +60,8 @@ const createTools = (agentName: string, activatedPlugins: IPlugin[]): Structured
 };
 
 const createMemory = (sessionId: string) => {
-	const uri = Deno.env.get("MONGOOSE_CONNECT_URI");
-	if (!uri) throw new Error("MONGOOSE_CONNECT_URI not set!");
-
-	const db = Deno.env.get("MONGOOSE_DB");
-	if (!db) throw new Error("MONGOOSE_DB not set!");
-
-	const client = new MongoClient(uri);
-	const collection = client.db(db).collection("alexMemory");
+	const dbModel = mongoose.model("AlexMemory");
+	const collection = dbModel.collection;
 
 	return new BufferMemory({
 		chatHistory: new MongoDBChatMessageHistory({
