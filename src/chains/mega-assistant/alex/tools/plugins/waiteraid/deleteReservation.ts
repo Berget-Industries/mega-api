@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { Reservation } from "../../../../../../models/index.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
