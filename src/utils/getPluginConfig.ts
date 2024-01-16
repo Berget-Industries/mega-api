@@ -20,8 +20,8 @@ export default async function getPluginConfig(pluginName: string, organizationId
 	}
 
 	if (plugin.activated === true) {
-		return undefined;
-	} else {
 		return plugin.config;
+	} else {
+		return undefined;
 	}
 }
