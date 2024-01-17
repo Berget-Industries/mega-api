@@ -1,4 +1,4 @@
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from "npm:zod";
 import mongoose from "npm:mongoose";
 import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import { OpenAIEmbeddings } from "npm:langchain@^0.0.159/embeddings/openai";
@@ -19,7 +19,7 @@ export const knowledgeToolInputZod = z.object({
 });
 
 const runFunction = async (
-	{ query, document }: knowledgeToolInput,
+	{ query, document }: z.infer<typeof knowledgeToolInputZod>,
 	_runManager: CallbackManagerForToolRun | undefined
 ) => {
 	const dbModel = mongoose.model(document);
@@ -42,7 +42,7 @@ const runFunction = async (
 export default function knowledgeTool({ tags }: { tags: string[] }): StructuredTool {
 	return new DynamicStructuredTool({
 		verbose: false,
-		schema: knowledgeToolInputZod,
+		schema: z.object({ name: z.string() }),
 		name: "trattorian-knowledge",
 		description:
 			"användbart när du behöver veta något om trattorian. Här finns all din kunskap om trattorian",
