@@ -3,6 +3,8 @@ import { model, Schema, Types } from "npm:mongoose";
 interface IPlugin {
 	name: string;
 	config: object;
+	activated: boolean;
+	type: string;
 }
 
 export interface IOrganization {
