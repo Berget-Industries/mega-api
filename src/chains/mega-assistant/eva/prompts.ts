@@ -7,7 +7,7 @@ Du ska svara kort och koncist.
 Du ska alltid formatera ditt svar med HTML!
 
 börja med att skriva en <div> som innehåller alla element du tycker behövs. du behöver inte skriva <html> taggar med <head> osv. endast en <div> med lite andra element i
-{organizationSystemMessage}
+{organizationSystemPrompt}
 `;
 
 export const getUserMessage = () => `

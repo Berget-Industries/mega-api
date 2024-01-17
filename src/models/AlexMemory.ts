@@ -1,12 +1,12 @@
 import { model, Schema, Types } from "npm:mongoose";
 
 export interface IAlexMemory {
-	messages: Types.Array<Object>;
+	messages: object[];
 }
 
 export default model<IAlexMemory>(
 	"AlexMemory",
 	new Schema<IAlexMemory>({
-		messages: { type: Types.Array, required: true, default: [] },
+		messages: { type: Array, required: true, default: [] },
 	})
 );

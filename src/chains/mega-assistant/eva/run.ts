@@ -1,7 +1,6 @@
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
 import TokenCounter from "../../../utils/tokenCounter.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
-import { IUsedTokens } from "../../../models/Message.ts";
 import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
 import { getSystemMessage, getUserMessage } from "./prompts.ts";
 import {

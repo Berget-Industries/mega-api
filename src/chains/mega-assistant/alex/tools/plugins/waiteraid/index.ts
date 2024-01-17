@@ -4,16 +4,34 @@ import createReservationTool from "./createReservationTool.ts";
 import getAvailableChambreReservationsTool from "./getAvailableChambreReservationsTool.ts";
 
 interface IPluginConfigWaterAid {
-	organizationId: string;
-	conversationId: string;
 	chambre: string | undefined;
 	apiKey: string;
 }
 
-export default function initPluginWaiterAid(config: IPluginConfigWaterAid, tags: string[]) {
+interface initPluginWaiterAidInput {
+	config: IPluginConfigWaterAid;
+	conversationId: string;
+	organizationId: string;
+	tags: string[];
+}
+
+export default function initPluginWaiterAid({
+	config,
+	conversationId,
+	organizationId,
+	tags,
+}: initPluginWaiterAidInput) {
 	return [
-		editReservationTool({ tags: [...tags, "editReservationTool"], ...config }),
-		createReservationTool({ tags: [...tags, "createReservationTool"], ...config }),
+		editReservationTool({
+			tags: [...tags, "editReservationTool"],
+			...config,
+			conversationId,
+		}),
+		createReservationTool({
+			tags: [...tags, "createReservationTool"],
+			...config,
+			conversationId,
+		}),
 		deleteReservationTool({ tags: [...tags, "deleteReservationTool"], ...config }),
 		getAvailableChambreReservationsTool({
 			tags: [...tags, "getAvailableChambreReservationsTool"],

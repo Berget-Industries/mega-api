@@ -1,4 +1,4 @@
-import { Organization } from "../models/index.ts";
+import { Plugin } from "../models/index.ts";
 
 export default async function getPluginConfig(pluginName: string, organizationId: string) {
 	if (!organizationId) {
@@ -9,18 +9,17 @@ export default async function getPluginConfig(pluginName: string, organizationId
 		throw new Error("Pluginet saknas.");
 	}
 
-	const organizationDoc = await Organization.findById(organizationId);
-	if (!organizationDoc) {
-		throw new Error("Kunde inte hitta organisation.");
+	const pluginDoc = await Plugin.findOne({
+		organization: organizationId,
+		name: pluginName,
+	});
+
+	if (!pluginDoc) {
+		throw new Error(`Pluginet kunde inte hittas: ${pluginName} (${organizationId})`);
 	}
 
-	const plugin = organizationDoc.plugins.find((_) => _.name === pluginName);
-	if (!plugin) {
-		throw new Error("Pluginet kunde inte hittas.");
-	}
-
-	if (plugin.activated === true) {
-		return plugin.config;
+	if (pluginDoc.isActivated) {
+		return pluginDoc.config;
 	} else {
 		return undefined;
 	}
