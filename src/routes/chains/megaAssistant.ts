@@ -1,34 +1,29 @@
 import mongoose from "npm:mongoose";
-import runManualFilterChain from "../../chains/manualFilter/run.ts";
+import runMegaAssistant from "../../chains/mega-assistant/run.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import getPluginConfig from "../../utils/getPluginConfig.ts";
 
 const router = new Router();
-router.post("/manualFilter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
+router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { message, organizationId } = await ctx.request.body().value;
+		const { organizationId, conversationId, contactEmail, contactName, input } =
+			await ctx.request.body().value;
 
-		if (!message || !organizationId) {
+		if (!organizationId || !conversationId || !contactEmail || !contactName || !input) {
 			handleResponseError(ctx, {
 				status: "missing-info",
-				message: "message eller organizationId keys saknas i body",
+				message:
+					"organizationId eller conversationId eller contactEmail eller contactName eller input keys saknas i body",
 			});
 		}
 
-		type manualFilterConifg = {
-			systemPrompt: string;
-		};
-
-		const manualFilterConfig = (await getPluginConfig(
-			"manualFilter",
-			organizationId
-		)) as manualFilterConifg;
-
-		const { output, usedTokens } = await runManualFilterChain({
-			message,
-			organizationSystemPrompt: manualFilterConfig.systemPrompt,
+		const output = await runMegaAssistant({
+			organizationId,
+			conversationId,
+			contactEmail,
+			contactName,
+			input,
 		});
 
 		handleResponseSuccess(ctx, {

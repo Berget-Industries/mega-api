@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "dom", "esnext"],
+    "strict": true
+  },
+  "lint": {
+    "files": {
+      "include": ["./src"],
+      "exclude": []
+    },
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["ban-untagged-ignore"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["./src"],
+      "exclude": ["./src/vendor"]
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
-import { z } from "zod";
+import { z } from "npm:zod";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import Reservation from "../../../../../../models/Reservation.ts";
 import convertToUTC from "../../../../../../utils/convertToUTC.ts";
@@ -24,7 +24,7 @@ export const editReservationToolInputZod = z.object({
 		.string()
 		.optional()
 		.describe("Datumet för bokningen")
-		.transform((dateString: string, ctx: any) => {
+		.transform((dateString, ctx) => {
 			if (!dateString) return null;
 			const date = new Date(dateString);
 			if (!z.date().safeParse(date).success) {
@@ -48,17 +48,33 @@ const runFunction = async (
 	conversationId: string
 ) => {
 	try {
-		const utcDateTime = convertToUTC(new Date(input.date), input.time);
-
 		const updateData: Record<string, any> = {};
 		for (const [key, value] of Object.entries(input)) {
 			if (key !== "_id" && value !== null && value !== "") {
 				updateData[key] = value;
 			}
 		}
-		updateData.date = utcDateTime;
+
+		if (updateData.date && updateData.time) {
+			const { date, time } = updateData;
+			updateData.date = convertToUTC(new Date(date), time);
+
+			const isAvailable = await checkAvailableDates({
+				date: new Date(date),
+				time,
+			});
+
+			if (!isAvailable) {
+				return Promise.resolve("Det valda datumet och tiden är inte tillgängliga.");
+			}
+		}
 
 		const reservation = await Reservation.findById(input._id);
+
+		if (!reservation) {
+			return Promise.resolve(`Kunde inte hitta reservation med id: ${input._id}`);
+		}
+
 		const chambre = reservation?.chambre;
 		const brokenRules = chambre
 			? checkChambreBookingRules({ ...updateData, time: input.time })
@@ -66,14 +82,6 @@ const runFunction = async (
 
 		if (brokenRules.length > 0) {
 			return Promise.resolve(`Regelbrott: ${brokenRules.map((r) => r.message).join(", ")}`);
-		}
-
-		const isAvailable = await checkAvailableDates({
-			date: new Date(input.date),
-			time: input.time,
-		});
-		if (!isAvailable) {
-			return Promise.resolve("Det valda datumet och tiden är inte tillgängliga.");
 		}
 
 		const reservationDetails = await Reservation.findOneAndUpdate(
@@ -85,11 +93,13 @@ const runFunction = async (
 			{ new: true }
 		);
 
-		editReservationFromDate({
-			reservation: input._id,
-			date: new Date(input.date),
-			time: input.time,
-		});
+		if (reservationDetails?.chambre) {
+			editReservationFromDate({
+				reservation: reservationDetails._id.toString(),
+				date: new Date(reservationDetails.date),
+				time: input.time as string,
+			});
+		}
 
 		return Promise.resolve(`Det lyckades! Dokument Id: ${reservationDetails?._id}`);
 	} catch (error) {

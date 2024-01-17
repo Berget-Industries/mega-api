@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "npm:zod";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { getAvilableDates } from "../../../../../../utils/availableDates.ts";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";

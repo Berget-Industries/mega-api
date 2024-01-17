@@ -1,15 +1,10 @@
-import { z } from "zod";
-import { MongoClient } from "npm:mongodb";
+import { z } from "npm:zod";
+import mongoose from "npm:mongoose";
 import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import { OpenAIEmbeddings } from "npm:langchain@^0.0.159/embeddings/openai";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/tools";
 import { MongoDBAtlasVectorSearch } from "npm:langchain@^0.0.159/vectorstores/mongodb_atlas";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
-
-export type knowledgeToolInput = {
-	query: string;
-	document: string;
-};
 
 export const knowledgeToolInputZod = z.object({
 	query: z.string().describe("Frågan du vill få svar på."),
@@ -19,11 +14,11 @@ export const knowledgeToolInputZod = z.object({
 });
 
 const runFunction = async (
-	{ query, document }: knowledgeToolInput,
+	{ query, document }: z.infer<typeof knowledgeToolInputZod>,
 	_runManager: CallbackManagerForToolRun | undefined
 ) => {
-	const client = new MongoClient(Deno.env.get("MONGOOSE_CONNECT_URI") || "");
-	const collection = client.db("agent").collection(document);
+	const dbModel = mongoose.model(document);
+	const collection = dbModel.collection;
 
 	const embeddings = new OpenAIEmbeddings();
 	const vectorStore = new MongoDBAtlasVectorSearch(embeddings, {

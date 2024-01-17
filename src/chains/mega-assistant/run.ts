@@ -1,4 +1,4 @@
-import runAlex from "./alex/run.ts";
+import runAlex, { IPlugin } from "./alex/run.ts";
 import runEva from "./eva/run.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
 import saveAssistantMessage from "../../utils/saveAssistantMessage.ts";
@@ -18,7 +18,12 @@ export default async function runMegaAssistant({
 	contactName,
 	input,
 }: IRunMegaAssistantConfig) {
-	const alexConfig = await getPluginConfig("mega-assistant-alex", organizationId);
+	type alexConfig = {
+		systemPrompt: string;
+		plugins: IPlugin[];
+	};
+
+	const alexConfig = (await getPluginConfig("mega-assistant-alex", organizationId)) as alexConfig;
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
@@ -26,7 +31,12 @@ export default async function runMegaAssistant({
 		input,
 	});
 
-	const evaConfig = await getPluginConfig("mega-assistant-eva", organizationId);
+	type evaConfig = {
+		systemPrompt: string;
+		model: string;
+	};
+
+	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as evaConfig;
 	const eva = await runEva({
 		organizationSystemPrompt: evaConfig.systemPrompt,
 		organizationModel: evaConfig.model,
@@ -39,7 +49,7 @@ export default async function runMegaAssistant({
 		conversationId,
 		contactEmail,
 		contactName,
-		createdAt: Date.now(),
+		createdAt: new Date(),
 		llmOutput: [alex, eva],
 		input,
 	});

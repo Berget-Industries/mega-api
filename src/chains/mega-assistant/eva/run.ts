@@ -1,5 +1,5 @@
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
-import TokenCounter from "../../../utils/TokenCounter.ts";
+import TokenCounter from "../../../utils/tokenCounter.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { IUsedTokens } from "../../../models/Message.ts";
 import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
@@ -59,8 +59,10 @@ export default async function runEva({
 	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
+		name: "mega-assistant-eva",
 		responseTime,
 		usedTokens,
+		actions: [],
 		output,
 	});
 }
