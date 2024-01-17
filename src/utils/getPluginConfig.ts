@@ -15,7 +15,7 @@ export default async function getPluginConfig(pluginName: string, organizationId
 	});
 
 	if (!pluginDoc) {
-		throw new Error("Pluginet kunde inte hittas.");
+		throw new Error(`Pluginet kunde inte hittas: ${pluginName} (${organizationId})`);
 	}
 
 	if (pluginDoc.isActivated) {

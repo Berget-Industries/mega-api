@@ -1,9 +1,7 @@
 import { IAction } from "../../../models/Message.ts";
-import mongoose from "npm:mongoose";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
-import { IUsedTokens } from "../../../models/Message.ts";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
 import { BufferMemory } from "npm:langchain@^0.0.159/memory";
 import { StructuredTool } from "npm:langchain@^0.0.159/tools";
@@ -23,11 +21,17 @@ import getCurrentDateAndTimeTool from "./tools/getCurrentDateAndTime.ts";
 // PLUGIN TOOLS
 import initPluginWaiterAid from "./tools/plugins/waiteraid/index.ts";
 
-const createTools = async (
-	agentName: string,
-	activatedPlugins: string[],
-	organizationId: string
-): Promise<StructuredTool[]> => {
+const createTools = async ({
+	agentName,
+	organizationId,
+	conversationId,
+	organizationPlugins,
+}: {
+	agentName: string;
+	organizationPlugins: string[];
+	organizationId: string;
+	conversationId: string;
+}): Promise<StructuredTool[]> => {
 	type availablePlugins = "waiteraid" | undefined;
 	const availablePlugins = {
 		waiteraid: initPluginWaiterAid,
@@ -38,7 +42,7 @@ const createTools = async (
 		getCurrentDateAndTimeTool({ tags: [agentName, "getCurrentDateAndTimeTool"] }),
 	];
 
-	for (const pluginName of activatedPlugins) {
+	for (const pluginName of organizationPlugins) {
 		const foundPlugin = Object.keys(availablePlugins).find(
 			(_) => _ === pluginName
 		) as availablePlugins;
@@ -47,7 +51,12 @@ const createTools = async (
 			const pluginConfig = await getPluginConfig(pluginName, organizationId);
 
 			const initPluginFunc = availablePlugins[foundPlugin];
-			const pluginTools = initPluginFunc(pluginConfig as any, [agentName, foundPlugin]);
+			const pluginTools = initPluginFunc({
+				config: pluginConfig as any,
+				conversationId,
+				organizationId,
+				tags: [agentName, foundPlugin],
+			});
 
 			for (const pluginTool of pluginTools) {
 				activatedTools.push(pluginTool);
@@ -61,8 +70,7 @@ const createTools = async (
 };
 
 const createMemory = (sessionId: string) => {
-	const dbModel = mongoose.model("AlexMemory");
-	const collection = dbModel.collection;
+	const collection = AlexMemory.collection;
 
 	return new BufferMemory({
 		chatHistory: new MongoDBChatMessageHistory({
@@ -98,7 +106,12 @@ export default async function initAgentAlex({
 		modelName: "gpt-4-1106-preview",
 	});
 
-	const tools = await createTools(agentName, organizationPlugins, organizationId);
+	const tools = await createTools({
+		organizationPlugins,
+		organizationId,
+		conversationId,
+		agentName,
+	});
 	const memory = createMemory(conversationId);
 
 	const agentArgs = {

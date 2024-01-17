@@ -1,6 +1,5 @@
 import runAlex from "./alex/run.ts";
 import runEva from "./eva/run.ts";
-import { IPlugin } from "../../models/Plugin.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
 import saveAssistantMessage from "../../utils/saveAssistantMessage.ts";
 
@@ -39,6 +38,7 @@ export default async function runMegaAssistant({
 	};
 
 	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as evaConfig;
+	console.log(evaConfig);
 	const eva = await runEva({
 		organizationSystemPrompt: evaConfig.systemPrompt,
 		organizationModel: evaConfig.model,
@@ -55,4 +55,6 @@ export default async function runMegaAssistant({
 		llmOutput: [alex, eva],
 		input,
 	});
+
+	return eva.output;
 }
