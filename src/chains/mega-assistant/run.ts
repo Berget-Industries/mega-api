@@ -1,5 +1,6 @@
-import runAlex, { IPlugin } from "./alex/run.ts";
+import runAlex from "./alex/run.ts";
 import runEva from "./eva/run.ts";
+import { IPlugin } from "../../models/Plugin.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
 import saveAssistantMessage from "../../utils/saveAssistantMessage.ts";
 
@@ -20,13 +21,14 @@ export default async function runMegaAssistant({
 }: IRunMegaAssistantConfig) {
 	type alexConfig = {
 		systemPrompt: string;
-		plugins: IPlugin[];
+		plugins: string[];
 	};
 
 	const alexConfig = (await getPluginConfig("mega-assistant-alex", organizationId)) as alexConfig;
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
+		organizationId,
 		conversationId,
 		input,
 	});
