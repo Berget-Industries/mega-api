@@ -13,8 +13,8 @@ export default model<IPlugin>(
 	new Schema({
 		name: String,
 		type: String,
-		isActivated: Boolean,
+		isActivated: { type: Boolean, default: false },
 		config: Object,
-		organization: [{ type: Types.ObjectId, ref: "Organization" }],
+		organization: { type: Types.ObjectId, ref: "Organization" },
 	})
 );
