@@ -10,7 +10,7 @@ import {
 
 const router = new Router();
 router.post(
-	"/activate/:pluginId",
+	"/activate",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
