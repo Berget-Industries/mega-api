@@ -33,7 +33,7 @@ router.post(
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
 					message:
-						"Detta plugin existerar inte på denna organization. Kunde inte ta bort.",
+						"Detta plugin existerar inte på denna organization. Kunde inte aktivera.",
 				});
 				return;
 			}
