@@ -12,6 +12,8 @@ export default async function apiKeyAuthenticationMiddleware(ctx: Context, next:
 			return;
 		}
 
+		ctx.state.organizationId = keyDoc.organization;
+
 		await next();
 	} catch (error) {
 		ctx.response.status = 401;

@@ -7,14 +7,14 @@ import { handleResponseError, handleResponseSuccess } from "../../utils/contextH
 const router = new Router();
 router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { organizationId, conversationId, contactEmail, contactName, input } =
-			await ctx.request.body().value;
+		const { conversationId, contactEmail, contactName, input } = await ctx.request.body().value;
+		const organizationId = ctx.state.organizationId;
 
-		if (!organizationId || !conversationId || !contactEmail || !contactName || !input) {
+		if (!conversationId || !contactEmail || !contactName || !input) {
 			handleResponseError(ctx, {
 				status: "missing-info",
 				message:
-					"organizationId eller conversationId eller contactEmail eller contactName eller input keys saknas i body",
+					"conversationId eller contactEmail eller contactName eller input keys saknas i body",
 			});
 		}
 
