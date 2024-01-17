@@ -8,12 +8,13 @@ import getPluginConfig from "../../utils/getPluginConfig.ts";
 const router = new Router();
 router.post("/manualFilter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { message, organizationId } = await ctx.request.body().value;
+		const { message } = await ctx.request.body().value;
+		const organizationId = ctx.state.organizationId;
 
-		if (!message || !organizationId) {
+		if (!message) {
 			handleResponseError(ctx, {
 				status: "missing-info",
-				message: "message eller organizationId keys saknas i body",
+				message: "message saknas i body",
 			});
 		}
 
