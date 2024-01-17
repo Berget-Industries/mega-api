@@ -27,6 +27,7 @@ export default async function runMegaAssistant({
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
+		organizationId,
 		conversationId,
 		input,
 	});
