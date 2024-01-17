@@ -4,6 +4,7 @@ interface IPlugin {
 	name: string;
 	config: object;
 	activated: boolean;
+	type: string;
 }
 
 export interface IOrganization {
