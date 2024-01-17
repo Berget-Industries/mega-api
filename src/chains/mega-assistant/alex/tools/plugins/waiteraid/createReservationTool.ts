@@ -84,7 +84,13 @@ const runFunction = async (
 	}
 };
 
-export const createReservationTool = ({ tags }: { tags: string[] }): StructuredTool =>
+export const createReservationTool = ({
+	tags,
+	conversationId,
+}: {
+	tags: string[];
+	conversationId: string;
+}): StructuredTool =>
 	new DynamicStructuredTool({
 		verbose: false,
 		schema: createReservationToolInputZod,
@@ -95,7 +101,7 @@ Innan du kan använda det här vekrtyget måste du ta reda på följande informa
 Om gäste inte säger något om antal gäster måste du fråga gästen. Du får inte anta att gästen vill boka för en person.
 Tänk på att du alltid måste kolla upp datumet just nu med verktyget (get-current-date-and-time) för att förstå vilket år gästen menar, bokningen som skapas måste alltid vara i framtiden.
   `,
-		func: runFunction,
+		func: (input, _runManager) => runFunction(input, _runManager, conversationId),
 		tags,
 		callbacks: [new LoggerCallbackHandler()],
 	});

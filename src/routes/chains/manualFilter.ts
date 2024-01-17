@@ -17,7 +17,14 @@ router.post("/manualFilter", apiKeyAuthenticationMiddleware, async (ctx: Context
 			});
 		}
 
-		const manualFilterConfig = await getPluginConfig("manualFilter", organizationId);
+		type manualFilterConifg = {
+			systemPrompt: string;
+		};
+
+		const manualFilterConfig = (await getPluginConfig(
+			"manualFilter",
+			organizationId
+		)) as manualFilterConifg;
 
 		const { output, usedTokens } = await runManualFilterChain({
 			message,

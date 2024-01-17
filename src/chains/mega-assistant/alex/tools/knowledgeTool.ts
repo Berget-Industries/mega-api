@@ -6,11 +6,6 @@ import { DynamicStructuredTool, StructuredTool } from "npm:langchain@^0.0.159/to
 import { MongoDBAtlasVectorSearch } from "npm:langchain@^0.0.159/vectorstores/mongodb_atlas";
 import { CallbackManagerForToolRun } from "npm:langchain@^0.0.159/callbacks";
 
-export type knowledgeToolInput = {
-	query: string;
-	document: string;
-};
-
 export const knowledgeToolInputZod = z.object({
 	query: z.string().describe("Frågan du vill få svar på."),
 	document: z
@@ -42,7 +37,7 @@ const runFunction = async (
 export default function knowledgeTool({ tags }: { tags: string[] }): StructuredTool {
 	return new DynamicStructuredTool({
 		verbose: false,
-		schema: z.object({ name: z.string() }),
+		schema: knowledgeToolInputZod,
 		name: "trattorian-knowledge",
 		description:
 			"användbart när du behöver veta något om trattorian. Här finns all din kunskap om trattorian",
