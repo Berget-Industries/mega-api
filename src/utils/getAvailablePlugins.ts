@@ -9,16 +9,24 @@ const inputPlugins: availablePlugin[] = [
 		name: "chat-client",
 		type: "input",
 		defaultConfig: {
-			systemPrompt: "",
-			tools: [],
+			greeting: "",
+			color: "",
+			name: "",
 		},
 	},
 	{
 		name: "mailer",
 		type: "input",
 		defaultConfig: {
-			systemPrompt: "",
-			tools: [],
+			mainInbox: "[Gmail]/Alla mail",
+			imapConfig: {
+				user: "",
+				password: "",
+				host: "",
+				port: 993,
+				tls: true,
+				tlsOptions: { rejectUnauthorized: false },
+			},
 		},
 	},
 ];
@@ -54,7 +62,7 @@ const toolPlugins: availablePlugin[] = [
 		name: "mega-assistant-alex-waiteraid",
 		type: "tool",
 		defaultConfig: {
-			chambre: true,
+			chambre: false,
 			apiKey: "",
 		},
 	},
