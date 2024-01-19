@@ -1,0 +1,9 @@
+.github
+node_modules
+.vscode
+test
+.env
+.gitignore
+.prettierrc
+default.env
+README.md
