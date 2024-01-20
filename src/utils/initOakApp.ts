@@ -1,4 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import routes from "../routes/index.ts";
 import dotenv from "npm:dotenv";
 dotenv.config();
@@ -13,6 +14,8 @@ export function initOakApp() {
 
 	const app = new Application();
 	const router = new Router();
+
+	app.use(oakCors());
 
 	router.use("/api", routes.routes());
 	router.use("/api", routes.allowedMethods());
