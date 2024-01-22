@@ -1,3 +1,4 @@
+import initNewInstance from "./initNewInstance.ts";
 import mongoose from "npm:mongoose";
 import dotenv from "npm:dotenv";
 dotenv.config();
@@ -12,6 +13,7 @@ export async function initDatabase() {
 		console.log("Connecting to database...");
 		await mongoose.connect(uri);
 		console.log("Connected to database successfully");
+		await initNewInstance();
 	} catch (error) {
 		console.log("Database connection error: ", error);
 		throw error;
