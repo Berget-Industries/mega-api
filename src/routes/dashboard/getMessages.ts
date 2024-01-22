@@ -14,25 +14,22 @@ router.get("/messages", authenticationMiddleware, checkOrganizationAccess, async
 		const endDate = params.get("endDate");
 		const startDate = params.get("startDate");
 		const organization = ctx.state.organization;
-		console.log(endDate, startDate);
 
 		if (!organization) throw "missing-id";
 		if (!startDate) throw "missing-startDate";
 		if (!endDate) throw "missing-endDate;";
 
-		const organizationDoc = await Organization.findById(organization)
-			.populate({
-				path: "messages",
-				populate: "contact",
-				match: {
-					createdAt: {
-						$gte: decodeURIComponent(startDate),
-						$lte: decodeURIComponent(endDate),
-					},
+		const messages = await Message.find({
+			match: {
+				createdAt: {
+					$gte: decodeURIComponent(startDate),
+					$lte: decodeURIComponent(endDate),
 				},
-			})
+			},
+		})
+			.populate("contact")
 			.exec();
-		const messages = organizationDoc?.messages;
+
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "Lyckades hitta meddelanden.",

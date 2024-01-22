@@ -16,8 +16,6 @@ router.post(
 				name,
 				logoUrl,
 				users: [...users],
-				conversations: [],
-				messages: [],
 				plugins: [],
 			});
 
