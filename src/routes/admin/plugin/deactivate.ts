@@ -38,6 +38,14 @@ router.post(
 				return;
 			}
 
+			await Plugin.updateMany(
+				{
+					organization: organizationId,
+					dependencies: { $in: foundPlugin.name },
+				},
+				{ isActivated: false }
+			);
+
 			foundPlugin.isActivated = false;
 			await foundPlugin.save();
 
