@@ -1,9 +1,13 @@
 import mongoose from "npm:mongoose";
+import getPluginConfig from "../../utils/getPluginConfig.ts";
 import runAutoFilterChain from "../../chains/auto-filter/run.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
-import getPluginConfig from "../../utils/getPluginConfig.ts";
+import {
+	handleResponseError,
+	handleResponseSuccess,
+	handleResponsePartialContent,
+} from "../../utils/contextHandler.ts";
 
 const router = new Router();
 router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
@@ -18,17 +22,40 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 			});
 		}
 
-		type autoFilterConifg = {
-			rules: Record<string, string>;
-			exemples: string;
-		};
+		type autoFilterConifg =
+			| {
+					rules: Record<string, string>;
+					exemples: string;
+			  }
+			| undefined;
 
 		const autoFilterConfig = (await getPluginConfig(
 			"auto-filter",
 			organizationId
 		)) as autoFilterConifg;
 
+		if (!autoFilterConfig) {
+			handleResponsePartialContent(ctx, {
+				status: "plugin-not-activated",
+				message: "Pluginet är inte aktiverat.",
+			});
+			return;
+		}
+		type megaAssistantAlexConfig =
+			| {
+					systemPrompt: string;
+					abilities: string;
+					plugins: string[];
+			  }
+			| undefined;
+
+		const megaAssistantAlexConfig = (await getPluginConfig(
+			"mega-assistant-alex",
+			organizationId
+		)) as megaAssistantAlexConfig;
+
 		const { output, usedTokens } = await runAutoFilterChain({
+			organizationAbilities: megaAssistantAlexConfig?.abilities,
 			organizationExamples: autoFilterConfig.exemples,
 			organizationRules: autoFilterConfig.rules,
 			message,
