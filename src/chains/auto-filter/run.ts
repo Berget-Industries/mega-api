@@ -8,12 +8,14 @@ import { getChatPrompt } from "./prompts.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
 
 export interface IRunAutoFilterConfig {
+	organizationAbilities: string | undefined;
 	organizationExamples: string;
 	organizationRules: Record<string, string>;
 	message: string;
 }
 
 export default async function runManualFilterChain({
+	organizationAbilities,
 	organizationExamples,
 	organizationRules,
 	message,
@@ -26,7 +28,7 @@ export default async function runManualFilterChain({
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt(organizationRules)],
+		["system", systemPrompt(organizationRules, organizationAbilities)],
 		["human", getChatPrompt()],
 	]);
 
@@ -44,6 +46,7 @@ export default async function runManualFilterChain({
 	});
 
 	const { output } = await chain.call({
+		organizationAbilities,
 		organizationExamples,
 		message,
 	});
