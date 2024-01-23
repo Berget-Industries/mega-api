@@ -21,12 +21,14 @@ export default async function runMegaAssistant({
 	type alexConfig = {
 		systemPrompt: string;
 		plugins: string[];
+		abilities: string;
 	};
 
 	const alexConfig = (await getPluginConfig("mega-assistant-alex", organizationId)) as alexConfig;
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
+		organizationAbilities: alexConfig.abilities,
 		organizationId,
 		conversationId,
 		input,
