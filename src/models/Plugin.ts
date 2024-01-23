@@ -6,6 +6,7 @@ export interface IPlugin {
 	isActivated: boolean;
 	config: object;
 	organization: Types.ObjectId;
+	dependencies: string[];
 }
 
 export default model<IPlugin>(
@@ -16,5 +17,6 @@ export default model<IPlugin>(
 		isActivated: { type: Boolean, default: false },
 		config: Object,
 		organization: { type: Types.ObjectId, ref: "Organization" },
+		dependencies: Array,
 	})
 );

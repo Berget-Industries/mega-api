@@ -12,9 +12,6 @@ router.get(
 	checkOrganizationAccess,
 	async (ctx: Context) => {
 		try {
-			const params = ctx.request.url.searchParams;
-			const endDate = params.get("endDate");
-			const startDate = params.get("startDate");
 			const organization = ctx.state.organization;
 
 			if (!organization) {
@@ -25,14 +22,10 @@ router.get(
 				return;
 			}
 
-			const organizationDoc = await Organization.findById(organization)
-				.populate({
-					path: "conversations",
-					populate: [{ path: "messages" }, { path: "contact" }],
-				})
+			const conversations = await Conversation.find({ organization })
+				.populate("message contact")
 				.exec();
 
-			const conversations = organizationDoc ? organizationDoc.conversations : [];
 			handleResponseSuccess(ctx, {
 				status: "success",
 				message: "Lyckades hitta konversationerna.",

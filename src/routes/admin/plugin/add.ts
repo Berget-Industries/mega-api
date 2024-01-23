@@ -15,14 +15,21 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name, type, isActivated, config } = await ctx.request.body()
-				.value;
+			const { organizationId, name, type, isActivated, config, dependencies } =
+				await ctx.request.body().value;
 
-			if (!organizationId || !name || !type || isActivated === undefined || !config) {
+			if (
+				!name ||
+				!type ||
+				!config ||
+				!organizationId ||
+				!dependencies ||
+				isActivated === undefined
+			) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
 					message:
-						"Saknar någon av dessa nycklar: organizationId, name, type, isActivated, config. Kan inte aktivera plugin.",
+						"Saknar någon av dessa nycklar: organizationId, name, type, isActivated, config, dependencies. Kan inte aktivera plugin.",
 				});
 				return;
 			}
@@ -35,8 +42,24 @@ router.post(
 				});
 			}
 
+			const foundDependencies = await Plugin.find({
+				$and: [
+					{ organization: organizationId },
+					{ name: { $in: dependencies } },
+					{ isActivated: true },
+				],
+			}).exec();
+
+			if (foundDependencies.length !== dependencies.length) {
+				handleResponsePartialContent(ctx, {
+					status: "missing-dependencies",
+					message: "Organizationen saknar anda plugins, kan inte lägga till plugin.",
+				});
+			}
+
 			const newPlugin = await Plugin.create({
 				organization: organizationId,
+				dependencies,
 				isActivated,
 				config,
 				name,
