@@ -31,7 +31,7 @@ MEGA-ASSISTANTs kunskaper:
 
 Du ska endast svara ett ord. Vilken sorterings som ska ske. Du ska endast skriva sorterings nyckeln.
 SVARA ALLTID I FÖLJANDE FORMAT:
-(SORTERINGS-NYCKEL)
+SORTERINGS-NYCKEL
 
 {organizationExamples}
 `;
