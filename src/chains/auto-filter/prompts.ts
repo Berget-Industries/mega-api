@@ -39,7 +39,10 @@ const some = {
 		"Ett jobb som handlar om srägårdsanläggning oDh som är mindre än 250 m2.",
 };
 
-export const systemPrompt = (organizationRules: Record<string, string>) => `
+export const systemPrompt = (
+	organizationRules: Record<string, string>,
+	organizationAbilities: string | undefined
+) => `
 Du är en expert på att sortera mail. Din uppgift är att sortera mail.
 Du kommer att få ett meddelande av användaren och du ska endast berätta var meddelandet ska ta vägen, hur det sak sorteras.
 
@@ -54,6 +57,18 @@ REGLER FÖR SORTERING:
 ${Object.entries(organizationRules)
 	.map(([key, value]) => `- ${key}: ${value}`)
 	.join("\n")}
+
+${
+	organizationAbilities !== undefined
+		? `
+REGLEL SPECIAL CASE:
+- SORTERINGS NYCKEL: MEGA-ASSISTANT
+- FÖKLARING: Om du tror att MEGA-ASSISTANT kan hantera ärendet baserat på hur listan med kunskaper ser ut för MEGA-ASSISTANT. Här nedanför hittar du exakt precis vad MEGA-ASSISTANT kan göra. Om MEGA-ASSISTANT kan hantera ärendet ska du svara med MEGA-ASSISTANT.
+MEGA-ASSISTANTs kunskaper:
+{organizationAbilities}
+`
+		: ""
+}
 
 Du ska endast svara ett ord. Vilken sorterings som ska ske. Du ska endast skriva sorterings nyckeln.
 SVARA ALLTID I FÖLJANDE FORMAT:
