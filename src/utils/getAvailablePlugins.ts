@@ -40,6 +40,7 @@ const chainPlugins: availablePlugin[] = [
 		type: "chain",
 		defaultConfig: {
 			systemPrompt: "",
+			abilities: "",
 			tools: [],
 		},
 		dependencies: [],
@@ -54,10 +55,13 @@ const chainPlugins: availablePlugin[] = [
 		dependencies: ["mega-assistant-alex"],
 	},
 	{
-		name: "manualFilter",
+		name: "auto-filter",
 		type: "chain",
 		defaultConfig: {
-			systemPrompt: "",
+			rules: {
+				Manuell: "Allt som inte passar in på något annat hamnar här.",
+			},
+			exemples: "",
 		},
 		dependencies: ["mailer"],
 	},

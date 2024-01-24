@@ -7,18 +7,20 @@ import TokenCounter from "../../utils/tokenCounter.ts";
 import { getChatPrompt } from "./prompts.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
 
-type agentInput = {
+export interface IRunAutoFilterConfig {
+	organizationAbilities: string | undefined;
+	organizationExamples: string;
+	organizationRules: Record<string, string>;
 	message: string;
-	organizationSystemPrompt: string;
-};
+}
 
 export default async function runManualFilterChain({
+	organizationAbilities,
+	organizationExamples,
+	organizationRules,
 	message,
-	organizationSystemPrompt,
-}: agentInput) {
-	const agentName = "El Manuel";
-
-	let usedTokens = { input: 0, output: 0, total: 0 };
+}: IRunAutoFilterConfig) {
+	const agentName = "auto-filter";
 
 	const llm = new ChatOpenAI({
 		modelName: "gpt-4-1106-preview",
@@ -26,7 +28,7 @@ export default async function runManualFilterChain({
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt()],
+		["system", systemPrompt(organizationRules, organizationAbilities)],
 		["human", getChatPrompt()],
 	]);
 
@@ -44,12 +46,13 @@ export default async function runManualFilterChain({
 	});
 
 	const { output } = await chain.call({
+		organizationAbilities,
+		organizationExamples,
 		message,
-		organizationSystemPrompt,
 	});
 
 	return Promise.resolve({
+		usedTokens: tokenCounter.getCount(),
 		output,
-		usedTokens,
 	});
 }
