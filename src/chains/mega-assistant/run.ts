@@ -8,7 +8,7 @@ interface IRunMegaAssistantConfig {
 	conversationId: string;
 	contactEmail: string;
 	contactName: string;
-	input: string;
+	message: string;
 }
 
 export default async function runMegaAssistant({
@@ -16,7 +16,7 @@ export default async function runMegaAssistant({
 	conversationId,
 	contactEmail,
 	contactName,
-	input,
+	message,
 }: IRunMegaAssistantConfig) {
 	type alexConfig = {
 		systemPrompt: string;
@@ -31,7 +31,7 @@ export default async function runMegaAssistant({
 		organizationAbilities: alexConfig.abilities,
 		organizationId,
 		conversationId,
-		input,
+		input: message,
 	});
 
 	type evaConfig = {
@@ -55,7 +55,7 @@ export default async function runMegaAssistant({
 		contactName,
 		createdAt: new Date(),
 		llmOutput: [alex, eva],
-		input,
+		input: message,
 	});
 
 	return eva.output;
