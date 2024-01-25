@@ -12,7 +12,8 @@ import {
 const router = new Router();
 router.get("/get-config", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { pluginName } = await ctx.request.body().value;
+		const params = ctx.request.url.searchParams;
+		const pluginName = params.get("plugin");
 
 		if (!pluginName) {
 			handleResponsePartialContent(ctx, {
@@ -22,8 +23,8 @@ router.get("/get-config", apiKeyAuthenticationMiddleware, async (ctx: Context) =
 			return;
 		}
 
-		const organizationId = ctx.state.organization;
-		const config = getPluginConfig(pluginName, organizationId);
+		const organizationId = ctx.state.organizationId;
+		const config = await getPluginConfig(pluginName, organizationId);
 
 		if (!config) {
 			handleResponseUnauthorized(ctx, {
