@@ -44,7 +44,7 @@ router.get("/get-config", apiKeyAuthenticationMiddleware, async (ctx: Context) =
 		if (error instanceof mongoose.Error.CastError) {
 			handleResponseError(ctx, {
 				status: "invalid-id",
-				message: "Kunde inte hitta reservationen. ID:et är ogiltigt.",
+				message: "Kunde inte hitta konfigurationen.",
 			});
 			return;
 		}
