@@ -8,7 +8,10 @@ import { handleResponseError, handleResponseSuccess } from "../../utils/contextH
 const router = new Router();
 
 async function validateUser(email: string, password: string): Promise<any> {
-	const user = await User.findOne({ email });
+	const user = await User.findOne({ email }).populate({
+		path: "organizations",
+		select: "-users -__v",
+	});
 	if (!user) {
 		return null;
 	}
