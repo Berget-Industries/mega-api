@@ -23,7 +23,7 @@ router.get(
 			}
 
 			const conversations = await Conversation.find({ organization })
-				.populate("message contact")
+				.populate("messages contact")
 				.exec();
 
 			handleResponseSuccess(ctx, {
