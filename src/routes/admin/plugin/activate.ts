@@ -29,6 +29,7 @@ router.post(
 				organization: organizationId,
 				name,
 			});
+
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
@@ -36,6 +37,22 @@ router.post(
 						"Detta plugin existerar inte på denna organization. Kunde inte aktivera.",
 				});
 				return;
+			}
+
+			const allActivatedPlugins = await Plugin.find({
+				organization: organizationId,
+				dependencies: { $in: foundPlugin.name },
+				isActivated: true,
+			});
+
+			const doesAllDependenciesExist =
+				foundPlugin.dependencies.length === allActivatedPlugins.length;
+
+			if (!doesAllDependenciesExist) {
+				handleResponsePartialContent(ctx, {
+					status: "missing-dependencies",
+					message: "Organizationen saknar anda plugins, kan inte lägga till plugin.",
+				});
 			}
 
 			foundPlugin.isActivated = true;

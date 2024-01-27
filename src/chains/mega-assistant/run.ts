@@ -8,7 +8,7 @@ interface IRunMegaAssistantConfig {
 	conversationId: string;
 	contactEmail: string;
 	contactName: string;
-	input: string;
+	message: string;
 }
 
 export default async function runMegaAssistant({
@@ -16,20 +16,22 @@ export default async function runMegaAssistant({
 	conversationId,
 	contactEmail,
 	contactName,
-	input,
+	message,
 }: IRunMegaAssistantConfig) {
 	type alexConfig = {
 		systemPrompt: string;
 		plugins: string[];
+		abilities: string;
 	};
 
 	const alexConfig = (await getPluginConfig("mega-assistant-alex", organizationId)) as alexConfig;
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
+		organizationAbilities: alexConfig.abilities,
 		organizationId,
 		conversationId,
-		input,
+		input: message,
 	});
 
 	type evaConfig = {
@@ -53,7 +55,7 @@ export default async function runMegaAssistant({
 		contactName,
 		createdAt: new Date(),
 		llmOutput: [alex, eva],
-		input,
+		input: message,
 	});
 
 	return eva.output;

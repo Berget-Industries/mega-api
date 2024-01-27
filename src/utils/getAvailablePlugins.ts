@@ -2,6 +2,7 @@ type availablePlugin = {
 	name: string;
 	type: string;
 	defaultConfig: Record<string, any>;
+	dependencies: string[];
 };
 
 const inputPlugins: availablePlugin[] = [
@@ -13,6 +14,7 @@ const inputPlugins: availablePlugin[] = [
 			color: "",
 			name: "",
 		},
+		dependencies: ["mega-assistant-alex"],
 	},
 	{
 		name: "mailer",
@@ -28,6 +30,7 @@ const inputPlugins: availablePlugin[] = [
 				tlsOptions: { rejectUnauthorized: false },
 			},
 		},
+		dependencies: ["mega-assistant-alex"],
 	},
 ];
 
@@ -37,8 +40,10 @@ const chainPlugins: availablePlugin[] = [
 		type: "chain",
 		defaultConfig: {
 			systemPrompt: "",
+			abilities: "",
 			tools: [],
 		},
+		dependencies: [],
 	},
 	{
 		name: "mega-assistant-eva",
@@ -47,13 +52,18 @@ const chainPlugins: availablePlugin[] = [
 			systemPrompt: "",
 			model: "gpt-4-1106-preview",
 		},
+		dependencies: ["mega-assistant-alex"],
 	},
 	{
-		name: "manualFilter",
+		name: "auto-filter",
 		type: "chain",
 		defaultConfig: {
-			systemPrompt: "",
+			rules: {
+				Manuell: "Allt som inte passar in på något annat hamnar här.",
+			},
+			exemples: "",
 		},
+		dependencies: ["mailer"],
 	},
 ];
 
@@ -65,6 +75,7 @@ const toolPlugins: availablePlugin[] = [
 			chambre: false,
 			apiKey: "",
 		},
+		dependencies: ["mega-assistant-alex"],
 	},
 ];
 

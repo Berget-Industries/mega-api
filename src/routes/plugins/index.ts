@@ -1,11 +1,10 @@
-import mailSubjector from "./mailSubjector.ts";
-import megaAssistant from "./megaAssistant.ts";
-import autoFilter from "./autoFilter.ts";
+import getConfig from "./getConfig.ts";
+import addSelectedMenu from "./addSelectedMenu.ts";
 import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();
-const basePath = "/chains";
-const routes = [mailSubjector, megaAssistant, autoFilter];
+const basePath = "/plugins";
+const routes = [getConfig, addSelectedMenu];
 
 routes.forEach((_) => {
 	router.use(basePath, _.routes());

@@ -89,6 +89,7 @@ interface IAgentAlexConfig {
 	conversationId: string;
 	organizationId: string;
 	organizationSystemPrompt: string;
+	organizationAbilities: string;
 	organizationPlugins: string[];
 }
 
@@ -97,6 +98,7 @@ export default async function initAgentAlex({
 	conversationId,
 	organizationId,
 	organizationSystemPrompt,
+	organizationAbilities,
 	organizationPlugins,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
@@ -115,7 +117,7 @@ export default async function initAgentAlex({
 	const memory = createMemory(conversationId);
 
 	const agentArgs = {
-		systemMessage: getSystemMessage(organizationSystemPrompt),
+		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
 	};
 
 	const tokenCounter = new TokenCounter();

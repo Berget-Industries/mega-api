@@ -52,16 +52,6 @@ export default async function saveAssistantMessage({
 		conversationDoc.organization = new Types.ObjectId(organizationId);
 		conversationDoc.messages = [...conversationDoc.messages, messageDoc._id];
 		await conversationDoc.save();
-
-		await Organization.updateOne(
-			{ _id: organizationId },
-			{
-				$addToSet: {
-					conversations: conversationDoc._id,
-					messages: messageDoc._id,
-				},
-			}
-		);
 	} catch (error) {
 		console.error(error);
 	}
