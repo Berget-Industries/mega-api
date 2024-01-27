@@ -20,6 +20,7 @@ router.get("/messages", authenticationMiddleware, checkOrganizationAccess, async
 		if (!endDate) throw "missing-endDate;";
 
 		const messages = await Message.find({
+			organization,
 			match: {
 				createdAt: {
 					$gte: decodeURIComponent(startDate),
