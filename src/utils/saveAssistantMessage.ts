@@ -40,6 +40,7 @@ export default async function saveAssistantMessage({
 		}
 
 		const messageDoc = await Message.create({
+			organization: new Types.ObjectId(organizationId),
 			conversation: conversationDoc._id,
 			contact: contactDoc._id,
 			createdAt,
