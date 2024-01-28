@@ -5,18 +5,16 @@ import { handleSocket } from "../websockets/index.ts";
 export default function initSocketIo() {
 	const io = new Server({
 		path: "/api/ws/",
-		allowRequest: async (req) => {
-			try {
-				const token = req.headers.get("Authorization");
-				await systemApiKeyWebsocketMiddleware(token);
-				return Promise.resolve();
-			} catch (error) {
-				return Promise.reject("Unauthorized");
-			}
+		cors: {
+			origin: ["*"],
+			allowedHeaders: ["Authorization"],
+			credentials: true,
 		},
 	});
 
-	io.on("connection", (socket) => {
+	io.use(systemApiKeyWebsocketMiddleware);
+
+	io.on("connection", async (socket) => {
 		console.log(`New connection: ${socket.id}`);
 		handleSocket(io, socket);
 	});
