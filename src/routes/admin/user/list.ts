@@ -11,7 +11,7 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const users = await User.find();
+			const users = await User.find().select("-password -__v").exec();
 			const usersArray = users.map((user) => user.toObject());
 			handleResponseSuccess(ctx, {
 				status: "success",
