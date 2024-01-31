@@ -1,4 +1,4 @@
-import { User } from "../../../models/index.ts";
+import { User, Organization } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
@@ -11,9 +11,8 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { _id } = await ctx.request.body().value;
-
-			const deletedUser = await User.findByIdAndDelete(_id);
+			const { userId } = await ctx.request.body().value;
+			const deletedUser = await User.findByIdAndDelete(userId);
 
 			if (!deletedUser) {
 				handleResponseSuccess(ctx, {
@@ -22,10 +21,12 @@ router.post(
 				});
 				return;
 			} else {
+				await Organization.updateMany({}, { $pull: { users: userId } });
+
 				handleResponseSuccess(ctx, {
 					status: "success",
 					message: "Lyckades ta bort användaren.",
-					_id: deletedUser._id,
+					userId: deletedUser._id,
 				});
 				return;
 			}
