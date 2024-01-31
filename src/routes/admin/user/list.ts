@@ -5,13 +5,13 @@ import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdmin
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
-router.post(
+router.get(
 	"/list",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const users = await User.find().select("-password -__v").exec();
+			const users = await User.find({}).select("-password -__v").exec();
 			const usersArray = users.map((user) => user.toObject());
 			handleResponseSuccess(ctx, {
 				status: "success",
