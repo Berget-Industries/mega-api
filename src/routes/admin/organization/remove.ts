@@ -1,4 +1,11 @@
-import { Organization } from "../../../models/index.ts";
+import {
+	Organization,
+	ApiKey,
+	Plugin,
+	User,
+	Message,
+	Conversation,
+} from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
@@ -13,6 +20,14 @@ router.post(
 		try {
 			const { organizationId } = await ctx.request.body().value;
 			const organizationDoc = await Organization.findByIdAndDelete(organizationId);
+
+			await User.updateMany({}, { $pull: { organizations: organizationId } });
+
+			await ApiKey.deleteMany({ organization: organizationId });
+			await Plugin.deleteMany({ organization: organizationId });
+
+			await Message.deleteMany({ organization: organizationId });
+			await Conversation.deleteMany({ organization: organizationId });
 
 			if (!organizationDoc) {
 				handleResponseError(ctx, {
