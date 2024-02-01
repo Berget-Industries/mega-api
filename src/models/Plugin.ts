@@ -7,6 +7,7 @@ export interface IPlugin {
 	config: object;
 	organization: Types.ObjectId;
 	dependencies: string[];
+	worker: Types.ObjectId | null;
 }
 
 export default model<IPlugin>(
@@ -18,5 +19,6 @@ export default model<IPlugin>(
 		config: Object,
 		organization: { type: Types.ObjectId, ref: "Organization" },
 		dependencies: Array,
+		worker: { type: Types.ObjectId, ref: "Worker", default: null },
 	})
 );

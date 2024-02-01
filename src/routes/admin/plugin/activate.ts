@@ -1,5 +1,6 @@
 import { Plugin } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
 import {
@@ -57,6 +58,10 @@ router.post(
 
 			foundPlugin.isActivated = true;
 			await foundPlugin.save();
+
+			if (name === "mailer") {
+				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
+			}
 
 			handleResponseSuccess(ctx, {
 				status: "success",

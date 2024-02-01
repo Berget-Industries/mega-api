@@ -18,8 +18,9 @@ Deno.test("ApiKey Model - Strukturkontroll", async () => {
 		const apiKeyObject = testApiKey.toObject();
 
 		assertEquals(typeof apiKeyObject.key, "string", "key bör vara en sträng");
+		assertEquals(typeof apiKeyObject.systemKey, "boolean", "systemKey bör vara en boolean");
 
-		const allowedFields = ["_id", "key"];
+		const allowedFields = ["_id", "key", "systemKey"];
 		Object.keys(apiKeyObject).forEach((key) => {
 			assertEquals(allowedFields.includes(key), true, `Oväntat fält: ${key}`);
 		});
