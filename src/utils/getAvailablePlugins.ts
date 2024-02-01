@@ -20,6 +20,8 @@ const inputPlugins: availablePlugin[] = [
 		name: "mailer",
 		type: "input",
 		defaultConfig: {
+			apiKey: "",
+			autoFilter: false,
 			mainInbox: "[Gmail]/Alla mail",
 			imapConfig: {
 				user: "",
