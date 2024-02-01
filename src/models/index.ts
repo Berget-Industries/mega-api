@@ -8,3 +8,4 @@ export { default as User } from "./User.ts";
 export { default as ApiKey } from "./ApiKey.ts";
 export { default as Session } from "./Session.ts";
 export { default as Plugin } from "./Plugin.ts";
+export { default as Worker } from "./Worker.ts";

@@ -21,8 +21,7 @@ ${
 	organizationAbilities !== undefined
 		? `
 REGLEL SPECIAL CASE:
-- SORTERINGS NYCKEL: MEGA-ASSISTANT
-- FÖKLARING: Om du tror att MEGA-ASSISTANT kan hantera ärendet baserat på hur listan med kunskaper ser ut för MEGA-ASSISTANT. Här nedanför hittar du exakt precis vad MEGA-ASSISTANT kan göra. Om MEGA-ASSISTANT kan hantera ärendet ska du svara med MEGA-ASSISTANT.
+-  MEGA-ASSISTANT: Om du tror att MEGA-ASSISTANT kan hantera ärendet baserat på hur listan med kunskaper ser ut för MEGA-ASSISTANT. Här nedanför hittar du exakt precis vad MEGA-ASSISTANT kan göra. Om MEGA-ASSISTANT kan hantera ärendet ska du svara med MEGA-ASSISTANT.
 MEGA-ASSISTANTs kunskaper:
 {organizationAbilities}
 `
@@ -31,8 +30,6 @@ MEGA-ASSISTANTs kunskaper:
 
 Du ska endast svara ett ord. Vilken sorterings som ska ske. Du ska endast skriva sorterings nyckeln.
 SVARA ALLTID I FÖLJANDE FORMAT:
-SORTERINGS-NYCKEL
-
 {organizationExamples}
 `;
 
