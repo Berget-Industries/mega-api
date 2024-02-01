@@ -1,34 +1,51 @@
-import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Application, Router, Context, Next } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import routes from "../routes/index.ts";
 import dotenv from "npm:dotenv";
 dotenv.config();
 
-export function initOakApp() {
-	const PORT = Deno.env.get("PORT");
-	const parsedPORT = PORT ? parseInt(PORT, 10) : null;
-	if (!parsedPORT) {
-		console.log("PORT är antingen inte satt eller inte ett giltigt heltal.");
-		Deno.exit();
+export class ActiveRequestsCounter {
+	private activeRequests = 0;
+
+	public add() {
+		this.activeRequests++;
 	}
 
-	const app = new Application();
-	const router = new Router();
+	public remove() {
+		this.activeRequests--;
+	}
 
-	app.use(oakCors());
+	public get() {
+		return this.activeRequests;
+	}
+}
 
-	router.use("/api", routes.routes());
-	router.use("/api", routes.allowedMethods());
+export function initOakApp(): Promise<[Application, ActiveRequestsCounter]> {
+	return new Promise((resolve, reject) => {
+		try {
+			const app = new Application();
+			const router = new Router();
 
-	app.use(router.routes());
-	app.use(router.allowedMethods());
+			app.use(oakCors());
 
-	const controller = new AbortController();
-	const { signal } = controller;
+			const activeRequestHandler = new ActiveRequestsCounter();
+			app.use(async (ctx: Context, next: Next) => {
+				activeRequestHandler.add();
+				await next();
+				activeRequestHandler.remove();
+			});
 
-	console.log("Loading Oak...");
-	app.listen({ port: parsedPORT, signal });
-	console.log(`Oak loaded successfully on PORT: ${PORT}`);
+			router.use("/api", routes.routes());
+			router.use("/api", routes.allowedMethods());
 
-	return controller;
+			app.use(router.routes());
+			app.use(router.allowedMethods());
+
+			console.log("Oak app initialized.");
+
+			resolve([app, activeRequestHandler]);
+		} catch (error) {
+			reject(error);
+		}
+	});
 }
