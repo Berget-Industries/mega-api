@@ -1,8 +1,7 @@
-import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { ApiKey } from "../../../models/index.ts";
+import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
-
 import { handleResponseSuccess, handleResponseError } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
@@ -30,3 +29,5 @@ router.get(
 		}
 	}
 );
+
+export default router;
