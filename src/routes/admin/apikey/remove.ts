@@ -1,5 +1,4 @@
 import { ApiKey } from "../../../models/index.ts";
-import uuidv4 from "../../../utils/generateAccessToken.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
@@ -10,6 +9,7 @@ import {
 } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
+
 router.post(
 	"/remove",
 	authenticationMiddleware,
@@ -25,6 +25,7 @@ router.post(
 				});
 				return;
 			}
+
 			const apiKey = await ApiKey.findOneAndDelete(apiKeyId);
 
 			if (!apiKey) {
