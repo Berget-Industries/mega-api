@@ -1,12 +1,13 @@
 import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import createNewUser from "./createNewUser.ts";
-import createNewOrganization from "./createNewOrganization.ts";
-import createNewApiKey from "./createNewApiKey.ts";
+import user from "./user/index.ts";
+import apiKey from "./apikey/index.ts";
 import plugin from "./plugin/index.ts";
+import organization from "./organization/index.ts";
 
 const router = new Router();
 const basePath = "/admin";
-const routes = [createNewUser, createNewOrganization, createNewApiKey, plugin];
+const routes = [user, apiKey, plugin, organization];
+
 
 routes.forEach((_) => {
 	router.use(basePath, _.routes());

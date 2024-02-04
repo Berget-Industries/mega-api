@@ -1,12 +1,12 @@
-import { Organization } from "../../models/index.ts";
-import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
-import systemAdminAuthenticationMiddleware from "../../middleware/systemAdminAuthenticationMiddleware.ts";
+import { Organization } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
+import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
+import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
 router.post(
-	"/createNewOrganization",
+	"/create",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
