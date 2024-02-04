@@ -1,16 +1,16 @@
 import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
+import { ChainValues } from "npm:langchain@^0.0.159/schema";
 import { LLMResult } from "npm:langchain@^0.0.159/schema";
 import { IUsedTokens } from "../../models/Message.ts";
-
-type onCount = (newCount: IUsedTokens) => void;
+import TokenCounter from "../../utils/tokenCounter.ts";
 
 export default class TokenCounterCallbackHandler extends BaseCallbackHandler {
 	name = "TokenCounterCallbackHandler";
-	onCount: onCount;
+	counter: TokenCounter;
 
-	constructor(onCount: onCount) {
+	constructor(counter: TokenCounter) {
 		super();
-		this.onCount = onCount.bind(this);
+		this.counter = counter;
 	}
 
 	handleLLMEnd(
@@ -20,10 +20,11 @@ export default class TokenCounterCallbackHandler extends BaseCallbackHandler {
 		tags?: string[] | undefined
 	) {
 		const { completionTokens, promptTokens, totalTokens } = output.llmOutput?.tokenUsage;
-		this.onCount({
+		const newCount = {
 			output: completionTokens,
 			input: promptTokens,
 			total: totalTokens,
-		});
+		};
+		this.counter.updateCount(newCount);
 	}
 }

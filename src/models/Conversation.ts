@@ -1,13 +1,13 @@
-import { model, Schema, Types } from "npm:mongoose";
-
-export interface IConveration {
+import { model, Schema, Types, Document } from "npm:mongoose";
+export interface IConversation extends Document {
+	_id: Types.ObjectId;
 	organization: Types.ObjectId;
 	contact: Types.ObjectId;
 	messages: Types.ObjectId[];
 	lastActivity: Date;
 }
 
-export default model<IConveration>(
+export default model<IConversation>(
 	"Conversation",
 	new Schema({
 		organization: { type: Types.ObjectId, ref: "Organization" },

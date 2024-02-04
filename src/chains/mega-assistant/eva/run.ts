@@ -36,10 +36,7 @@ export default async function runEva({
 	const tokenCounter = new TokenCounter();
 
 	const chain = new LLMChain({
-		callbacks: [
-			new LoggerCallbackHandler(),
-			new TokenCounterCallbackHandler(tokenCounter.updateCount),
-		],
+		callbacks: [new LoggerCallbackHandler()],
 		outputKey: "output",
 		prompt: chatPrompt,
 		tags: [agentName],
@@ -47,11 +44,16 @@ export default async function runEva({
 	});
 
 	const startTime = Date.now();
-	const { output } = await chain.call({
-		organizationSystemPrompt,
-		mailToReWrite,
-		nameOfUser,
-	});
+	const { output } = await chain.call(
+		{
+			organizationSystemPrompt,
+			mailToReWrite,
+			nameOfUser,
+		},
+		{
+			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
+		}
+	);
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
