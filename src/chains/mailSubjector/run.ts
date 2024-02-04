@@ -6,14 +6,18 @@ import { LLMChain } from "npm:langchain@^0.0.159/chains";
 import { getChatPrompt } from "./prompts.ts";
 import TokenCounter from "../../utils/tokenCounter.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
+import { ILLMOutput } from "../../models/Message.ts";
 
 type agentInput = {
 	userMessage: string;
 	assistantMessage: string;
 };
 
-export default async function runManualFilterChain({ userMessage, assistantMessage }: agentInput) {
-	const agentName = "Mail Subjector";
+export default async function runManualFilterChain({
+	userMessage,
+	assistantMessage,
+}: agentInput): Promise<ILLMOutput> {
+	const agentName = "mail-subjector";
 
 	const tokenCounter = new TokenCounter();
 
@@ -28,25 +32,33 @@ export default async function runManualFilterChain({ userMessage, assistantMessa
 	]);
 
 	const chain = new LLMChain({
-		callbacks: [
-			new LoggerCallbackHandler(),
-			new TokenCounterCallbackHandler(tokenCounter.updateCount),
-		],
+		callbacks: [new LoggerCallbackHandler()],
 		outputKey: "output",
 		prompt: chatPrompt,
 		tags: [agentName],
 		llm,
 	});
 
-	const { output } = await chain.call({
-		userMessage,
-		assistantMessage,
-	});
+	const startTime = Date.now();
+	const { output } = await chain.call(
+		{
+			userMessage,
+			assistantMessage,
+		},
+		{
+			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
+		}
+	);
+	const endTime = Date.now();
+	const responseTime = endTime - startTime;
 
 	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
-		output,
+		responseTime,
 		usedTokens,
+		actions: [],
+		output,
+		name: agentName,
 	});
 }
