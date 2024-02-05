@@ -1,25 +1,34 @@
 import mongoose from "npm:mongoose";
 import runMegaAssistant from "../../chains/mega-assistant/run.ts";
+import saveChainMessage from "../../utils/saveChainMessage.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import { Types } from "npm:mongoose";
 
 const router = new Router();
 router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { conversationId, contactEmail, contactName, message } = await ctx.request.body()
-			.value;
+		const {
+			messageId,
+			conversationId: conversationIdInput,
+			contactEmail,
+			contactName,
+			message,
+		} = await ctx.request.body().value;
 		const organizationId = ctx.state.organizationId;
 
-		if (!conversationId || !contactEmail || !contactName || !message) {
+		if (!contactEmail || !contactName || !message) {
+			// Det är okej att messageId är tom. Det betyder att det är första meddelandet i konversationen.
 			handleResponseError(ctx, {
 				status: "missing-info",
-				message:
-					"conversationId eller contactEmail eller contactName eller input keys saknas i body",
+				message: "contactEmail eller contactName eller input keys saknas i body",
 			});
 		}
 
-		const output = await runMegaAssistant({
+		const conversationId = new Types.ObjectId(conversationIdInput).toString();
+
+		const [alex, eva] = await runMegaAssistant({
 			organizationId,
 			conversationId,
 			contactEmail,
@@ -27,10 +36,22 @@ router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Conte
 			message,
 		});
 
+		const savedMessage = await saveChainMessage({
+			organizationId,
+			conversationId,
+			contactEmail,
+			contactName,
+			messageId,
+			createdAt: new Date(),
+			llmOutput: [alex, eva],
+			input: message,
+		});
+
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output,
+			output: eva.output,
+			...savedMessage,
 		});
 	} catch (error) {
 		console.error(error);

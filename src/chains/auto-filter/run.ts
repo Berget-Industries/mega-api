@@ -6,6 +6,7 @@ import { LLMChain } from "npm:langchain@^0.0.159/chains";
 import TokenCounter from "../../utils/tokenCounter.ts";
 import { getChatPrompt } from "./prompts.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
+import { ILLMOutput } from "../../models/Message.ts";
 
 export interface IRunAutoFilterConfig {
 	organizationAbilities: string | undefined;
@@ -19,7 +20,7 @@ export default async function runManualFilterChain({
 	organizationExamples,
 	organizationRules,
 	message,
-}: IRunAutoFilterConfig) {
+}: IRunAutoFilterConfig): Promise<ILLMOutput> {
 	const agentName = "auto-filter";
 
 	const llm = new ChatOpenAI({
@@ -33,26 +34,35 @@ export default async function runManualFilterChain({
 	]);
 
 	const tokenCounter = new TokenCounter();
-
 	const chain = new LLMChain({
-		callbacks: [
-			new LoggerCallbackHandler(),
-			new TokenCounterCallbackHandler(tokenCounter.updateCount),
-		],
+		callbacks: [new LoggerCallbackHandler()],
 		outputKey: "output",
 		prompt: chatPrompt,
 		tags: [agentName],
 		llm,
 	});
 
-	const { output } = await chain.call({
-		organizationAbilities,
-		organizationExamples,
-		message,
-	});
+	const startTime = Date.now();
+	const { output } = await chain.call(
+		{
+			organizationAbilities,
+			organizationExamples,
+			message,
+		},
+		{
+			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
+		}
+	);
+	const endTime = Date.now();
+	const responseTime = endTime - startTime;
+
+	const usedTokens = tokenCounter.getCount();
 
 	return Promise.resolve({
-		usedTokens: tokenCounter.getCount(),
+		responseTime,
+		usedTokens,
+		actions: [],
 		output,
+		name: agentName,
 	});
 }

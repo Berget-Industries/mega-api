@@ -1,6 +1,5 @@
-import { Plugin } from "../../../models/index.ts";
+import { ApiKey } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
 import {
@@ -10,46 +9,37 @@ import {
 } from "../../../utils/contextHandler.ts";
 
 const router = new Router();
+
 router.post(
-	"/add",
+	"/remove",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name, type, isActivated, config } = await ctx.request.body()
-				.value;
+			const { apiKeyId } = await ctx.request.body().value;
 
-			if (!organizationId || !name || !type || isActivated === undefined || !config) {
+			if (!apiKeyId) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
-					message:
-						"Saknar någon av dessa nycklar: organizationId, name, type, isActivated, config. Kan inte aktivera plugin.",
+					message: "Saknar apiKeyId. Kan inte skapa nyckel.",
 				});
 				return;
 			}
 
-			const foundPlugin = await Plugin.findOneAndUpdate(
-				{ name, organization: organizationId },
-				{ $set: { config } },
-				{ new: true }
-			);
-			if (!foundPlugin) {
+			const apiKey = await ApiKey.findOneAndDelete(apiKeyId);
+
+			if (!apiKey) {
 				handleResponsePartialContent(ctx, {
-					status: "not-found",
-					message:
-						"Detta plugin existerar inte på denna organization. Kunde inte ta bort.",
+					status: "invalid-id",
+					message: "Kunde inte hitta api nyckeln.",
 				});
 				return;
-			}
-
-			if (name === "mailer") {
-				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
 			}
 
 			handleResponseSuccess(ctx, {
 				status: "success",
-				message: "Lyckades skapa ett nytt plugin.",
-				plugin: foundPlugin.toObject(),
+				message: "Lyckades ta bort api nyckeln.",
+				apiKey: apiKey.toObject(),
 			});
 		} catch (error) {
 			console.error(error);

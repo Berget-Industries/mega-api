@@ -1,22 +1,22 @@
-import { ApiKey } from "../../models/index.ts";
+import { ApiKey } from "../../../models/index.ts";
+import uuidv4 from "../../../utils/generateAccessToken.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
-import systemAdminAuthenticationMiddleware from "../../middleware/systemAdminAuthenticationMiddleware.ts";
+import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
+import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
 import {
 	handleResponseError,
 	handleResponseSuccess,
 	handleResponsePartialContent,
-} from "../../utils/contextHandler.ts";
-import uuidv4 from "../../utils/generateAccessToken.ts";
+} from "../../../utils/contextHandler.ts";
 
 const router = new Router();
 router.post(
-	"/createNewApiKey",
+	"/create",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organization } = await ctx.request.body().value;
+			const { organization, systemKey } = await ctx.request.body().value;
 			if (!organization) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
@@ -28,6 +28,7 @@ router.post(
 			const key = uuidv4();
 			const apiKey = await ApiKey.create({
 				organization,
+				systemKey,
 				key,
 			});
 
