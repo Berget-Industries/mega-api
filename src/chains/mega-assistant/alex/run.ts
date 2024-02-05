@@ -125,11 +125,7 @@ export default async function initAgentAlex({
 
 	const agent = await initializeAgentExecutorWithOptions(tools, model, {
 		handleParsingErrors: "Please try again, paying close attention to the allowed enum values",
-		callbacks: [
-			new LoggerCallbackHandler(),
-			new TokenCounterCallbackHandler(tokenCounter.updateCount),
-			new ActionCounterCallbackHandler(actions.push),
-		],
+		callbacks: [new LoggerCallbackHandler(), new ActionCounterCallbackHandler(actions.push)],
 		agentType: "openai-functions",
 		tags: [agentName],
 		verbose: false,
@@ -138,7 +134,12 @@ export default async function initAgentAlex({
 	});
 
 	const startTime = Date.now();
-	const { output } = await agent.call({ input });
+	const { output } = await agent.call(
+		{ input },
+		{
+			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
+		}
+	);
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;

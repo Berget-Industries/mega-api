@@ -1,5 +1,6 @@
 import mongoose from "npm:mongoose";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
+import saveChainMessage from "../../utils/saveChainMessage.ts";
 import runAutoFilterChain from "../../chains/auto-filter/run.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
@@ -12,7 +13,8 @@ import {
 const router = new Router();
 router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { message } = await ctx.request.body().value;
+		const { message, contactEmail, contactName, conversationId } = await ctx.request.body()
+			.value;
 		const organizationId = ctx.state.organizationId;
 
 		if (!message) {
@@ -54,17 +56,29 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 			organizationId
 		)) as megaAssistantAlexConfig;
 
-		const { output, usedTokens } = await runAutoFilterChain({
+		const autoFilter = await runAutoFilterChain({
 			organizationAbilities: megaAssistantAlexConfig?.abilities,
 			organizationExamples: autoFilterConfig.exemples,
 			organizationRules: autoFilterConfig.rules,
 			message,
 		});
 
+		const savedMessage = await saveChainMessage({
+			organizationId,
+			conversationId,
+			contactEmail,
+			contactName,
+			messageId: new mongoose.Types.ObjectId().toString(),
+			createdAt: new Date(),
+			llmOutput: [autoFilter],
+			input: message,
+		});
+
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output,
+			output: autoFilter.output,
+			...savedMessage,
 		});
 	} catch (error) {
 		console.error(error);

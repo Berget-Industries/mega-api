@@ -1,7 +1,7 @@
 import runAlex from "./alex/run.ts";
 import runEva from "./eva/run.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
-import saveAssistantMessage from "../../utils/saveAssistantMessage.ts";
+import { ILLMOutput } from "../../models/Message.ts";
 
 interface IRunMegaAssistantConfig {
 	organizationId: string;
@@ -17,7 +17,7 @@ export default async function runMegaAssistant({
 	contactEmail,
 	contactName,
 	message,
-}: IRunMegaAssistantConfig) {
+}: IRunMegaAssistantConfig): Promise<ILLMOutput[]> {
 	type alexConfig = {
 		systemPrompt: string;
 		plugins: string[];
@@ -48,15 +48,5 @@ export default async function runMegaAssistant({
 		nameOfUser: contactName,
 	});
 
-	await saveAssistantMessage({
-		organizationId,
-		conversationId,
-		contactEmail,
-		contactName,
-		createdAt: new Date(),
-		llmOutput: [alex, eva],
-		input: message,
-	});
-
-	return eva.output;
+	return Promise.resolve([alex, eva]);
 }
