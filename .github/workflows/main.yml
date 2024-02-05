@@ -32,7 +32,7 @@ jobs:
     build:
         needs: test
         runs-on: ubuntu-latest
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         steps:
             - name: Setup repo
               uses: actions/checkout@v3
@@ -52,7 +52,7 @@ jobs:
     deploy:
         needs: build
         runs-on: ubuntu-latest
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         steps:
             - name: Update server
               uses: appleboy/ssh-action@v1.0.3
