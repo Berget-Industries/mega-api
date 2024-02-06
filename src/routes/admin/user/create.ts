@@ -24,10 +24,9 @@ router.post(
 				return;
 			}
 
-			const isOnlyObjectIds = organizations.every((_id: string) => {
-				return Types.ObjectId.isValid(_id);
-			});
-
+			const isOnlyObjectIds = organizations.every((_id: string) =>
+				Types.ObjectId.isValid(_id)
+			);
 			if (!isOnlyObjectIds) {
 				handleResponseError(ctx, {
 					status: "bad-request",
@@ -37,7 +36,6 @@ router.post(
 			}
 
 			const allOrganizations = await Organization.find({ _id: { $in: organizations } });
-			console.log(allOrganizations.length, organizations.length);
 			if (allOrganizations.length !== organizations.length) {
 				handleResponseError(ctx, {
 					status: "bad-request",
@@ -58,7 +56,7 @@ router.post(
 			handleResponseSuccess(ctx, {
 				status: "success",
 				message: "Lyckades skapa en användare.",
-				// user: userDoc.toObject(),
+				user: userDoc.toObject(),
 			});
 		} catch (error) {
 			console.error(error);
