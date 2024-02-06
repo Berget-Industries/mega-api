@@ -67,7 +67,7 @@ router.post(
 			const newPlugins = await Promise.all(
 				plugins.map(({ name, type, isActivated, config }: IExportedPlugin) =>
 					Plugin.create({
-						organizationId: newOrganization.id,
+						organization: newOrganization._id,
 						isActivated,
 						config,
 						type,
