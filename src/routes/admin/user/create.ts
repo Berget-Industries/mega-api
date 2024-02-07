@@ -1,4 +1,5 @@
-import { User } from "../../../models/index.ts";
+import { Types } from "npm:mongoose";
+import { User, Organization } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { sendResetPasswordMail } from "../../../utils/emailSender.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
@@ -13,12 +14,42 @@ router.post(
 	async (ctx: Context) => {
 		try {
 			const { name, email, avatarUrl, organizations } = await ctx.request.body().value;
+
 			const currentUser = await User.findOne({ email });
 			if (currentUser) {
-				handleResponseSuccess(ctx, "Email already exists");
+				handleResponseSuccess(ctx, {
+					status: "bad-request",
+					message: "En användare med samma email finns redan.",
+				});
 				return;
 			}
+
+			const isOnlyObjectIds = organizations.every((_id: string) =>
+				Types.ObjectId.isValid(_id)
+			);
+			if (!isOnlyObjectIds) {
+				handleResponseError(ctx, {
+					status: "bad-request",
+					message: "En eller flera organisationer har fel format.",
+				});
+				return;
+			}
+
+			const allOrganizations = await Organization.find({ _id: { $in: organizations } });
+			if (allOrganizations.length !== organizations.length) {
+				handleResponseError(ctx, {
+					status: "bad-request",
+					message: "En eller flera organisationer kunde inte hittas.",
+				});
+				return;
+			}
+
 			const userDoc = await User.create({ name, email, avatarUrl, organizations });
+
+			await Organization.updateMany(
+				{ _id: { $in: organizations } },
+				{ $push: { users: userDoc._id } }
+			);
 
 			await sendResetPasswordMail(email);
 
