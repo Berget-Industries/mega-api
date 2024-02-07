@@ -1,8 +1,9 @@
-import { Plugin } from "../../../models/index.ts";
+import { Plugin, Organization } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
+import { getAvailablePlugins, findPlugin } from "../../../utils/getAvailablePlugins.ts";
 import {
 	handleResponseError,
 	handleResponseSuccess,
@@ -16,21 +17,33 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name, type, isActivated, config, dependencies } =
-				await ctx.request.body().value;
+			const { organizationId, name, config } = await ctx.request.body().value;
 
-			if (
-				!name ||
-				!type ||
-				!config ||
-				!organizationId ||
-				!dependencies ||
-				isActivated === undefined
-			) {
+			if (!name || !config || !organizationId) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
 					message:
-						"Saknar någon av dessa nycklar: organizationId, name, type, isActivated, config, dependencies. Kan inte aktivera plugin.",
+						"Saknar någon av dessa nycklar: organizationId, name, config. Kan inte aktivera plugin.",
+				});
+				return;
+			}
+
+			const foundDefaultPlugin = findPlugin(name);
+			if (!foundDefaultPlugin) {
+				handleResponsePartialContent(ctx, {
+					status: "plugin-not-found",
+					message: "Pluginet existerar inte.",
+				});
+				return;
+			}
+
+			const { dependencies, type } = foundDefaultPlugin;
+
+			const organizationDoc = await Organization.findById(organizationId);
+			if (!organizationDoc) {
+				handleResponsePartialContent(ctx, {
+					status: "organization-not-found",
+					message: "Organizationen existerar inte.",
 				});
 				return;
 			}
@@ -43,28 +56,16 @@ router.post(
 				});
 			}
 
-			const foundDependencies = await Plugin.find({
-				$and: [
-					{ organization: organizationId },
-					{ name: { $in: dependencies } },
-					{ isActivated: true },
-				],
-			}).exec();
-
-			if (foundDependencies.length !== dependencies.length) {
-				handleResponsePartialContent(ctx, {
-					status: "missing-dependencies",
-					message: "Organizationen saknar anda plugins, kan inte lägga till plugin.",
-				});
-			}
-
 			const newPlugin = await Plugin.create({
 				organization: organizationId,
 				dependencies,
-				isActivated,
 				config,
 				name,
 				type,
+			});
+
+			await Organization.findByIdAndUpdate(organizationId, {
+				$addToSet: { plugins: newPlugin._id },
 			});
 
 			if (name === "mailer") {

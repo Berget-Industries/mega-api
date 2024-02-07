@@ -2,7 +2,7 @@ type availablePlugin = {
 	name: string;
 	type: string;
 	defaultConfig: Record<string, any>;
-	dependencies: string[];
+	dependencies: string[] | string[][];
 };
 
 const inputPlugins: availablePlugin[] = [
@@ -32,7 +32,7 @@ const inputPlugins: availablePlugin[] = [
 				tlsOptions: { rejectUnauthorized: false },
 			},
 		},
-		dependencies: ["mega-assistant-alex"],
+		dependencies: [["mega-assistant-alex", "auto-filter"]],
 	},
 ];
 
@@ -83,10 +83,14 @@ const toolPlugins: availablePlugin[] = [
 
 const availablePlugins: availablePlugin[] = [...inputPlugins, ...chainPlugins, ...toolPlugins];
 
-export function getAvaialblePlugins(): availablePlugin[] {
+export function getAvailablePlugins(): availablePlugin[] {
 	return availablePlugins;
 }
 export function isPluginAvaialble(name: string): boolean {
 	const foundPlugin = availablePlugins.some((_) => _.name === name);
+	return foundPlugin;
+}
+export function findPlugin(name: string): availablePlugin | undefined {
+	const foundPlugin = availablePlugins.find((_) => _.name === name);
 	return foundPlugin;
 }

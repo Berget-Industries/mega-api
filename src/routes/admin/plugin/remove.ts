@@ -1,4 +1,5 @@
-import { Plugin } from "../../../models/index.ts";
+import { findPlugin } from "../../../utils/getAvailablePlugins.ts";
+import { Plugin, Organization } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
@@ -27,11 +28,28 @@ router.post(
 				return;
 			}
 
+			const foundDefaultPlugin = findPlugin(name);
+			if (!foundDefaultPlugin) {
+				handleResponsePartialContent(ctx, {
+					status: "plugin-not-found",
+					message: "Pluginet existerar inte.",
+				});
+				return;
+			}
+
+			const organizationDoc = await Organization.findById(organizationId);
+			if (!organizationDoc) {
+				handleResponsePartialContent(ctx, {
+					status: "organization-not-found",
+					message: "Organizationen existerar inte.",
+				});
+				return;
+			}
+
 			const foundPlugin = await Plugin.findOneAndDelete({
 				organization: organizationId,
 				name,
 			});
-
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
@@ -41,13 +59,9 @@ router.post(
 				return;
 			}
 
-			await Plugin.updateMany(
-				{
-					organization: organizationId,
-					dependencies: { $in: foundPlugin.name },
-				},
-				{ isActivated: false }
-			);
+			await Organization.findByIdAndUpdate(organizationId, {
+				$pull: { plugins: foundPlugin._id },
+			});
 
 			if (name === "mailer") {
 				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
