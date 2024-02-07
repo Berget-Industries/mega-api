@@ -1,5 +1,5 @@
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { getAvaialblePlugins } from "../../../utils/getAvailablePlugins.ts";
+import { getAvailablePlugins } from "../../../utils/getAvailablePlugins.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
 import { handleResponseError, handleResponseSuccess } from "../../../utils/contextHandler.ts";
@@ -14,7 +14,7 @@ router.get(
 			handleResponseSuccess(ctx, {
 				status: "success",
 				message: "Lyckades skapa ett nytt plugin.",
-				avaialblePlugins: getAvaialblePlugins(),
+				avaialblePlugins: getAvailablePlugins(),
 			});
 		} catch (error) {
 			console.error(error);
