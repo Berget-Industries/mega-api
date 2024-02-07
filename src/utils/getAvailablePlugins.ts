@@ -63,7 +63,6 @@ const chainPlugins: availablePlugin[] = [
 			rules: {
 				Manuell: "Allt som inte passar in på något annat hamnar här.",
 			},
-			exemples: "",
 		},
 		dependencies: ["mailer"],
 	},

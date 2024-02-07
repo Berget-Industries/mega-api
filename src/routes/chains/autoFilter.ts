@@ -56,9 +56,17 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 			organizationId
 		)) as megaAssistantAlexConfig;
 
+		const allExamples = Object.keys(autoFilterConfig.rules);
+		const randomExamples: string[] = [];
+
+		for (let i = 0; i < allExamples.length / 5; i++) {
+			const randomIndex = Math.random() * allExamples.length;
+			randomExamples.push(allExamples[randomIndex]);
+		}
+
 		const autoFilter = await runAutoFilterChain({
 			organizationAbilities: megaAssistantAlexConfig?.abilities,
-			organizationExamples: autoFilterConfig.exemples,
+			organizationExamples: randomExamples.join("\n"),
 			organizationRules: autoFilterConfig.rules,
 			message,
 		});
