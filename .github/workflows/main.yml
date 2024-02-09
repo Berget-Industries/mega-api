@@ -1,4 +1,4 @@
-name: Development
+name: Deno with Docker
 
 on:
     push:
@@ -28,11 +28,6 @@ jobs:
 
             - name: Run tests
               run: deno test -A
-
-            - name: Run lint
-              run: |
-                  deno lint || true
-              shell: bash
 
     build:
         needs: test
