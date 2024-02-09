@@ -1,9 +1,13 @@
 import * as bcrypt from "npm:bcrypt-ts";
-import { User } from "../../models/index.ts";
+import { User, Organization } from "../../models/index.ts";
 import sessionStore from "../../utils/sessionStore.ts";
 import { createJwtToken } from "../../utils/jwt.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
+import {
+	handleResponseError,
+	handleResponseSuccess,
+	handleResponseUnauthorized,
+} from "../../utils/contextHandler.ts";
 
 const router = new Router();
 
@@ -22,10 +26,17 @@ async function validateUser(email: string, password: string): Promise<any> {
 	}
 
 	const formatUser = () => {
-		let { password, _id, ...rest } = user.toObject();
-		let formattedUser = { id: _id, ...rest };
+		const { password, _id, ...rest } = user.toObject();
+		const formattedUser = { id: _id, ...rest };
 		return formattedUser;
 	};
+
+	if (user.systemAdmin) {
+		const allOrganizations = await Organization.find({});
+		const organizations = allOrganizations.map((_) => _.toObject());
+		const formattedUser = { ...formatUser(), organizations };
+		return formattedUser;
+	}
 
 	return formatUser();
 }
@@ -36,8 +47,10 @@ router.post("/login", async (ctx: Context) => {
 		const user = await validateUser(email, password);
 
 		if (!user) {
-			ctx.response.status = 401;
-			ctx.response.body = { message: "Unauthorized" };
+			handleResponseUnauthorized(ctx, {
+				status: "error",
+				message: "Fel användarnamn eller lösenord.",
+			});
 			return;
 		}
 
