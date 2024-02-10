@@ -32,7 +32,7 @@ jobs:
     build:
         needs: test
         runs-on: ubuntu-latest
-        if: github.event_name == 'push' &&  github.base_ref == 'main'
+        if: github.event_name == 'push' && github.base_ref == 'main'
         steps:
             - name: Setup repo
               uses: actions/checkout@v3
