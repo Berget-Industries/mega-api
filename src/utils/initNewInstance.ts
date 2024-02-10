@@ -1,4 +1,4 @@
-import { Organization, User } from "../models/index.ts";
+import { Organization, User, Worker } from "../models/index.ts";
 
 export default async function initNewInstance() {
 	try {
@@ -9,6 +9,10 @@ export default async function initNewInstance() {
 
 		if (orgs.length > 0 || users.length > 0) {
 			console.log("Database is not empty.");
+
+			console.log("Cleaning database...");
+			await Worker.deleteMany({});
+
 			return;
 		}
 
