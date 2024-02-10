@@ -3,10 +3,16 @@ import { Organization } from "../models/index.ts";
 import { Types } from "npm:mongoose";
 
 export default async function checkOrganizationAccess(ctx: Context, next: Next) {
-	const userId = ctx.state.session.user.id.toString();
+	const user = ctx.state.session.user;
+	const userId = user.id.toString();
 	const userOrganizations = ctx.state.session.user.organizations.map((_: Types.ObjectId) =>
 		_.toString()
 	);
+
+	if (user.isSystemAdmin) {
+		await next();
+		return;
+	}
 
 	const requestedOrganization: string | null = ctx.request.hasBody
 		? (await ctx.request.body().value).organization
