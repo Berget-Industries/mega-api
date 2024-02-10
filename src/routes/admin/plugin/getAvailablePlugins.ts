@@ -14,7 +14,7 @@ router.get(
 			handleResponseSuccess(ctx, {
 				status: "success",
 				message: "Lyckades skapa ett nytt plugin.",
-				avaialblePlugins: getAvailablePlugins(),
+				availablePlugins: getAvailablePlugins(),
 			});
 		} catch (error) {
 			console.error(error);
