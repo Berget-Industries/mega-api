@@ -11,19 +11,18 @@ import {
 
 const router = new Router();
 router.post(
-	"/add",
+	"/update",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name, type, isActivated, config } = await ctx.request.body()
-				.value;
+			const { organizationId, name, config } = await ctx.request.body().value;
 
-			if (!organizationId || !name || !type || isActivated === undefined || !config) {
+			if (!organizationId || !name || !config) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
 					message:
-						"Saknar någon av dessa nycklar: organizationId, name, type, isActivated, config. Kan inte aktivera plugin.",
+						"Saknar någon av dessa nycklar: organizationId, name, config. Kan inte uppdatera plugin.",
 				});
 				return;
 			}
