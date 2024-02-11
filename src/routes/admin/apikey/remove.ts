@@ -26,7 +26,7 @@ router.post(
 				return;
 			}
 
-			const apiKey = await ApiKey.findOneAndDelete(apiKeyId);
+			const apiKey = await ApiKey.findByIdAndDelete(apiKeyId);
 
 			if (!apiKey) {
 				handleResponsePartialContent(ctx, {
