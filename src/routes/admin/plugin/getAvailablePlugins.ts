@@ -42,7 +42,7 @@ router.get(
 			const actualAvailablePlugins = allAvailablePlugins.filter((availablePlugin) => {
 				if (availablePlugin.type !== "input") {
 					const doesPluginExist = orgPlugins.some(
-						(orgPlugin: typeof Plugin) => orgPlugin.name === availablePlugin.name
+						(orgPlugin) => orgPlugin.name === availablePlugin.name
 					);
 					return !doesPluginExist;
 				} else {
