@@ -37,18 +37,13 @@ router.get(
 
 			const orgPlugins = await Plugin.find({ organization: organizationId });
 
-			console.log(organization);
-
 			const allAvailablePlugins = getAvailablePlugins();
 
 			const actualAvailablePlugins = allAvailablePlugins.filter((availablePlugin) => {
 				if (availablePlugin.type !== "input") {
 					const doesPluginExist = orgPlugins.some(
-						(orgPlugin) => orgPlugin.name === availablePlugin.name
+						(orgPlugin: typeof Plugin) => orgPlugin.name === availablePlugin.name
 					);
-					console.log(allAvailablePlugins);
-					console.log(orgPlugins);
-					console.log(doesPluginExist);
 					return !doesPluginExist;
 				} else {
 					return true;

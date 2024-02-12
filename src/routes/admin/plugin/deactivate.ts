@@ -35,13 +35,51 @@ router.post(
 				return;
 			}
 
-			await Plugin.updateMany(
-				{
+			if (foundPlugin.name === "auto-filter") {
+				console.log("auto-filter1");
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: "mailer",
+					},
+					{ $set: { "config.autoFilter": false } }
+				);
+
+				const megaAssistantAlexPlugin = await Plugin.findOne({
 					organization: foundPlugin.organization,
-					dependencies: { $in: foundPlugin.name },
-				},
-				{ isActivated: false }
-			);
+					name: "mega-assistant-alex",
+				});
+
+				if (!megaAssistantAlexPlugin || !megaAssistantAlexPlugin.isActivated) {
+					console.log("mega-assistant-alex2");
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ isActivated: false }
+					);
+				}
+			}
+
+			if (foundPlugin.name === "mega-assistant-alex") {
+				console.log("mega-assistant-alex1");
+				const autoFilterPlugin = await Plugin.findOne({
+					organization: foundPlugin.organization,
+					name: "auto-filter",
+				});
+
+				if (!autoFilterPlugin || !autoFilterPlugin.isActivated) {
+					console.log("auto-filter2");
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ isActivated: false }
+					);
+				}
+			}
 
 			foundPlugin.isActivated = false;
 			await foundPlugin.save();

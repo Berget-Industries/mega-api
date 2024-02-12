@@ -1,4 +1,4 @@
-import { Organization } from "../../../models/index.ts";
+import { Organization, User } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
 import systemAdminAuthenticationMiddleware from "../../../middleware/systemAdminAuthenticationMiddleware.ts";
@@ -18,6 +18,11 @@ router.post(
 				users: [...users],
 				plugins: [],
 			});
+
+			await User.updateMany(
+				{ _id: { $in: users } },
+				{ $push: { organizations: organizationDoc._id } }
+			);
 
 			handleResponseSuccess(ctx, {
 				status: "success",
