@@ -35,7 +35,7 @@ router.get(
 				});
 			}
 
-			const orgPlugins = await Plugin.find({ organization: organization._id });
+			const orgPlugins = await Plugin.find({ organization: organizationId });
 
 			console.log(organization);
 
