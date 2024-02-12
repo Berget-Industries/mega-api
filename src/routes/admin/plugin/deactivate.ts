@@ -16,20 +16,16 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name } = await ctx.request.body().value;
-			if (!organizationId || !name) {
+			const { pluginId } = await ctx.request.body().value;
+			if (!pluginId) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
-					message:
-						"Saknar någon av dessa nycklar: organizationId, name. Kan inte avaktivera plugin.",
+					message: "Saknar någon av dessa nycklar: pluginId. Kan inte avaktivera plugin.",
 				});
 				return;
 			}
 
-			const foundPlugin = await Plugin.findOne({
-				organization: organizationId,
-				name,
-			});
+			const foundPlugin = await Plugin.findById(pluginId);
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
@@ -39,18 +35,56 @@ router.post(
 				return;
 			}
 
-			await Plugin.updateMany(
-				{
-					organization: organizationId,
-					dependencies: { $in: foundPlugin.name },
-				},
-				{ isActivated: false }
-			);
+			if (foundPlugin.name === "auto-filter") {
+				console.log("auto-filter1");
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: "mailer",
+					},
+					{ $set: { "config.autoFilter": false } }
+				);
+
+				const megaAssistantAlexPlugin = await Plugin.findOne({
+					organization: foundPlugin.organization,
+					name: "mega-assistant-alex",
+				});
+
+				if (!megaAssistantAlexPlugin || !megaAssistantAlexPlugin.isActivated) {
+					console.log("mega-assistant-alex2");
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ isActivated: false }
+					);
+				}
+			}
+
+			if (foundPlugin.name === "mega-assistant-alex") {
+				console.log("mega-assistant-alex1");
+				const autoFilterPlugin = await Plugin.findOne({
+					organization: foundPlugin.organization,
+					name: "auto-filter",
+				});
+
+				if (!autoFilterPlugin || !autoFilterPlugin.isActivated) {
+					console.log("auto-filter2");
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ isActivated: false }
+					);
+				}
+			}
 
 			foundPlugin.isActivated = false;
 			await foundPlugin.save();
 
-			if (name === "mailer") {
+			if (foundPlugin.name === "mailer") {
 				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
 			}
 

@@ -9,11 +9,6 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 		_.toString()
 	);
 
-	if (user.isSystemAdmin) {
-		await next();
-		return;
-	}
-
 	const requestedOrganization: string | null = ctx.request.hasBody
 		? (await ctx.request.body().value).organization
 		: ctx.request.url.searchParams.get("organization");
@@ -28,6 +23,12 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 		return;
 	}
 
+	if (user.systemAdmin) {
+		ctx.state.organization = organizationDoc._id;
+		await next();
+		return;
+	}
+
 	const organizationUsers = organizationDoc.users.map((_: Types.ObjectId) => _.toString());
 
 	const isUserInOrg = organizationUsers.includes(userId);
@@ -37,7 +38,7 @@ export default async function checkOrganizationAccess(ctx: Context, next: Next) 
 		ctx.state.organization = organizationDoc._id;
 		await next();
 	} else {
-		ctx.response.status = 404;
+		ctx.response.status = 401;
 		ctx.response.body = {
 			status: "error",
 			message: "Unauthorized",

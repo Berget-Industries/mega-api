@@ -48,12 +48,15 @@ router.post(
 				return;
 			}
 
-			const foundPlugin = await Plugin.findOne({ name, organization: organizationId });
-			if (foundPlugin) {
-				handleResponsePartialContent(ctx, {
-					status: "already-exciting",
-					message: "Detta plugin existerar redan på denna organization.",
-				});
+			if (type !== "input") {
+				const foundPlugin = await Plugin.findOne({ name, organization: organizationId });
+				if (foundPlugin) {
+					handleResponsePartialContent(ctx, {
+						status: "already-exciting",
+						message: "Det går endast att ha en instans av detta plugin.",
+					});
+					return;
+				}
 			}
 
 			const newPlugin = await Plugin.create({
