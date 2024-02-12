@@ -16,20 +16,16 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name } = await ctx.request.body().value;
-			if (!organizationId || !name) {
+			const { pluginId } = await ctx.request.body().value;
+			if (!pluginId) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
-					message:
-						"Saknar någon av dessa nycklar: organizationId, name. Kan inte aktivera plugin.",
+					message: "Saknar någon av dessa nycklar: pluginId Kan inte aktivera plugin.",
 				});
 				return;
 			}
 
-			const foundPlugin = await Plugin.findOne({
-				organization: organizationId,
-				name,
-			});
+			const foundPlugin = await Plugin.findById(pluginId);
 
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
@@ -41,7 +37,7 @@ router.post(
 			}
 
 			const allActivatedPlugins = await Plugin.find({
-				organization: organizationId,
+				organization: foundPlugin.organization,
 				dependencies: { $in: foundPlugin.name },
 				isActivated: true,
 			});
@@ -59,7 +55,7 @@ router.post(
 			foundPlugin.isActivated = true;
 			await foundPlugin.save();
 
-			if (name === "mailer") {
+			if (foundPlugin.name === "mailer") {
 				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
 			}
 

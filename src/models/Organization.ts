@@ -11,7 +11,7 @@ export interface IOrganization {
 	name: string;
 	logoUrl: string;
 	users: Types.ObjectId[];
-	plugins: IPlugin[];
+	plugins: IPlugin[] | Types.ObjectId[];
 }
 
 export default model<IOrganization>(
@@ -20,6 +20,6 @@ export default model<IOrganization>(
 		name: String,
 		logoUrl: String,
 		users: [{ type: Types.ObjectId, ref: "User" }],
-		plugins: Array,
+		plugins: [{ type: Types.ObjectId, ref: "Plugin" }],
 	})
 );

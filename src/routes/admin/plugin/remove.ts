@@ -17,39 +17,16 @@ router.post(
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
 		try {
-			const { organizationId, name } = await ctx.request.body().value;
-
-			if (!organizationId || !name) {
+			const { pluginId } = await ctx.request.body().value;
+			if (!pluginId) {
 				handleResponsePartialContent(ctx, {
 					status: "missing-information",
-					message:
-						"Saknar någon av dessa nycklar: organizationId, name. Kan inte aktivera plugin.",
+					message: "Saknar någon av dessa nycklar: pluginId. Kan inte ta bort plugin.",
 				});
 				return;
 			}
 
-			const foundDefaultPlugin = findPlugin(name);
-			if (!foundDefaultPlugin) {
-				handleResponsePartialContent(ctx, {
-					status: "plugin-not-found",
-					message: "Pluginet existerar inte.",
-				});
-				return;
-			}
-
-			const organizationDoc = await Organization.findById(organizationId);
-			if (!organizationDoc) {
-				handleResponsePartialContent(ctx, {
-					status: "organization-not-found",
-					message: "Organizationen existerar inte.",
-				});
-				return;
-			}
-
-			const foundPlugin = await Plugin.findOneAndDelete({
-				organization: organizationId,
-				name,
-			});
+			const foundPlugin = await Plugin.findByIdAndDelete(pluginId);
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
@@ -59,11 +36,11 @@ router.post(
 				return;
 			}
 
-			await Organization.findByIdAndUpdate(organizationId, {
+			await Organization.findByIdAndUpdate(foundPlugin.organization, {
 				$pull: { plugins: foundPlugin._id },
 			});
 
-			if (name === "mailer") {
+			if (foundPlugin.name === "mailer") {
 				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
 			}
 
