@@ -13,7 +13,7 @@ export default model<IUser>(
 	"User",
 	new Schema<IUser>({
 		name: String,
-		password: String,
+		password: { type: String, default: "" },
 		email: { type: String, unique: true },
 		avatarUrl: String,
 		organizations: [{ type: Types.ObjectId, ref: "Organization" }],

@@ -22,11 +22,24 @@ router.post("/resetPasswordWithToken", async (ctx: Context) => {
 				status: "error",
 				message: "Unauthorized",
 			});
+			return;
 		}
 
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(newPassword, salt);
-		await User.findOneAndUpdate({ email: payload.email }, { password: hashedPassword });
+
+		const user = await User.findOne({ email: payload.data });
+		if (!user) {
+			handleResponseError(ctx, {
+				status: "error",
+				message: "Användaren kunde inte hittas.",
+			});
+			return;
+		}
+
+		user.password = hashedPassword;
+		await user.save();
+
 		await ResetPasswordToken.findOneAndDelete({ token: token });
 
 		handleResponseSuccess(ctx, {
