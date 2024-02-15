@@ -5,16 +5,25 @@ export default async function systemApiKeyMiddleware(socket: Socket): Promise<vo
 	const key = socket.handshake.auth.token;
 
 	if (!key) {
-		return Promise.reject();
+		return Promise.reject({
+			status: "error",
+			message: "No API key provided",
+		});
 	}
 
 	const apiKey = await ApiKey.findOne({ key });
 	if (!apiKey) {
-		return Promise.reject();
+		return Promise.reject({
+			status: "error",
+			message: "Invalid API key",
+		});
 	}
 
 	if (!apiKey.systemKey) {
-		return Promise.reject();
+		return Promise.reject({
+			status: "error",
+			message: "Invalid",
+		});
 	}
 
 	return Promise.resolve();

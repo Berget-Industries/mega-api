@@ -41,7 +41,11 @@ router.post(
 			});
 
 			if (foundPlugin.name === "mailer") {
-				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
+				globalEventTarget.dispatchEvent(
+					new CustomEvent("update-plugins-mailer", {
+						detail: foundPlugin._id,
+					})
+				);
 			}
 
 			handleResponseSuccess(ctx, {
