@@ -1,4 +1,4 @@
-import { Plugin } from "../../../models/index.ts";
+import { Plugin, Worker } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
@@ -36,56 +36,75 @@ router.post(
 			}
 
 			if (foundPlugin.name === "auto-filter") {
-				console.log("auto-filter1");
-				await Plugin.updateMany(
-					{
-						organization: foundPlugin.organization,
-						name: "mailer",
-					},
-					{ $set: { "config.autoFilter": false } }
-				);
-
 				const megaAssistantAlexPlugin = await Plugin.findOne({
 					organization: foundPlugin.organization,
 					name: "mega-assistant-alex",
 				});
 
 				if (!megaAssistantAlexPlugin || !megaAssistantAlexPlugin.isActivated) {
-					console.log("mega-assistant-alex2");
 					await Plugin.updateMany(
 						{
 							organization: foundPlugin.organization,
 							name: "mailer",
 						},
-						{ isActivated: false }
+						{ isActivated: false, worker: null }
+					);
+				} else {
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ $set: { "config.autoFilter": false } }
 					);
 				}
 			}
 
 			if (foundPlugin.name === "mega-assistant-alex") {
 				console.log("mega-assistant-alex1");
-				const autoFilterPlugin = await Plugin.findOne({
-					organization: foundPlugin.organization,
-					name: "auto-filter",
-				});
 
-				if (!autoFilterPlugin || !autoFilterPlugin.isActivated) {
-					console.log("auto-filter2");
-					await Plugin.updateMany(
-						{
-							organization: foundPlugin.organization,
-							name: "mailer",
-						},
-						{ isActivated: false }
-					);
-				}
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: "mailer",
+						"config.autoFilter": false,
+					},
+					{ isActivated: false, worker: null }
+				);
+
+				await Plugin.updateOne(
+					{
+						organization: foundPlugin.organization,
+						name: "mega-assistant-eva",
+					},
+					{ isActivated: false }
+				);
+
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: { $regex: /^mega-assistant-alex-/ },
+					},
+					{ isActivated: false }
+				);
 			}
 
+			if (foundPlugin.worker) {
+				await Worker.findByIdAndUpdate(foundPlugin.worker, {
+					$pull: { plugins: foundPlugin._id },
+				});
+			}
+
+			foundPlugin.worker = null;
 			foundPlugin.isActivated = false;
 			await foundPlugin.save();
 
 			if (foundPlugin.name === "mailer") {
-				globalEventTarget.dispatchEvent(new Event("update-plugins-mailer"));
+				globalEventTarget.dispatchEvent(
+					new CustomEvent("update-plugins-mailer", {
+						detail: foundPlugin._id,
+					})
+				);
 			}
 
 			handleResponseSuccess(ctx, {

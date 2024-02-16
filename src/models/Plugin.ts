@@ -8,6 +8,7 @@ export interface IPlugin {
 	organization: Types.ObjectId;
 	dependencies: string[];
 	worker: Types.ObjectId | null;
+	lastHeartbeat: Date | null;
 }
 
 export default model<IPlugin>(
@@ -20,5 +21,6 @@ export default model<IPlugin>(
 		organization: { type: Types.ObjectId, ref: "Organization" },
 		dependencies: Array,
 		worker: { type: Types.ObjectId, ref: "Worker", default: null },
+		lastHeartbeat: { type: Date, default: null },
 	})
 );

@@ -12,7 +12,7 @@ import {
 
 const router = new Router();
 router.post(
-	"/add",
+	"/import-config",
 	authenticationMiddleware,
 	systemAdminAuthenticationMiddleware,
 	async (ctx: Context) => {
@@ -28,6 +28,15 @@ router.post(
 				return;
 			}
 
+			const organizationDoc = await Organization.findById(organizationId);
+			if (!organizationDoc) {
+				handleResponsePartialContent(ctx, {
+					status: "organization-not-found",
+					message: "Organizationen existerar inte.",
+				});
+				return;
+			}
+
 			const foundDefaultPlugin = findPlugin(name);
 			if (!foundDefaultPlugin) {
 				handleResponsePartialContent(ctx, {
@@ -37,16 +46,7 @@ router.post(
 				return;
 			}
 
-			const { dependencies, type } = foundDefaultPlugin;
-
-			const organizationDoc = await Organization.findById(organizationId);
-			if (!organizationDoc) {
-				handleResponsePartialContent(ctx, {
-					status: "organization-not-found",
-					message: "Organizationen existerar inte.",
-				});
-				return;
-			}
+			const { dependencies, type, defaultConfig } = foundDefaultPlugin;
 
 			if (type !== "input") {
 				const foundPlugin = await Plugin.findOne({ name, organization: organizationId });
@@ -57,6 +57,39 @@ router.post(
 					});
 					return;
 				}
+			}
+
+			const defaultConfigKeys = Object.keys(defaultConfig);
+			const configKeys = Object.keys(config);
+
+			if (defaultConfigKeys.length !== configKeys.length) {
+				handleResponsePartialContent(ctx, {
+					status: "invalid-config",
+					message: "Konfigurationen är ogiltig. Felaktigt antal nycklar.",
+				});
+				return;
+			}
+
+			if (!defaultConfigKeys.every((key) => configKeys.includes(key))) {
+				handleResponsePartialContent(ctx, {
+					status: "invalid-config",
+					message: "Konfigurationen är ogiltig. Saknar nödvändiga nycklar.",
+				});
+				return;
+			}
+
+			const isConfigValid = defaultConfigKeys.every((key) => {
+				const defaultValue = defaultConfig[key];
+				const configValue = config[key];
+				return typeof configValue === typeof defaultValue;
+			});
+
+			if (!isConfigValid) {
+				handleResponsePartialContent(ctx, {
+					status: "invalid-config",
+					message: "Konfigurationen är ogiltig. Felaktiga värden för nycklar.",
+				});
+				return;
 			}
 
 			const newPlugin = await Plugin.create({

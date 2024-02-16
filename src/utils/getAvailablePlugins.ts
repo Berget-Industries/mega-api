@@ -1,8 +1,29 @@
+type availablePluginType = "input" | "chain" | "tool";
 type availablePlugin = {
 	name: string;
-	type: string;
+	type: availablePluginType;
 	defaultConfig: Record<string, any>;
 	dependencies: string[] | string[][];
+};
+
+type DefaultConfigChatClient = {
+	greeting: string;
+	color: string;
+	name: string;
+};
+
+type DefaultConfigMailer = {
+	apiKey: string;
+	autoFilter: boolean;
+	mainInbox: string;
+	imapConfig: {
+		user: string;
+		password: string;
+		host: string;
+		port: number;
+		tls: boolean;
+		tlsOptions: { rejectUnauthorized: boolean };
+	};
 };
 
 const inputPlugins: availablePlugin[] = [
@@ -13,7 +34,7 @@ const inputPlugins: availablePlugin[] = [
 			greeting: "",
 			color: "",
 			name: "",
-		},
+		} as DefaultConfigChatClient,
 		dependencies: ["mega-assistant-alex"],
 	},
 	{
@@ -31,10 +52,25 @@ const inputPlugins: availablePlugin[] = [
 				tls: true,
 				tlsOptions: { rejectUnauthorized: false },
 			},
-		},
+		} as DefaultConfigMailer,
 		dependencies: [["mega-assistant-alex", "auto-filter"]],
 	},
 ];
+
+type DefaultConfigMegaAssistantAlex = {
+	systemPrompt: string;
+	abilities: string;
+	tools: string[];
+};
+
+type DefaultConfigMegaAssistantEva = {
+	systemPrompt: string;
+	model: string;
+};
+
+type DefaultConfigAutoFilter = {
+	rules: Record<string, string>;
+};
 
 const chainPlugins: availablePlugin[] = [
 	{
@@ -44,7 +80,7 @@ const chainPlugins: availablePlugin[] = [
 			systemPrompt: "",
 			abilities: "",
 			tools: [],
-		},
+		} as DefaultConfigMegaAssistantAlex,
 		dependencies: [],
 	},
 	{
@@ -53,7 +89,7 @@ const chainPlugins: availablePlugin[] = [
 		defaultConfig: {
 			systemPrompt: "",
 			model: "gpt-4-1106-preview",
-		},
+		} as DefaultConfigMegaAssistantEva,
 		dependencies: ["mega-assistant-alex"],
 	},
 	{
@@ -63,10 +99,15 @@ const chainPlugins: availablePlugin[] = [
 			rules: {
 				Manuell: "Allt som inte passar in på något annat hamnar här.",
 			},
-		},
+		} as DefaultConfigAutoFilter,
 		dependencies: ["mailer"],
 	},
 ];
+
+type DefaultConfigMegaAssistantAlexWaiteraid = {
+	chambre: boolean;
+	apiKey: string;
+};
 
 const toolPlugins: availablePlugin[] = [
 	{
@@ -75,7 +116,7 @@ const toolPlugins: availablePlugin[] = [
 		defaultConfig: {
 			chambre: false,
 			apiKey: "",
-		},
+		} as DefaultConfigMegaAssistantAlexWaiteraid,
 		dependencies: ["mega-assistant-alex"],
 	},
 ];
