@@ -27,19 +27,32 @@ router.post(
 				return;
 			}
 
-			const foundPlugin = await Plugin.findByIdAndUpdate(
-				pluginId,
-				{ $set: { config } },
-				{ new: true }
-			);
+			const foundPlugin = await Plugin.findById(pluginId);
 			if (!foundPlugin) {
 				handleResponsePartialContent(ctx, {
 					status: "not-found",
 					message:
-						"Detta plugin existerar inte på denna organization. Kunde inte ta bort.",
+						"Detta plugin existerar inte på denna organization. Kunde inte uppdatera.",
 				});
 				return;
 			}
+
+			if (foundPlugin.name === "mailer" && config.autoFilter && foundPlugin.isActivated) {
+				const autoFilterPlugin = await Plugin.findOne({
+					organization: foundPlugin.organization,
+					name: "auto-filter",
+				});
+
+				if (!autoFilterPlugin || !autoFilterPlugin.isActivated) {
+					handleResponsePartialContent(ctx, {
+						status: "missing-dependencies",
+						message: "Mailer pluginet saknar auto-filter, kan inte uppdatera plugin.",
+					});
+					return;
+				}
+			}
+
+			await Plugin.findByIdAndUpdate(pluginId, { $set: { config } }, { new: true });
 
 			if (foundPlugin.name === "mailer") {
 				globalEventTarget.dispatchEvent(
@@ -51,7 +64,7 @@ router.post(
 
 			handleResponseSuccess(ctx, {
 				status: "success",
-				message: "Lyckades skapa ett nytt plugin.",
+				message: "Lyckades uppdatera ett plugin.",
 				plugin: foundPlugin.toObject(),
 			});
 		} catch (error) {

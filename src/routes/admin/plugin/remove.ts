@@ -1,5 +1,5 @@
 import { findPlugin } from "../../../utils/getAvailablePlugins.ts";
-import { Plugin, Organization } from "../../../models/index.ts";
+import { Plugin, Organization, Worker } from "../../../models/index.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { globalEventTarget } from "../../../utils/globalEventTarget.ts";
 import authenticationMiddleware from "../../../middleware/authenticationMiddleware.ts";
@@ -34,6 +34,66 @@ router.post(
 						"Detta plugin existerar inte på denna organization. Kunde inte ta bort.",
 				});
 				return;
+			}
+
+			if (foundPlugin.name === "auto-filter") {
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: "mailer",
+					},
+					{ $set: { "config.autoFilter": false } }
+				);
+
+				const megaAssistantAlexPlugin = await Plugin.findOne({
+					organization: foundPlugin.organization,
+					name: "mega-assistant-alex",
+				});
+
+				if (!megaAssistantAlexPlugin || !megaAssistantAlexPlugin.isActivated) {
+					await Plugin.updateMany(
+						{
+							organization: foundPlugin.organization,
+							name: "mailer",
+						},
+						{ isActivated: false, worker: null }
+					);
+				}
+			}
+
+			if (foundPlugin.name === "mega-assistant-alex") {
+				console.log("mega-assistant-alex1");
+
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: "mailer",
+						"config.autoFilter": false,
+					},
+					{ isActivated: false, worker: null }
+				);
+
+				await Plugin.updateOne(
+					{
+						organization: foundPlugin.organization,
+						name: "mega-assistant-eva",
+					},
+					{ isActivated: false }
+				);
+
+				await Plugin.updateMany(
+					{
+						organization: foundPlugin.organization,
+						name: { $regex: /^mega-assistant-alex-/ },
+					},
+					{ isActivated: false }
+				);
+			}
+
+			if (foundPlugin.worker) {
+				await Worker.findByIdAndUpdate(foundPlugin.worker, {
+					$pull: { plugins: foundPlugin._id },
+				});
 			}
 
 			await Organization.findByIdAndUpdate(foundPlugin.organization, {
