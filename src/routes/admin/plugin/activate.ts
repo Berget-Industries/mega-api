@@ -37,7 +37,7 @@ router.post(
 			}
 
 			if (foundPlugin.name === "mailer") {
-				if (foundPlugin.config.autoFilter) {
+				if ((foundPlugin?.config as Record<string, any>).autoFilter) {
 					const autoFilterPlugin = await Plugin.findOne({
 						organization: foundPlugin.organization,
 						name: "auto-filter",
