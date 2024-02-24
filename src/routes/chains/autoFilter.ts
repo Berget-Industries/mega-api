@@ -9,6 +9,7 @@ import {
 	handleResponseSuccess,
 	handleResponsePartialContent,
 } from "../../utils/contextHandler.ts";
+import { ILLMOutput } from "../../models/Message.ts";
 
 const router = new Router();
 router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
@@ -64,12 +65,29 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 			randomExamples.push(allExamples[randomIndex]);
 		}
 
-		const autoFilter = await runAutoFilterChain({
-			organizationAbilities: megaAssistantAlexConfig?.abilities,
-			organizationExamples: randomExamples.join("\n"),
-			organizationRules: autoFilterConfig.rules,
-			message,
-		});
+		const llmOutput: ILLMOutput[] = [];
+		const runAutoFilter = async (): Promise<void> => {
+			const autoFilterLLMOutput = await runAutoFilterChain({
+				organizationAbilities: megaAssistantAlexConfig?.abilities,
+				organizationExamples: randomExamples.join("\n"),
+				organizationRules: autoFilterConfig.rules,
+				message,
+			});
+
+			llmOutput.push(autoFilterLLMOutput);
+
+			if (
+				allExamples.includes(autoFilterLLMOutput.output) ||
+				autoFilterLLMOutput.output === "MEGA-ASSISTANT" ||
+				autoFilterLLMOutput.output === "OTHER"
+			) {
+				return Promise.resolve();
+			}
+
+			return runAutoFilter();
+		};
+
+		await runAutoFilter();
 
 		const savedMessage = await saveChainMessage({
 			organizationId,
@@ -78,14 +96,14 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 			contactName,
 			messageId: new mongoose.Types.ObjectId().toString(),
 			createdAt: new Date(),
-			llmOutput: [autoFilter],
+			llmOutput,
 			input: message,
 		});
 
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output: autoFilter.output,
+			output: llmOutput.length > 0 ? llmOutput[llmOutput.length - 1].output : "",
 			...savedMessage,
 		});
 	} catch (error) {
