@@ -29,6 +29,12 @@ MEGA-ASSISTANTs kunskaper:
 }
 
 Du ska endast svara ett ord. Vilken sorterings som ska ske. Du ska endast skriva sorterings nyckeln.
+Om INGEN av ovanstående sorterings nycklar passar in på meddelandet ska du svara med "OTHER".
+Det är EXTREMT viktigt att du svarar med exakt sorterings nyckel${
+	organizationAbilities !== undefined ? ', "MEGA-ASSISTANT"' : ""
+} eller "OTHER".
+Försök inte svara något du inte ska för att ditt svar kommer att dubbelkollas.
+
 SVARA ALLTID I FÖLJANDE FORMAT:
 {organizationExamples}
 `;
