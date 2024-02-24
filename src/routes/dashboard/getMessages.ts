@@ -11,21 +11,22 @@ router.get("/messages", authenticationMiddleware, checkOrganizationAccess, async
 	try {
 		const params = ctx.request.url.searchParams;
 
-		const endDate = params.get("endDate");
-		const startDate = params.get("startDate");
+		const endDateParam = params.get("endDate");
+		const startDateParam = params.get("startDate");
 		const organization = ctx.state.organization;
 
 		if (!organization) throw "missing-id";
-		if (!startDate) throw "missing-startDate";
-		if (!endDate) throw "missing-endDate;";
+		if (!endDateParam) throw "missing-endDate;";
+		if (!startDateParam) throw "missing-startDate";
+
+		const endDate = new Date(decodeURIComponent(endDateParam));
+		const startDate = new Date(decodeURIComponent(startDateParam));
 
 		const messages = await Message.find({
 			organization,
-			match: {
-				createdAt: {
-					$gte: decodeURIComponent(startDate),
-					$lte: decodeURIComponent(endDate),
-				},
+			createdAt: {
+				$gte: startDate,
+				$lte: endDate,
 			},
 		})
 			.populate("contact")
