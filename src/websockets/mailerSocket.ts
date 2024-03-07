@@ -39,6 +39,18 @@ export default async function handleMailerSocket(io: Server, socket: Socket) {
 		await Plugin.findByIdAndUpdate(pluginId, { lastHeartbeat: new Date() });
 	});
 
+	socket.on("mailer_close", async (pluginId) => {
+		const plugin = await Plugin.findById(pluginId);
+		if (!plugin || !plugin.isActivated) {
+			socket.emit("mailer_remove-config", pluginId);
+		} else {
+			socket.emit("mailer_update-config", {
+				_id: plugin._id,
+				config: plugin.config,
+			});
+		}
+	});
+
 	globalEventTarget.addEventListener("update-plugins-mailer", async (event) => {
 		const plugin = await Plugin.findById(event.detail);
 
