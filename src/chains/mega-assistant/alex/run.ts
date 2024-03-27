@@ -20,6 +20,7 @@ import getCurrentDateAndTimeTool from "./tools/getCurrentDateAndTime.ts";
 
 // PLUGIN TOOLS
 import initPluginWaiterAid from "./tools/plugins/waiteraid/index.ts";
+import { initPluginMailESendToHuman } from "./tools/plugins/mailE/index.ts";
 
 const createTools = async ({
 	agentName,
@@ -32,15 +33,19 @@ const createTools = async ({
 	organizationId: string;
 	conversationId: string;
 }): Promise<StructuredTool[]> => {
-	type availablePlugins = "waiteraid" | undefined;
+	type availablePlugins = "waiteraid" | "mega-assistant-alex-mailE-sendToHuman" | undefined;
 	const availablePlugins = {
 		waiteraid: initPluginWaiterAid,
+		"mega-assistant-alex-mailE-sendToHuman": initPluginMailESendToHuman,
 	};
 
 	const activatedTools: StructuredTool[] = [
-		knowledgeTool({ tags: [agentName, "knowledgeTool"] }),
+		// knowledgeTool({ tags: [agentName, "knowledgeTool"] }),
 		getCurrentDateAndTimeTool({ tags: [agentName, "getCurrentDateAndTimeTool"] }),
 	];
+
+	console.log({ organizationId, conversationId, agentName, organizationPlugins });
+	console.log({ availablePlugins });
 
 	for (const pluginName of organizationPlugins) {
 		const foundPlugin = Object.keys(availablePlugins).find(
@@ -58,7 +63,7 @@ const createTools = async ({
 				tags: [agentName, foundPlugin],
 			});
 
-			for (const pluginTool of pluginTools) {
+			for (const pluginTool of pluginTools as any) {
 				activatedTools.push(pluginTool);
 			}
 		} else {

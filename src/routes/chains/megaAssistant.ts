@@ -28,7 +28,7 @@ router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Conte
 
 		const conversationId = new Types.ObjectId(conversationIdInput).toString();
 
-		const [alex, eva] = await runMegaAssistant({
+		const megaOutput = await runMegaAssistant({
 			organizationId,
 			conversationId,
 			contactEmail,
@@ -43,14 +43,14 @@ router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Conte
 			contactName,
 			messageId,
 			createdAt: new Date(),
-			llmOutput: [alex, eva],
+			llmOutput: megaOutput,
 			input: message,
 		});
 
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output: eva.output,
+			output: megaOutput[1] ? megaOutput[1].output : megaOutput[0].output,
 			...savedMessage,
 		});
 	} catch (error) {

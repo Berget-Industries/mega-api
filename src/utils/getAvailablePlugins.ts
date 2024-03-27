@@ -24,6 +24,15 @@ type DefaultConfigMailer = {
 		tls: boolean;
 		tlsOptions: { rejectUnauthorized: boolean };
 	};
+	nodeMailerConfig: {
+		host: string;
+		port: number;
+		secure: boolean;
+		auth: {
+			user: string;
+			pass: string;
+		};
+	};
 };
 
 const inputPlugins: availablePlugin[] = [
@@ -109,6 +118,11 @@ type DefaultConfigMegaAssistantAlexWaiteraid = {
 	apiKey: string;
 };
 
+type DefaultConfigMegaAssistantAlexMailESendToHuman = {
+	sendTo: string;
+	subject: string;
+};
+
 const toolPlugins: availablePlugin[] = [
 	{
 		name: "mega-assistant-alex-waiteraid",
@@ -117,6 +131,15 @@ const toolPlugins: availablePlugin[] = [
 			chambre: false,
 			apiKey: "",
 		} as DefaultConfigMegaAssistantAlexWaiteraid,
+		dependencies: ["mega-assistant-alex"],
+	},
+	{
+		name: "mega-assistant-alex-mailE-sendToHuman",
+		type: "tool",
+		defaultConfig: {
+			sendTo: "",
+			subject: "",
+		} as DefaultConfigMegaAssistantAlexMailESendToHuman,
 		dependencies: ["mega-assistant-alex"],
 	},
 ];
