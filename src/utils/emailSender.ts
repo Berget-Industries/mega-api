@@ -3,7 +3,7 @@ import { createJwtToken } from "./jwt.ts";
 import ResetPasswordToken from "../models/ResetPasswordToken.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-async function sendMail(to: string, subject: string, html: string) {
+export async function sendMail(to: string, subject: string, html: string) {
 	const username = Deno.env.get("IMAP_USERNAME");
 	const password = Deno.env.get("IMAP_PASSWORD");
 

@@ -21,8 +21,8 @@ export default function getCurrentDateAndTimeTool({ tags }: { tags: string[] }):
 		verbose: false,
 		name: "get-current-date-and-time",
 		description: `användbart när du vill veta vad det är för datum idag eller vad klockan är just nu.
-    användbart när du behöver förstå vilket datum gästen pratar om.
-    till exemple om gästen säger ett datum som andra mars måste du förstå vilket år gästen menar. gästen kan ju inte boka den andra mars förra året.
+    användbart när du behöver förstå vilket datum personen pratar om.
+    till exemple om personen säger ett datum som andra mars måste du förstå vilket år personen menar. personen kan ju inte boka den andra mars förra året.
   `,
 		func: runFunction,
 		tags,

@@ -39,8 +39,14 @@ export default async function runMegaAssistant({
 		model: string;
 	};
 
-	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as evaConfig;
-	console.log(evaConfig);
+	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as
+		| evaConfig
+		| undefined;
+
+	if (!evaConfig) {
+		return Promise.resolve([alex]);
+	}
+
 	const eva = await runEva({
 		organizationSystemPrompt: evaConfig.systemPrompt,
 		organizationModel: evaConfig.model,
