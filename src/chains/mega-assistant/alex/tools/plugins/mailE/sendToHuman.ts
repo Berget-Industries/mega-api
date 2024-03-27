@@ -42,10 +42,15 @@ const runFunction = async ({
 			</div>
 		`;
 
-		const config = await getPluginConfig(
+		type sendToHumanConfig = {
+			sendTo: string;
+			subject: string;
+		};
+
+		const config = (await getPluginConfig(
 			"mega-assistant-alex-mailE-sendToHuman",
 			organizationId
-		);
+		)) as sendToHumanConfig;
 
 		if (!config) {
 			return Promise.resolve("Kunde inte hitta konfiguration för mail plugin.");
