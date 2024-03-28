@@ -603,7 +603,8 @@
   "redirects": {
     "https://deno.land/std/testing/asserts.ts": "https://deno.land/std@0.211.0/testing/asserts.ts",
     "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts",
-    "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v12.6.2/mod.ts"
+    "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v12.6.2/mod.ts",
+    "https://deno.land/x/smtp/mod.ts": "https://deno.land/x/smtp@v0.7.0/mod.ts"
   },
   "remote": {
     "https://deno.land/std@0.110.0/fmt/colors.ts": "8368ddf2d48dfe413ffd04cdbb7ae6a1009cf0dccc9c7ff1d76259d9c61a0621",
@@ -994,6 +995,11 @@
     "https://deno.land/std@0.211.0/streams/writer_from_stream_writer.ts": "cc5719a97b7af028ba1e16e7814aebff67ab3f2ec73228b295d5121f89630cae",
     "https://deno.land/std@0.211.0/streams/zip_readable_streams.ts": "53eb10d7557539b489bd858907aab6dd28247f074b3446573801de3150cb932e",
     "https://deno.land/std@0.211.0/testing/asserts.ts": "808a1ed58d59b5020da782fd6e20748deac3f1ea0cc1b89ec1fc511506de4ec0",
+    "https://deno.land/std@0.81.0/_util/assert.ts": "e1f76e77c5ccb5a8e0dbbbe6cce3a56d2556c8cb5a9a8802fc9565af72462149",
+    "https://deno.land/std@0.81.0/bytes/mod.ts": "e4f91c6473fe13e3cf1a23649137f87f49135c10bc08fc0f83382a0fb0b03744",
+    "https://deno.land/std@0.81.0/encoding/utf8.ts": "1b7e77db9a12363c67872f8a208886ca1329f160c1ca9133b13d2ed399688b99",
+    "https://deno.land/std@0.81.0/io/bufio.ts": "3cbbe1f761c1c636d1e7128ed4e7fdca6bf21d9199aa3cae71e69972a6ae8f93",
+    "https://deno.land/std@0.81.0/textproto/mod.ts": "4c378eda3cb6216608bb4c3a34201761c65f6980c4669455ca224c330cd5b790",
     "https://deno.land/x/cors@v1.2.2/abcCors.ts": "cdf83a7eaa69a1bf3ab910d18b9422217902fac47601adcaf0afac5a61845d48",
     "https://deno.land/x/cors@v1.2.2/attainCors.ts": "7d6aba0f942495cc31119604e0895c9bb8edd8f8baa7fe78e6c655bd0b4cbf59",
     "https://deno.land/x/cors@v1.2.2/cors.ts": "0e2d9167e3685f9bcf48f565e312b6e1883fa458f7337e5ce7bc2e3b29767980",
@@ -1008,6 +1014,7 @@
     "https://deno.land/x/denomailer@1.6.0/client/basic/transforms.ts": "e630a23d24e9b397e231ae8796c0a0080770ac6f5ab9bffc105d3717706e62c9",
     "https://deno.land/x/denomailer@1.6.0/client/mod.ts": "8ec4c25d9586f83f8629768311a077eaf03b1490dcb872030ba2e27fadb674d8",
     "https://deno.land/x/denomailer@1.6.0/client/pool.ts": "0466e69ca8959aa85501cc6b30d7f5fd8e43b0a6ac88ecc60dab71081e801bae",
+    "https://deno.land/x/denomailer@1.6.0/client/worker/worker-file.ts": "37b00f7995dc1f88f5641e842cfc30ab8ade1eeae6638ceeeb8ebf47eda47a1a",
     "https://deno.land/x/denomailer@1.6.0/client/worker/worker.ts": "a4c3a3e2e1fde0967817ece7c345a565eb44a7312acf8d46ce620d4ff4443b31",
     "https://deno.land/x/denomailer@1.6.0/config/client.ts": "302f5c18fbb5531b5615613084b86d44120acc210e072f4135e431fa27fc4526",
     "https://deno.land/x/denomailer@1.6.0/config/mail/attachments.ts": "1f357bddc9d5e813c3f647498db81a165a1a8a7163116c58dc10cf01427fd81e",
@@ -1111,6 +1118,10 @@
     "https://deno.land/x/oak_commons@0.4.0/server_sent_event.ts": "5c0b5b930bf39ea6742e408d9d47f6080637a1991188e10402d521181ee32286",
     "https://deno.land/x/oak_commons@0.4.0/status.ts": "f13e0e61c2aaf5e254ca528569b03896aee89d96ebc256fa740ea7305a68f53f",
     "https://deno.land/x/path_to_regexp@v6.2.1/index.ts": "894060567837bae8fc9c5cbd4d0a05e9024672083d5883b525c031eea940e556",
+    "https://deno.land/x/smtp@v0.7.0/code.ts": "f388fae4995b4d35d99fb6b8bfded522f5a3e7e7d63babdf318a059d6db43baf",
+    "https://deno.land/x/smtp@v0.7.0/deps.ts": "5e2a437e3ae35f0e83719fd2e707858dcb750c1111ff5bebc729522a1380b53d",
+    "https://deno.land/x/smtp@v0.7.0/mod.ts": "9b0d8fbdacc184d1af10f727980e51486e0ddf9d2ec7227c8dfce90db5bfbcf5",
+    "https://deno.land/x/smtp@v0.7.0/smtp.ts": "47c72a99925ad07f3174037f9325dbb8b703dc1177277b9161dc6209c7fa4f90",
     "https://deno.land/x/socket_io@0.2.0/deps.ts": "136b3fc7c55f2a06a367965da3395f1bf7de66d36a0d91c5f795084fa8c67ab3",
     "https://deno.land/x/socket_io@0.2.0/mod.ts": "61277a4145c378b602e8146ed4302117f130cf3b018c0a07bcb917e1b8c9fcf4",
     "https://deno.land/x/socket_io@0.2.0/packages/engine.io-parser/base64-arraybuffer.ts": "57ccea6679609df5416159fcc8a47936ad28ad6fe32235ef78d9223a3a823407",

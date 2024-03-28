@@ -81,6 +81,10 @@ type DefaultConfigAutoFilter = {
 	rules: Record<string, string>;
 };
 
+type DefaultConfigChainStarter = {
+	systemPrompt: string;
+};
+
 const chainPlugins: availablePlugin[] = [
 	{
 		name: "mega-assistant-alex",
@@ -109,6 +113,14 @@ const chainPlugins: availablePlugin[] = [
 				Manuell: "Allt som inte passar in på något annat hamnar här.",
 			},
 		} as DefaultConfigAutoFilter,
+		dependencies: ["mailer"],
+	},
+	{
+		name: "chain-starter",
+		type: "chain",
+		defaultConfig: {
+			systemPrompt: "",
+		} as DefaultConfigChainStarter,
 		dependencies: ["mailer"],
 	},
 ];

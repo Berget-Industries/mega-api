@@ -96,4 +96,10 @@ export default async function handleMailerSocket(io: Server, socket: Socket) {
 			return;
 		}
 	});
+
+	globalEventTarget.addEventListener("chain-starter-send-mail", (event) => {
+		const { to, subject, text, from } = event.detail;
+		console.log(event.detail);
+		socket.emit("chain-starter-send-mail", { to, subject, text, from });
+	});
 }

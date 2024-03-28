@@ -21,6 +21,49 @@ export async function sendMail(to: string, subject: string, html: string) {
 				password,
 			},
 		},
+		debug: {
+			noStartTLS: true,
+		},
+	});
+
+	await client.send({
+		from: username,
+		to,
+		subject,
+		html,
+	});
+	await client.close();
+}
+
+type sendMailWithCustomAuth = {
+	to: string;
+	subject: string;
+	html: string;
+	username: string;
+	password: string;
+	host: string;
+	port: number;
+};
+
+export async function sendMailWithCustomAuth({
+	to,
+	subject,
+	html,
+	username,
+	password,
+	host,
+	port,
+}: sendMailWithCustomAuth) {
+	const client = new SMTPClient({
+		connection: {
+			hostname: host,
+			port,
+			tls: true,
+			auth: {
+				username,
+				password,
+			},
+		},
 	});
 
 	await client.send({
