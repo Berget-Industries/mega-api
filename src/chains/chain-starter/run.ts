@@ -3,23 +3,25 @@ import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
 import { systemPrompt } from "./prompts.ts";
 import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import { LLMChain } from "npm:langchain@^0.0.159/chains";
-import { getChatPrompt } from "./prompts.ts";
 import TokenCounter from "../../utils/tokenCounter.ts";
+import { getChatPrompt } from "./prompts.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
 import { ILLMOutput } from "../../models/Message.ts";
 
-type agentInput = {
-	userMessage: string;
-	assistantMessage: string;
-};
+export interface IRunChainStarterConfig {
+	organizationSystemMessage: string;
+	messageInstructions: string;
+	contactInformation: string;
+	contactName: string;
+}
 
-export default async function runMailSubjector({
-	userMessage,
-	assistantMessage,
-}: agentInput): Promise<ILLMOutput> {
-	const agentName = "mail-subjector";
-
-	const tokenCounter = new TokenCounter();
+export default async function runChainStarterChain({
+	organizationSystemMessage,
+	messageInstructions,
+	contactInformation,
+	contactName,
+}: IRunChainStarterConfig): Promise<ILLMOutput> {
+	const agentName = "chain-starter";
 
 	const llm = new ChatOpenAI({
 		modelName: "gpt-4-1106-preview",
@@ -31,6 +33,7 @@ export default async function runMailSubjector({
 		["human", getChatPrompt()],
 	]);
 
+	const tokenCounter = new TokenCounter();
 	const chain = new LLMChain({
 		callbacks: [new LoggerCallbackHandler()],
 		outputKey: "output",
@@ -42,8 +45,10 @@ export default async function runMailSubjector({
 	const startTime = Date.now();
 	const { output } = await chain.call(
 		{
-			userMessage,
-			assistantMessage,
+			organizationSystemMessage,
+			messageInstructions,
+			contactInformation,
+			contactName,
 		},
 		{
 			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
