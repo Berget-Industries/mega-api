@@ -34,6 +34,8 @@ export default async function runMegaAssistant({
 		input: message,
 	});
 
+	console.log(alex);
+
 	type evaConfig = {
 		systemPrompt: string;
 		model: string;

@@ -1,11 +1,14 @@
 import { model, Schema, Types } from "npm:mongoose";
 
 export interface IAction {
-	type: "skapa-reservation" | "redigera-reservation" | "avboka-reservation";
+	type:
+		| "skapa-reservation"
+		| "redigera-reservation"
+		| "avboka-reservation"
+		| "skicka-mail-till-manniska";
 	docId: string;
 	date: Date;
 	input: any;
-	displayName: string;
 }
 export interface IUsedTokens {
 	input: number;

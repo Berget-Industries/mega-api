@@ -1,15 +1,20 @@
 import { Serialized } from "npm:langchain@^0.0.159/load/serializable";
 import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
 import { AgentAction, AgentFinish, ChainValues } from "npm:langchain@^0.0.159/schema";
+import { IAction } from "../../models/Message.ts";
 
-type onAction = (some: any) => void;
+type onAction = (action: IAction) => void;
 
 export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 	name = "ActionCounterCallbackHandler";
 	actions: Record<
 		string,
 		{
-			type: "skapa-reservation" | "redigera-reservation" | "avboka-reservation";
+			type:
+				| "skapa-reservation"
+				| "redigera-reservation"
+				| "avboka-reservation"
+				| "skicka-mail-till-manniska";
 			docId: string;
 			date: Date;
 			input: string;
@@ -34,9 +39,9 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 		if (
 			type === "skapa-reservation" ||
 			type === "redigera-reservation" ||
-			type === "avboka-reservation"
+			type === "avboka-reservation" ||
+			type === "skicka-mail-till-manniska"
 		) {
-			console.log(type);
 			this.actions[runId] = { ...this.actions[runId], type };
 		}
 	}

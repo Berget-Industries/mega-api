@@ -31,6 +31,9 @@ export default async function saveChainMessage({
 				email: contactEmail,
 				name: contactName,
 			});
+		} else {
+			contactDoc.name = contactName;
+			await contactDoc.save();
 		}
 
 		const actualConversationId = conversationId || new Types.ObjectId();

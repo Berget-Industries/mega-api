@@ -59,7 +59,7 @@ const runFunction = async ({
 		const { sendTo, subject } = config;
 		await sendMail(sendTo, subject, html);
 
-		return Promise.resolve(`Mail skickats!`);
+		return Promise.resolve(`Det lyckades!`);
 	} catch (error) {
 		console.error(error);
 		return Promise.resolve("Kunde inte skicka mail! Försök igen senare.");

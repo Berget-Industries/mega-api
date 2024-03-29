@@ -21,9 +21,6 @@ export async function sendMail(to: string, subject: string, html: string) {
 				password,
 			},
 		},
-		debug: {
-			noStartTLS: true,
-		},
 	});
 
 	await client.send({

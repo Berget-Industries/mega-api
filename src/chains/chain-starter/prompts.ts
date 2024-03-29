@@ -1,5 +1,4 @@
 export const systemPrompt = () => `
-KONTEXT OM DIG:
 {organizationSystemMessage}
 `;
 
@@ -8,7 +7,4 @@ Du ska skriva ett meddelande till {contactName}.
 
 INFORMATION OM PERSONEN DU SKA KONTAKTA:
 {contactInformation}
-
-INSTRUKTIONER FÖR MEDDELANDE:
-{messageInstructions}
 `;

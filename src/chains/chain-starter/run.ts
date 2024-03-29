@@ -24,8 +24,8 @@ export default async function runChainStarterChain({
 	const agentName = "chain-starter";
 
 	const llm = new ChatOpenAI({
-		modelName: "gpt-4-1106-preview",
-		temperature: 0,
+		modelName: "gpt-4-turbo-preview",
+		temperature: 0.25,
 	});
 
 	const chatPrompt = ChatPromptTemplate.fromMessages([
