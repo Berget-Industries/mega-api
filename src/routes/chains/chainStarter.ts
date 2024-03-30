@@ -1,4 +1,5 @@
 import mongoose from "npm:mongoose";
+import AlexMemory from "../../models/AlexMemory.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
 import saveChainMessage from "../../utils/saveChainMessage.ts";
 import runMailSubjector from "../../chains/mailSubjector/run.ts";
@@ -28,7 +29,7 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 		}
 
 		type chainStarterConfig = {
-			systemMessage: string;
+			systemPrompt: string;
 			signature: string;
 		};
 
@@ -68,27 +69,22 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 		}
 
 		const llmOutput: ILLMOutput = await runChainStarterChain({
-			organizationSystemMessage: chainStarterConfig.systemMessage,
+			organizationSystemMessage: chainStarterConfig.systemPrompt,
 			messageInstructions,
 			contactInformation,
 			contactName,
 		});
 
 		const mailSubjectOutput = await runMailSubjector({
-			userMessage: chainStarterConfig.systemMessage + messageInstructions,
+			userMessage: chainStarterConfig.systemPrompt + messageInstructions,
 			assistantMessage: llmOutput.output,
 		});
 
-		globalEventTarget.dispatchEvent(
-			new CustomEvent("chain-starter-send-mail", {
-				detail: {
-					from: mailerConfig.nodemailerConfig.auth.user,
-					to: contactEmail,
-					subject: mailSubjectOutput.output,
-					text: llmOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
-				},
-			})
-		);
+		const messageInput = `
+Jag heter ${contactName} och min epost är ${contactEmail}.
+Lite kort information om mig: 
+${contactInformation}
+`;
 
 		const savedMessage = await saveChainMessage({
 			organizationId,
@@ -98,8 +94,47 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 			messageId: new mongoose.Types.ObjectId().toString(),
 			createdAt: new Date(),
 			llmOutput: [llmOutput],
-			input: `Namn: ${contactName}\nE-post: ${contactEmail}\nKontaktinformation: ${contactInformation}`,
+			input: messageInput,
 		});
+
+		if (!savedMessage) {
+			handleResponseError(ctx, {
+				status: "error",
+				message: "Nånting gick fel.",
+			});
+			return;
+		}
+
+		await AlexMemory.create({
+			_id: savedMessage.conversationId,
+			messages: [
+				{
+					type: "human",
+					data: {
+						content: messageInput,
+						additional_kwargs: {},
+					},
+				},
+				{
+					type: "ai",
+					data: {
+						content: llmOutput.output,
+						additional_kwargs: {},
+					},
+				},
+			],
+		});
+
+		globalEventTarget.dispatchEvent(
+			new CustomEvent("chain-starter-send-mail", {
+				detail: {
+					to: contactEmail,
+					from: mailerConfig.nodemailerConfig.auth.user,
+					subject: mailSubjectOutput.output + " | " + savedMessage.conversationId,
+					text: llmOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
+				},
+			})
+		);
 
 		handleResponseSuccess(ctx, {
 			status: "success",
