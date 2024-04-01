@@ -14,7 +14,8 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 				| "skapa-reservation"
 				| "redigera-reservation"
 				| "avboka-reservation"
-				| "skicka-mail-till-manniska";
+				| "skicka-mail-till-manniska"
+				| "skapa-kalenderhandelse";
 			docId: string;
 			date: Date;
 			input: string;
@@ -40,7 +41,8 @@ export default class ActionCounterCallbackHandler extends BaseCallbackHandler {
 			type === "skapa-reservation" ||
 			type === "redigera-reservation" ||
 			type === "avboka-reservation" ||
-			type === "skicka-mail-till-manniska"
+			type === "skicka-mail-till-manniska" ||
+			type === "skapa-kalenderhandelse"
 		) {
 			this.actions[runId] = { ...this.actions[runId], type };
 		}

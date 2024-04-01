@@ -112,7 +112,7 @@ export default async function initAgentAlex({
 
 	const model = new ChatOpenAI({
 		temperature: 0,
-		modelName: "gpt-4-1106-preview",
+		modelName: "gpt-4-0125-preview",
 	});
 
 	const tools = await createTools({

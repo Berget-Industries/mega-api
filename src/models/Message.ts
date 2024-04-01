@@ -5,7 +5,8 @@ export interface IAction {
 		| "skapa-reservation"
 		| "redigera-reservation"
 		| "avboka-reservation"
-		| "skicka-mail-till-manniska";
+		| "skicka-mail-till-manniska"
+		| "skapa-kalenderhandelse";
 	docId: string;
 	date: Date;
 	input: any;

@@ -24,7 +24,7 @@ export default async function runManualFilterChain({
 	const agentName = "auto-filter";
 
 	const llm = new ChatOpenAI({
-		modelName: "gpt-4-1106-preview",
+		modelName: "gpt-4-0125-preview",
 		temperature: 0,
 	});
 
