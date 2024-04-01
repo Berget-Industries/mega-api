@@ -31,6 +31,7 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 		type chainStarterConfig = {
 			systemPrompt: string;
 			signature: string;
+			subject?: string;
 		};
 
 		const chainStarterConfig = (await getPluginConfig("chain-starter", organizationId)) as
@@ -68,17 +69,22 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 			return;
 		}
 
-		const llmOutput: ILLMOutput = await runChainStarterChain({
+		const chainStarterOutput: ILLMOutput = await runChainStarterChain({
 			organizationSystemMessage: chainStarterConfig.systemPrompt,
 			messageInstructions,
 			contactInformation,
 			contactName,
 		});
 
-		const mailSubjectOutput = await runMailSubjector({
-			userMessage: chainStarterConfig.systemPrompt + messageInstructions,
-			assistantMessage: llmOutput.output,
-		});
+		const llmOutputs: ILLMOutput[] = [chainStarterOutput];
+
+		if (!chainStarterConfig.subject) {
+			const mailSubjectOutput = await runMailSubjector({
+				assistantMessage: chainStarterOutput.output,
+				userMessage: "",
+			});
+			llmOutputs.push(mailSubjectOutput);
+		}
 
 		const messageInput = `
 Jag heter ${contactName} och min epost är ${contactEmail}.
@@ -93,7 +99,7 @@ ${contactInformation}
 			contactName,
 			messageId: new mongoose.Types.ObjectId().toString(),
 			createdAt: new Date(),
-			llmOutput: [llmOutput],
+			llmOutput: llmOutputs,
 			input: messageInput,
 		});
 
@@ -118,7 +124,7 @@ ${contactInformation}
 				{
 					type: "ai",
 					data: {
-						content: llmOutput.output,
+						content: chainStarterOutput.output,
 						additional_kwargs: {},
 					},
 				},
@@ -130,8 +136,10 @@ ${contactInformation}
 				detail: {
 					to: contactEmail,
 					from: mailerConfig.nodemailerConfig.auth.user,
-					subject: mailSubjectOutput.output + " | " + savedMessage.conversationId,
-					text: llmOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
+					subject: chainStarterConfig.subject
+						? chainStarterConfig.subject
+						: (llmOutputs[1]?.output || "") + " | " + savedMessage.conversationId,
+					text: chainStarterOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
 				},
 			})
 		);
@@ -139,7 +147,7 @@ ${contactInformation}
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output: llmOutput.output,
+			output: chainStarterOutput.output,
 			...savedMessage,
 		});
 	} catch (error) {

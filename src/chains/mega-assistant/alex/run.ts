@@ -21,6 +21,7 @@ import getCurrentDateAndTimeTool from "./tools/getCurrentDateAndTime.ts";
 // PLUGIN TOOLS
 import initPluginWaiterAid from "./tools/plugins/waiteraid/index.ts";
 import { initPluginMailESendToHuman } from "./tools/plugins/mailE/index.ts";
+import { initPluginGSuiteCalendarEvent } from "./tools/plugins/gSuite/index.ts";
 
 const createTools = async ({
 	agentName,
@@ -37,6 +38,7 @@ const createTools = async ({
 	const availablePlugins = {
 		waiteraid: initPluginWaiterAid,
 		"mega-assistant-alex-mailE-sendToHuman": initPluginMailESendToHuman,
+		"mega-assistant-alex-gSuite-createCalendarEvent": initPluginGSuiteCalendarEvent,
 	};
 
 	const activatedTools: StructuredTool[] = [
