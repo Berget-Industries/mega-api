@@ -10,6 +10,7 @@ import {
 	handleResponsePartialContent,
 } from "../../utils/contextHandler.ts";
 import { ILLMOutput } from "../../models/Message.ts";
+import { resolve } from "https://deno.land/std@0.200.0/path/resolve.ts";
 
 const router = new Router();
 router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
@@ -78,9 +79,15 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 
 			if (
 				allExamples.includes(autoFilterLLMOutput.output) ||
+				autoFilterLLMOutput.output === "Bounce" ||
+				autoFilterLLMOutput.output === "Auto-Reply" ||
 				autoFilterLLMOutput.output === "MEGA-ASSISTANT" ||
 				autoFilterLLMOutput.output === "OTHER"
 			) {
+				return Promise.resolve();
+			}
+
+			if (llmOutput.length >= 5) {
 				return Promise.resolve();
 			}
 
@@ -103,7 +110,10 @@ router.post("/auto-filter", apiKeyAuthenticationMiddleware, async (ctx: Context)
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
-			output: llmOutput.length > 0 ? llmOutput[llmOutput.length - 1].output : "",
+			output:
+				llmOutput.length > 0 && llmOutput.length <= 5
+					? llmOutput[llmOutput.length - 1].output
+					: "OTHER",
 			...savedMessage,
 		});
 	} catch (error) {
