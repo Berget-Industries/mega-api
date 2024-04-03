@@ -13,6 +13,8 @@ Namnet på nyckeln är själva sorterings nyckeln som du ska svara med för att 
 Värdet till nyckeln i listan är förklaringen till när du ska använda just den nyckeln, vilka krav som krävs för att meddelandet ska passa den sorteringsnyckel.
 
 REGLER FÖR SORTERING:
+- Bounce: Om du tror att meddelandet är en notis från en mailserver som förklarar att ett tidigare mail inte kunde levereras korrekt.
+- Auto-Reply: Om du tror att meddelandet är ett auto svar.
 ${Object.entries(organizationRules)
 	.map(([key, value]) => `- ${key}: ${value}`)
 	.join("\n")}
@@ -21,7 +23,7 @@ ${
 	organizationAbilities !== undefined
 		? `
 REGLEL SPECIAL CASE:
--  MEGA-ASSISTANT: Om du tror att MEGA-ASSISTANT kan hantera ärendet baserat på hur listan med kunskaper ser ut för MEGA-ASSISTANT. Här nedanför hittar du exakt precis vad MEGA-ASSISTANT kan göra. Om MEGA-ASSISTANT kan hantera ärendet ska du svara med MEGA-ASSISTANT.
+- MEGA-ASSISTANT: Om du tror att MEGA-ASSISTANT kan hantera ärendet baserat på hur listan med kunskaper ser ut för MEGA-ASSISTANT. Här nedanför hittar du exakt precis vad MEGA-ASSISTANT kan göra. Om MEGA-ASSISTANT kan hantera ärendet ska du svara med MEGA-ASSISTANT.
 MEGA-ASSISTANTs kunskaper:
 {organizationAbilities}
 `
@@ -36,10 +38,12 @@ Det är EXTREMT viktigt att du svarar med exakt sorterings nyckel${
 Försök inte svara något du inte ska för att ditt svar kommer att dubbelkollas.
 
 SVARA ALLTID I FÖLJANDE FORMAT:
+Bounce
+Auto-Replay
 {organizationExamples}
 `;
 
 export const getChatPrompt = () => `
 Meddelande:
-{message}
+{message} 
 `;

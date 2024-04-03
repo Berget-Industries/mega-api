@@ -171,11 +171,11 @@ export default async function addCalendarEvent({
 					summary: summary,
 					description: description,
 					start: {
-						dateTime: eventStartDate.toISOString(),
+						dateTime: eventStart,
 						timeZone: "Europe/Stockholm",
 					},
 					end: {
-						dateTime: eventEndDate.toISOString(),
+						dateTime: eventEnd,
 						timeZone: "Europe/Stockholm",
 					},
 				}),
