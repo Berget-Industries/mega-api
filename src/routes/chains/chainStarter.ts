@@ -152,6 +152,7 @@ ${contactInformation}
 			message: "",
 			output: chainStarterOutput.output,
 			content: {
+				signaure: chainStarterConfig.signature,
 				message: chainStarterOutput.output,
 				subject: chainStarterConfig.subject
 					? chainStarterConfig.subject
