@@ -17,7 +17,7 @@ import { globalEventTarget } from "../../utils/globalEventTarget.ts";
 const router = new Router();
 router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
 	try {
-		const { contactEmail, contactName, contactInformation, messageInstructions } =
+		const { contactEmail, contactName, contactInformation, messageInstructions, writeOnly } =
 			await ctx.request.body().value;
 		const organizationId = ctx.state.organizationId;
 
@@ -56,18 +56,6 @@ router.post("/chain-starter", apiKeyAuthenticationMiddleware, async (ctx: Contex
 				};
 			};
 		};
-
-		const mailerConfig = (await getPluginConfig("mailer", organizationId)) as
-			| mailerConfig
-			| undefined;
-
-		if (!mailerConfig) {
-			handleResponsePartialContent(ctx, {
-				status: "plugin-not-activated",
-				message: "Pluginet är inte aktiverat.",
-			});
-			return;
-		}
 
 		const chainStarterOutput: ILLMOutput = await runChainStarterChain({
 			organizationSystemMessage: chainStarterConfig.systemPrompt,
@@ -131,23 +119,44 @@ ${contactInformation}
 			],
 		});
 
-		globalEventTarget.dispatchEvent(
-			new CustomEvent("chain-starter-send-mail", {
-				detail: {
-					to: contactEmail,
-					from: mailerConfig.nodemailerConfig.auth.user,
-					subject: chainStarterConfig.subject
-						? chainStarterConfig.subject
-						: (llmOutputs[1]?.output || "") + " | " + savedMessage.conversationId,
-					text: chainStarterOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
-				},
-			})
-		);
+		if (!writeOnly) {
+			const mailerConfig = (await getPluginConfig("mailer", organizationId)) as
+				| mailerConfig
+				| undefined;
+
+			if (!mailerConfig) {
+				handleResponsePartialContent(ctx, {
+					status: "plugin-not-activated",
+					message: "Pluginet är inte aktiverat.",
+				});
+				return;
+			}
+
+			globalEventTarget.dispatchEvent(
+				new CustomEvent("chain-starter-send-mail", {
+					detail: {
+						to: contactEmail,
+						from: mailerConfig.nodemailerConfig.auth.user,
+						subject: chainStarterConfig.subject
+							? chainStarterConfig.subject
+							: (llmOutputs[1]?.output || "") + " | " + savedMessage.conversationId,
+						text:
+							chainStarterOutput.output + `\n\n\n\n\n${chainStarterConfig.signature}`,
+					},
+				})
+			);
+		}
 
 		handleResponseSuccess(ctx, {
 			status: "success",
 			message: "",
 			output: chainStarterOutput.output,
+			content: {
+				message: chainStarterOutput.output,
+				subject: chainStarterConfig.subject
+					? chainStarterConfig.subject
+					: (llmOutputs[1]?.output || "") + " | " + savedMessage.conversationId,
+			},
 			...savedMessage,
 		});
 	} catch (error) {
