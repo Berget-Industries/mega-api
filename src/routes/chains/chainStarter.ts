@@ -154,9 +154,9 @@ ${contactInformation}
 			content: {
 				signature: chainStarterConfig.signature,
 				message: chainStarterOutput.output,
-				subject: chainStarterConfig.subject
-					? chainStarterConfig.subject
-					: (llmOutputs[1]?.output || "") + " | " + savedMessage.conversationId,
+				subject: `${
+					chainStarterConfig.subject ? chainStarterConfig.subject : llmOutputs[1]?.output
+				} | ${savedMessage.conversationId}`,
 			},
 			...savedMessage,
 		});
