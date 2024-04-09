@@ -5,11 +5,12 @@ import update from "./update.ts";
 import remove from "./remove.ts";
 import activate from "./activate.ts";
 import deactivate from "./deactivate.ts";
+import importPlugin from "./import.ts";
 import getAvailablePlugins from "./getAvailablePlugins.ts";
 
 const router = new Router();
 const basePath = "/plugin";
-const routes = [add, list, update, remove, activate, deactivate, getAvailablePlugins];
+const routes = [add, list, update, remove, activate, deactivate, importPlugin, getAvailablePlugins];
 
 routes.forEach((_) => {
 	router.use(basePath, _.routes());
