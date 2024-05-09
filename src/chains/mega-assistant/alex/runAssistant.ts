@@ -5,6 +5,10 @@ import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
 import { BufferMemory } from "npm:langchain@^0.0.159/memory";
 import { StructuredTool } from "npm:langchain@^0.0.159/tools";
+
+import { AgentExecutor } from "npm:langchain@latest/agents";
+import { OpenAIAssistantRunnable } from "npm:langchain@latest/experimental/openai_assistant";
+
 import { getSystemMessage } from "./prompts.ts";
 import { MongoDBChatMessageHistory } from "npm:langchain@^0.0.159/stores/message/mongodb";
 import { initializeAgentExecutorWithOptions } from "npm:langchain@^0.0.159/agents";
@@ -95,6 +99,7 @@ interface IAgentAlexConfig {
 	organizationSystemPrompt: string;
 	organizationAbilities: string;
 	organizationPlugins: string[];
+	onStreamChunk?: (token: string) => void;
 }
 
 export default async function initAgentAlex({
@@ -104,13 +109,9 @@ export default async function initAgentAlex({
 	organizationSystemPrompt,
 	organizationAbilities,
 	organizationPlugins,
+	onStreamChunk,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
-
-	const model = new ChatOpenAI({
-		temperature: 0,
-		modelName: "gpt-4-0125-preview",
-	});
 
 	const tools = await createTools({
 		organizationPlugins,
@@ -118,34 +119,43 @@ export default async function initAgentAlex({
 		conversationId,
 		agentName,
 	});
-	const memory = createMemory(conversationId);
+
+	const agent = await OpenAIAssistantRunnable.createAssistant({
+		model: "gpt-3.5-turbo-1106",
+		instructions: "You are a weather bot. Use the provided functions to answer questions.",
+		name: "Weather Assistant",
+		tools,
+		asAgent: true,
+	});
+	const agentExecutor = AgentExecutor.fromAgentAndTools({
+		agent,
+		tools,
+	});
 
 	const agentArgs = {
 		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
 	};
 
+	console.log(agentArgs.systemMessage);
+
 	const tokenCounter = new TokenCounter();
 	const actions: IAction[] = [];
-
-	const agent = await initializeAgentExecutorWithOptions(tools, model, {
-		handleParsingErrors: "Please try again, paying close attention to the allowed enum values",
-		callbacks: [new LoggerCallbackHandler()],
-		agentType: "openai-functions",
-		tags: [agentName],
-		verbose: false,
-		agentArgs,
-		memory,
-	});
 
 	const startTime = Date.now();
 	const { output } = await agent.invoke(
 		{ input },
 		{
 			callbacks: [
-				new TokenCounterCallbackHandler(tokenCounter),
-				new ActionCounterCallbackHandler((item) => {
-					actions.push(item);
-				}),
+				{
+					handleLLMStart(llm, prompt) {
+						prompt.forEach(console.log);
+					},
+				},
+				{
+					handleLLMNewToken(token: string) {
+						onStreamChunk && onStreamChunk(token);
+					},
+				},
 			],
 		}
 	);

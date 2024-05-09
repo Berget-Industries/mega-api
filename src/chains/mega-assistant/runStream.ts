@@ -5,7 +5,15 @@ import runStreamAlex from "./alex/runStream.ts";
 import getPluginConfig from "../../utils/getPluginConfig.ts";
 import { ILLMOutput } from "../../models/Message.ts";
 
+export interface IMegaAssistantStreamChunk {
+	token: string;
+	assistant: string;
+	role: "thinker" | "speaker";
+	conversationId: string;
+}
+
 interface IRunMegaAssistantConfig {
+	onStreamChunk: (chunk: IMegaAssistantStreamChunk) => void;
 	organizationId: string;
 	conversationId: string;
 	contactEmail: string;
@@ -13,7 +21,8 @@ interface IRunMegaAssistantConfig {
 	message: string;
 }
 
-export default async function runMegaAssistant({
+export async function runMegaAssistantStream({
+	onStreamChunk,
 	organizationId,
 	conversationId,
 	contactEmail,
@@ -25,39 +34,49 @@ export default async function runMegaAssistant({
 		plugins: string[];
 		abilities: string;
 	};
+	type evaConfig = {
+		systemPrompt: string;
+		model: string;
+	};
 
 	const alexConfig = (await getPluginConfig("mega-assistant-alex", organizationId)) as alexConfig;
-	const alex = await runAlex({
+	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as
+		| evaConfig
+		| undefined;
+
+	console.log(alexConfig);
+
+	const alex = await runStreamAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
 		organizationPlugins: alexConfig.plugins,
 		organizationAbilities: alexConfig.abilities,
 		organizationId,
 		conversationId,
 		input: message,
+		onStreamChunk: (token: string) =>
+			onStreamChunk({
+				token,
+				assistant: "Alex",
+				role: evaConfig ? "thinker" : "speaker",
+				conversationId,
+			}),
 	});
-
-	console.log(alex);
-
-	type evaConfig = {
-		systemPrompt: string;
-		model: string;
-	};
-
-	const evaConfig = (await getPluginConfig("mega-assistant-eva", organizationId)) as
-		| evaConfig
-		| undefined;
 
 	if (!evaConfig) {
 		console.log("No Eva config found");
 		return Promise.resolve([alex]);
 	}
 
-	const eva = await runEva({
+	const eva = await runStreamEva({
 		organizationSystemPrompt: evaConfig.systemPrompt,
 		organizationModel: evaConfig.model,
 		mailToReWrite: alex.output,
 		nameOfUser: contactName,
+		onStreamChunk: (token: string) =>
+			onStreamChunk({ token, assistant: "Eva", role: "speaker", conversationId }),
 	});
 
 	return Promise.resolve([alex, eva]);
 }
+
+export default runMegaAssistantStream;

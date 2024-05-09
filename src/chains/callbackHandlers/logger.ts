@@ -21,6 +21,7 @@ export default class LoggerCallbackHandler extends BaseCallbackHandler {
 	) {
 		const str = `[${tags?.[0]}] jobbar...`;
 		console.log(str.bgYellow.black);
+		console.log(inputs);
 	}
 	// AGENT
 	async handleAgentAction(

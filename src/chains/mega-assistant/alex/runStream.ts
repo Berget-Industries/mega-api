@@ -95,6 +95,7 @@ interface IAgentAlexConfig {
 	organizationSystemPrompt: string;
 	organizationAbilities: string;
 	organizationPlugins: string[];
+	onStreamChunk: (token: string) => void;
 }
 
 export default async function initAgentAlex({
@@ -104,12 +105,14 @@ export default async function initAgentAlex({
 	organizationSystemPrompt,
 	organizationAbilities,
 	organizationPlugins,
+	onStreamChunk,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
 
 	const model = new ChatOpenAI({
 		temperature: 0,
 		modelName: "gpt-4-0125-preview",
+		streaming: true,
 	});
 
 	const tools = await createTools({
@@ -123,6 +126,8 @@ export default async function initAgentAlex({
 	const agentArgs = {
 		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
 	};
+
+	console.log(agentArgs.systemMessage);
 
 	const tokenCounter = new TokenCounter();
 	const actions: IAction[] = [];
@@ -142,10 +147,17 @@ export default async function initAgentAlex({
 		{ input },
 		{
 			callbacks: [
-				new TokenCounterCallbackHandler(tokenCounter),
-				new ActionCounterCallbackHandler((item) => {
-					actions.push(item);
-				}),
+				{
+					handleLLMStart(llm, prompt) {
+						prompt.forEach(console.log);
+					},
+				},
+				{
+					handleLLMNewToken(token: string) {
+						onStreamChunk(token);
+						// Deno.stdout.writeSync(new TextEncoder().encode(token));
+					},
+				},
 			],
 		}
 	);
