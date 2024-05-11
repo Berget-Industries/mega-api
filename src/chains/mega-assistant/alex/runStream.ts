@@ -1,13 +1,17 @@
 import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
+import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
-import { BufferMemory } from "npm:langchain@^0.0.159/memory";
-import { StructuredTool } from "npm:langchain@^0.0.159/tools";
-import { getSystemMessage } from "./prompts.ts";
-import { MongoDBChatMessageHistory } from "npm:langchain@^0.0.159/stores/message/mongodb";
-import { initializeAgentExecutorWithOptions } from "npm:langchain@^0.0.159/agents";
+import { BufferMemory } from "npm:langchain@latest/memory";
+import { StructuredTool } from "npm:langchain@latest/tools";
+
+import { convertToOpenAIFunction } from "npm:langchain@latest/core/utils/function_calling";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "npm:langchain@latest/agents";
+import { OpenAIAssistantRunnable } from "npm:langchain@latest/experimental/openai_assistant";
+
+import { getPrompt } from "./prompts.ts";
+import { MongoDBChatMessageHistory } from "npm:@langchain/mongodb";
 import {
 	ActionCounterCallbackHandler,
 	TokenCounterCallbackHandler,
@@ -81,8 +85,6 @@ const createMemory = (sessionId: string) => {
 			collection,
 			sessionId,
 		}),
-		memoryKey: "chat_history",
-		returnMessages: true,
 		outputKey: "output",
 		inputKey: "input",
 	});
@@ -95,7 +97,7 @@ interface IAgentAlexConfig {
 	organizationSystemPrompt: string;
 	organizationAbilities: string;
 	organizationPlugins: string[];
-	onStreamChunk: (token: string) => void;
+	onStreamChunk?: (token: string) => void;
 }
 
 export default async function initAgentAlex({
@@ -108,11 +110,20 @@ export default async function initAgentAlex({
 	onStreamChunk,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
+	const tokenCounter = new TokenCounter();
 
-	const model = new ChatOpenAI({
+	const llm = new ChatOpenAI({
+		model: "gpt-4-turbo-preview",
 		temperature: 0,
-		modelName: "gpt-4-0125-preview",
-		streaming: true,
+		verbose: false,
+		streaming: Boolean(onStreamChunk),
+		callbacks: [
+			{
+				handleLLMEnd(output) {
+					console.log(output);
+				},
+			},
+		],
 	});
 
 	const tools = await createTools({
@@ -121,50 +132,50 @@ export default async function initAgentAlex({
 		conversationId,
 		agentName,
 	});
+
+	const prompt = getPrompt({
+		organizationSystemPrompt,
+		organizationAbilities,
+	});
+
+	const agent = await createOpenAIFunctionsAgent({
+		llm,
+		tools,
+		prompt,
+	});
+
 	const memory = createMemory(conversationId);
 
-	const agentArgs = {
-		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
-	};
-
-	console.log(agentArgs.systemMessage);
-
-	const tokenCounter = new TokenCounter();
 	const actions: IAction[] = [];
 
-	const agent = await initializeAgentExecutorWithOptions(tools, model, {
-		handleParsingErrors: "Please try again, paying close attention to the allowed enum values",
-		callbacks: [new LoggerCallbackHandler()],
-		agentType: "openai-functions",
-		tags: [agentName],
-		verbose: false,
-		agentArgs,
+	const agentExecutor = new AgentExecutor({
+		agent,
+		tools,
 		memory,
+		returnIntermediateSteps: true,
 	});
 
 	const startTime = Date.now();
-	const { output } = await agent.invoke(
+	const res = await agentExecutor.invoke(
 		{ input },
 		{
 			callbacks: [
 				{
-					handleLLMStart(llm, prompt) {
-						prompt.forEach(console.log);
-					},
-				},
-				{
-					handleLLMNewToken(token: string) {
-						onStreamChunk(token);
-						// Deno.stdout.writeSync(new TextEncoder().encode(token));
+					handleLLMNewToken(token) {
+						onStreamChunk?.(token);
 					},
 				},
 			],
 		}
 	);
+	const output = res.output;
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
 	const usedTokens = tokenCounter.getCount();
+
+	console.log(usedTokens);
+	console.log(actions);
 
 	return Promise.resolve({
 		name: "mega-assistant-alex",

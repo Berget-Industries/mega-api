@@ -1,7 +1,7 @@
-import { LLMChain } from "npm:langchain@^0.0.159/chains";
+import { LLMChain } from "npm:langchain@latest/chains";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
-import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
+import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
+import { ChatPromptTemplate } from "npm:langchain@latest/prompts";
 import { getSystemMessage, getUserMessage } from "./prompts.ts";
 import {
 	LoggerCallbackHandler,

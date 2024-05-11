@@ -1,17 +1,17 @@
 import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
+import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
-import { BufferMemory } from "npm:langchain@^0.0.159/memory";
-import { StructuredTool } from "npm:langchain@^0.0.159/tools";
+import { BufferMemory } from "npm:langchain@latest/memory";
+import { StructuredTool } from "npm:langchain@latest/tools";
 
-import { AgentExecutor } from "npm:langchain@latest/agents";
+import { convertToOpenAIFunction } from "npm:langchain@latest/core/utils/function_calling";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "npm:langchain@latest/agents";
 import { OpenAIAssistantRunnable } from "npm:langchain@latest/experimental/openai_assistant";
 
-import { getSystemMessage } from "./prompts.ts";
-import { MongoDBChatMessageHistory } from "npm:langchain@^0.0.159/stores/message/mongodb";
-import { initializeAgentExecutorWithOptions } from "npm:langchain@^0.0.159/agents";
+import { getPrompt } from "./prompts.ts";
+import { MongoDBChatMessageHistory } from "npm:@langchain/mongodb";
 import {
 	ActionCounterCallbackHandler,
 	TokenCounterCallbackHandler,
@@ -85,8 +85,6 @@ const createMemory = (sessionId: string) => {
 			collection,
 			sessionId,
 		}),
-		memoryKey: "chat_history",
-		returnMessages: true,
 		outputKey: "output",
 		inputKey: "input",
 	});
@@ -112,6 +110,45 @@ export default async function initAgentAlex({
 	onStreamChunk,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
+	const tokenCounter = new TokenCounter();
+
+	const llm = new ChatOpenAI({
+		model: "gpt-4-turbo",
+		temperature: 0,
+		verbose: true,
+		streaming: Boolean(onStreamChunk),
+		callbacks: [
+			{
+				handleLLMEnd(output) {
+					console.log(JSON.stringify(output, null, 2));
+				},
+				handleChainEnd(outputs, runId, parentRunId, tags, kwargs) {
+					console.log(outputs, runId, parentRunId, tags, kwargs);
+				},
+				handleChatModelStart(
+					llm,
+					messages,
+					runId,
+					parentRunId,
+					extraParams,
+					tags,
+					metadata,
+					name
+				) {
+					console.log(
+						llm,
+						messages,
+						runId,
+						parentRunId,
+						extraParams,
+						tags,
+						metadata,
+						name
+					);
+				},
+			},
+		],
+	});
 
 	const tools = await createTools({
 		organizationPlugins,
@@ -120,49 +157,49 @@ export default async function initAgentAlex({
 		agentName,
 	});
 
-	const agent = await OpenAIAssistantRunnable.createAssistant({
-		model: "gpt-3.5-turbo-1106",
-		instructions: "You are a weather bot. Use the provided functions to answer questions.",
-		name: "Weather Assistant",
-		tools,
-		asAgent: true,
-	});
-	const agentExecutor = AgentExecutor.fromAgentAndTools({
-		agent,
-		tools,
+	const prompt = getPrompt({
+		organizationSystemPrompt,
+		organizationAbilities,
 	});
 
-	const agentArgs = {
-		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
-	};
+	const agent = await createOpenAIFunctionsAgent({
+		llm,
+		tools,
+		prompt,
+	});
 
-	console.log(agentArgs.systemMessage);
+	const memory = createMemory(conversationId);
 
-	const tokenCounter = new TokenCounter();
 	const actions: IAction[] = [];
 
+	const agentExecutor = new AgentExecutor({
+		agent,
+		tools,
+		memory,
+		returnIntermediateSteps: true,
+	});
+
 	const startTime = Date.now();
-	const { output } = await agent.invoke(
+	const res = await agentExecutor.invoke(
 		{ input },
 		{
 			callbacks: [
 				{
-					handleLLMStart(llm, prompt) {
-						prompt.forEach(console.log);
-					},
-				},
-				{
-					handleLLMNewToken(token: string) {
-						onStreamChunk && onStreamChunk(token);
+					handleLLMNewToken(token) {
+						onStreamChunk?.(token);
 					},
 				},
 			],
 		}
 	);
+	const output = res.output;
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
 	const usedTokens = tokenCounter.getCount();
+
+	console.log(usedTokens);
+	console.log(actions);
 
 	return Promise.resolve({
 		name: "mega-assistant-alex",

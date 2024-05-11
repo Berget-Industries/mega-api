@@ -1,8 +1,8 @@
-import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
+import { ChatPromptTemplate } from "npm:langchain@latest/prompts";
 import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
 import { systemPrompt } from "./prompts.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
-import { LLMChain } from "npm:langchain@^0.0.159/chains";
+import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
+import { LLMChain } from "npm:langchain@latest/chains";
 import TokenCounter from "../../utils/tokenCounter.ts";
 import { getChatPrompt } from "./prompts.ts";
 import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";

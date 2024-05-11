@@ -1,6 +1,6 @@
-import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
-import { ChainValues } from "npm:langchain@^0.0.159/schema";
-import { LLMResult } from "npm:langchain@^0.0.159/schema";
+import { BaseCallbackHandler } from "npm:langchain@latest/callbacks";
+import { ChainValues } from "npm:langchain@latest/schema";
+import { LLMResult } from "npm:langchain@latest/schema";
 import { IUsedTokens } from "../../models/Message.ts";
 import TokenCounter from "../../utils/tokenCounter.ts";
 
@@ -19,12 +19,6 @@ export default class TokenCounterCallbackHandler extends BaseCallbackHandler {
 		parentRunId?: string | undefined,
 		tags?: string[] | undefined
 	) {
-		const { completionTokens, promptTokens, totalTokens } = output.llmOutput?.tokenUsage;
-		const newCount = {
-			output: completionTokens,
-			input: promptTokens,
-			total: totalTokens,
-		};
-		this.counter.updateCount(newCount);
+		console.log(output.generations[0]);
 	}
 }

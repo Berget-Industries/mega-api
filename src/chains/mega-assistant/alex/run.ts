@@ -1,13 +1,13 @@
 import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
+import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
-import { BufferMemory } from "npm:langchain@^0.0.159/memory";
-import { StructuredTool } from "npm:langchain@^0.0.159/tools";
+import { BufferMemory } from "npm:langchain@latest/memory";
+import { StructuredTool } from "npm:langchain@latest/tools";
 import { getSystemMessage } from "./prompts.ts";
-import { MongoDBChatMessageHistory } from "npm:langchain@^0.0.159/stores/message/mongodb";
-import { initializeAgentExecutorWithOptions } from "npm:langchain@^0.0.159/agents";
+import { MongoDBChatMessageHistory } from "npm:langchain@latest/stores/message/mongodb";
+import { initializeAgentExecutorWithOptions } from "npm:langchain@latest/agents";
 import {
 	ActionCounterCallbackHandler,
 	TokenCounterCallbackHandler,
