@@ -1,17 +1,19 @@
 import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:@langchain/openai";
+import { ChatOpenAI } from "npm:@langchain/openai@0.0.29";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
 import { BufferMemory } from "npm:langchain/memory";
 import { StructuredTool } from "npm:langchain/tools";
 
-import { convertToOpenAIFunction } from "npm:@langchain/core/utils/function_calling";
-import { AgentExecutor, createOpenAIFunctionsAgent } from "npm:langchain/agents";
-import { OpenAIAssistantRunnable } from "npm:langchain/experimental/openai_assistant";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "npm:langchain@latest/agents";
+import { BaseChatModel } from "npm:@langchain/core/language_models/chat_models";
+import { BaseFunctionCallOptions } from "npm:@langchain/core/language_models/base";
+import { BaseMessageChunk } from "npm:@langchain/core/messages";
 
 import { getPrompt } from "./prompts.ts";
 import { MongoDBChatMessageHistory } from "npm:@langchain/mongodb";
+import { Collection } from "npm:mongodb";
 
 import {
 	ActionCounterCallbackHandler,
@@ -79,7 +81,7 @@ const createTools = async ({
 };
 
 const createMemory = (sessionId: string) => {
-	const collection = AlexMemory.collection;
+	const collection = AlexMemory.collection as unknown as Collection;
 
 	return new BufferMemory({
 		chatHistory: new MongoDBChatMessageHistory({
@@ -126,7 +128,7 @@ export default async function initAgentAlex({
 				},
 			},
 		],
-	});
+	}) as unknown as BaseChatModel<BaseFunctionCallOptions, BaseMessageChunk>;
 
 	const tools = await createTools({
 		organizationPlugins,
@@ -165,8 +167,8 @@ export default async function initAgentAlex({
 	const usedTokens = tokenCounter.getCount();
 
 	const actions: IAction[] = intermediateSteps
-		.filter((step) => step.action && step.observation)
-		.map((step) => {
+		.filter((step: Record<string, any>) => step.action && step.observation)
+		.map((step: Record<string, any>) => {
 			const { action, observation } = step;
 			const { tool, toolInput } = action;
 			const docId = `${observation}`

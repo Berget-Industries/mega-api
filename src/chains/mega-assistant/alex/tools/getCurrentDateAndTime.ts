@@ -1,4 +1,4 @@
-import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
+import { CallbackManagerForToolRun } from "npm:langchain/callbacks";
 import { DynamicTool, StructuredTool } from "npm:langchain/tools";
 import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import moment from "npm:moment";
