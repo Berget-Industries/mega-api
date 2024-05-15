@@ -1,9 +1,5 @@
 import mongoose from "npm:mongoose";
-import runMegaAssistant from "../../chains/mega-assistant/run.ts";
-import {
-	runMegaAssistantStream,
-	IMegaAssistantStreamChunk,
-} from "../../chains/mega-assistant/runStream.ts";
+import { runMegaAssistant, IMegaAssistantStreamChunk } from "../../chains/mega-assistant/run.ts";
 import saveChainMessage from "../../utils/saveChainMessage.ts";
 import { Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
@@ -29,7 +25,10 @@ router.post("/mega-assistant", apiKeyAuthenticationMiddleware, async (ctx: Conte
 			});
 		}
 
-		const conversationId = new mongoose.Types.ObjectId(conversationIdInput).toString();
+		const ObjectId = mongoose.Types.ObjectId;
+		const conversationId = ObjectId.isValid(conversationIdInput)
+			? conversationIdInput
+			: new ObjectId();
 
 		const megaOutput = await runMegaAssistant({
 			organizationId,
@@ -102,7 +101,7 @@ router.post("/mega-assistant/stream", apiKeyAuthenticationMiddleware, async (ctx
 				};
 
 				try {
-					const megaOutput = await runMegaAssistantStream({
+					const megaOutput = await runMegaAssistant({
 						onStreamChunk: handleStreamChunk,
 						organizationId,
 						conversationId,

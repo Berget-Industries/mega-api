@@ -1,6 +1,6 @@
 import { z } from "npm:zod";
-import { CallbackManagerForToolRun } from "npm:langchain@latest/callbacks";
-import { DynamicStructuredTool, StructuredTool } from "npm:langchain@latest/tools";
+import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
+import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import createCalendarEvent from "../../../../../../utils/addGCalendarEvent.ts";
 import getPluginConfig from "../../../../../../utils/getPluginConfig.ts";

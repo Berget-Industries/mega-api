@@ -1,8 +1,8 @@
 import { z } from "npm:zod";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { getAvilableDates } from "../../../../../../utils/availableDates.ts";
-import { CallbackManagerForToolRun } from "npm:langchain@latest/callbacks";
-import { DynamicStructuredTool, StructuredTool } from "npm:langchain@latest/tools";
+import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
+import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 
 export const getAvailableChambreDatesToolInput = z.object({
 	startDate: z.string().describe("Första datumet i listan."),

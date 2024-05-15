@@ -1,10 +1,10 @@
 import { z } from "npm:zod";
 import mongoose from "npm:mongoose";
 import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
-import { OpenAIEmbeddings } from "npm:langchain@latest/embeddings/openai";
-import { DynamicStructuredTool, StructuredTool } from "npm:langchain@latest/tools";
-import { MongoDBAtlasVectorSearch } from "npm:langchain@latest/vectorstores/mongodb_atlas";
-import { CallbackManagerForToolRun } from "npm:langchain@latest/callbacks";
+import { OpenAIEmbeddings } from "npm:langchain/embeddings/openai";
+import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
+import { MongoDBAtlasVectorSearch } from "npm:langchain/vectorstores/mongodb_atlas";
+import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
 
 export const knowledgeToolInputZod = z.object({
 	query: z.string().describe("Frågan du vill få svar på."),

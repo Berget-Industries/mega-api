@@ -1,13 +1,18 @@
 import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
-import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
+import { ChatOpenAI } from "npm:@langchain/openai";
 import getPluginConfig from "../../../utils/getPluginConfig.ts";
-import { BufferMemory } from "npm:langchain@latest/memory";
-import { StructuredTool } from "npm:langchain@latest/tools";
-import { getSystemMessage } from "./prompts.ts";
-import { MongoDBChatMessageHistory } from "npm:langchain@latest/stores/message/mongodb";
-import { initializeAgentExecutorWithOptions } from "npm:langchain@latest/agents";
+import { BufferMemory } from "npm:langchain/memory";
+import { StructuredTool } from "npm:langchain/tools";
+
+import { convertToOpenAIFunction } from "npm:@langchain/core/utils/function_calling";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "npm:langchain/agents";
+import { OpenAIAssistantRunnable } from "npm:langchain/experimental/openai_assistant";
+
+import { getPrompt } from "./prompts.ts";
+import { MongoDBChatMessageHistory } from "npm:@langchain/mongodb";
+
 import {
 	ActionCounterCallbackHandler,
 	TokenCounterCallbackHandler,
@@ -81,8 +86,7 @@ const createMemory = (sessionId: string) => {
 			collection,
 			sessionId,
 		}),
-		memoryKey: "chat_history",
-		returnMessages: true,
+		memoryKey: "alex_memory",
 		outputKey: "output",
 		inputKey: "input",
 	});
@@ -95,6 +99,7 @@ interface IAgentAlexConfig {
 	organizationSystemPrompt: string;
 	organizationAbilities: string;
 	organizationPlugins: string[];
+	onStreamChunk?: (token: string) => void;
 }
 
 export default async function initAgentAlex({
@@ -104,12 +109,23 @@ export default async function initAgentAlex({
 	organizationSystemPrompt,
 	organizationAbilities,
 	organizationPlugins,
+	onStreamChunk,
 }: IAgentAlexConfig) {
 	const agentName = "Alex";
+	const tokenCounter = new TokenCounter();
 
-	const model = new ChatOpenAI({
+	const llm = new ChatOpenAI({
+		model: "gpt-4o",
 		temperature: 0,
-		modelName: "gpt-4-0125-preview",
+		streaming: true,
+		callbacks: [
+			new TokenCounterCallbackHandler(tokenCounter),
+			{
+				handleLLMNewToken(token) {
+					onStreamChunk?.(token);
+				},
+			},
+		],
 	});
 
 	const tools = await createTools({
@@ -118,41 +134,54 @@ export default async function initAgentAlex({
 		conversationId,
 		agentName,
 	});
+
+	const prompt = getPrompt();
+
+	const agent = await createOpenAIFunctionsAgent({
+		llm,
+		tools,
+		prompt,
+		streamRunnable: true,
+	});
+
 	const memory = createMemory(conversationId);
 
-	const agentArgs = {
-		systemMessage: getSystemMessage({ organizationSystemPrompt, organizationAbilities }),
-	};
-
-	const tokenCounter = new TokenCounter();
-	const actions: IAction[] = [];
-
-	const agent = await initializeAgentExecutorWithOptions(tools, model, {
-		handleParsingErrors: "Please try again, paying close attention to the allowed enum values",
-		callbacks: [new LoggerCallbackHandler()],
-		agentType: "openai-functions",
-		tags: [agentName],
-		verbose: false,
-		agentArgs,
+	const agentExecutor = new AgentExecutor({
+		agent,
+		tools,
 		memory,
+		returnIntermediateSteps: true,
 	});
 
 	const startTime = Date.now();
-	const { output } = await agent.invoke(
-		{ input },
-		{
-			callbacks: [
-				new TokenCounterCallbackHandler(tokenCounter),
-				new ActionCounterCallbackHandler((item) => {
-					actions.push(item);
-				}),
-			],
-		}
-	);
+	const { output, intermediateSteps } = await agentExecutor.invoke({
+		input,
+		organizationSystemPrompt,
+		organizationAbilities,
+	});
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
 	const usedTokens = tokenCounter.getCount();
+
+	const actions: IAction[] = intermediateSteps
+		.filter((step) => step.action && step.observation)
+		.map((step) => {
+			const { action, observation } = step;
+			const { tool, toolInput } = action;
+			const docId = `${observation}`
+				.replace("Det lyckades! Dokument Id: ", "")
+				.split(": ")[0];
+
+			const formattedAction: IAction = {
+				type: tool,
+				input: toolInput,
+				docId: docId,
+				date: new Date(),
+			};
+
+			return formattedAction;
+		});
 
 	return Promise.resolve({
 		name: "mega-assistant-alex",

@@ -1,11 +1,6 @@
-import { ChatPromptTemplate } from "npm:langchain@latest/prompts";
-import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
-import { systemPrompt } from "./prompts.ts";
-import { ChatOpenAI } from "npm:langchain@latest/chat_models/openai";
-import { LLMChain } from "npm:langchain@latest/chains";
-import { getChatPrompt } from "./prompts.ts";
+import { ChatOpenAI } from "npm:@langchain/openai";
+import getPrompt from "./prompts.ts";
 import TokenCounter from "../../utils/tokenCounter.ts";
-import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
 import { ILLMOutput } from "../../models/Message.ts";
 
 type agentInput = {
@@ -19,40 +14,24 @@ export default async function runMailSubjector({
 }: agentInput): Promise<ILLMOutput> {
 	const agentName = "mail-subjector";
 
-	const tokenCounter = new TokenCounter();
-
 	const llm = new ChatOpenAI({
-		modelName: "gpt-4-0125-preview",
+		modelName: "gpt-4o",
 		temperature: 0,
 	});
 
-	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt()],
-		["human", getChatPrompt()],
-	]);
-
-	const chain = new LLMChain({
-		callbacks: [new LoggerCallbackHandler()],
-		outputKey: "output",
-		prompt: chatPrompt,
-		tags: [agentName],
-		llm,
+	const prompt = await getPrompt({
+		systemMessage: "Du ska skriva ett ämne till ett mail.",
+		userMessage,
+		assistantMessage,
 	});
 
 	const startTime = Date.now();
-	const { output } = await chain.call(
-		{
-			userMessage,
-			assistantMessage,
-		},
-		{
-			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
-		}
-	);
+	const { content, response_metadata } = await llm.invoke(prompt);
 	const endTime = Date.now();
-	const responseTime = endTime - startTime;
 
-	const usedTokens = tokenCounter.getCount();
+	const responseTime = endTime - startTime;
+	const usedTokens = TokenCounter.format(response_metadata.tokenUsage);
+	const output = content as string;
 
 	return Promise.resolve({
 		responseTime,

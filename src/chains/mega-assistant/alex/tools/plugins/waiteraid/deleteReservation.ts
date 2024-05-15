@@ -1,9 +1,9 @@
 import { z } from "npm:zod";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { Reservation } from "../../../../../../models/index.ts";
-import { CallbackManagerForToolRun } from "npm:langchain@latest/callbacks";
+import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
 import { deleteReservationFromDate } from "../../../../../../utils/availableDates.ts";
-import { DynamicStructuredTool, StructuredTool } from "npm:langchain@latest/tools";
+import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 
 export const deleteReservationToolInputZod = z.object({
 	_id: z.string().describe("Bokningsnummer"),

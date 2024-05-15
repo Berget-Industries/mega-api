@@ -1,6 +1,6 @@
 import { z } from "npm:zod";
-import { CallbackManagerForToolRun } from "npm:langchain@latest/callbacks";
-import { DynamicStructuredTool, StructuredTool } from "npm:langchain@latest/tools";
+import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
+import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { sendMail } from "../../../../../../utils/emailSender.ts";
 import getPluginConfig from "../../../../../../utils/getPluginConfig.ts";
@@ -78,17 +78,15 @@ export const sendMailToHumanTool = ({
 	config: {
 		subject: string;
 		sendTo: string;
+		nameOfHuman: string;
+		description: string;
 	};
 }): StructuredTool =>
 	new DynamicStructuredTool({
 		verbose: false,
 		schema: sendMailToHumanToolInputZod,
-		name: "skicka-mail-till-manniska",
-		description: `Skicka mail till en människa.
-Bra att använda när du behöver skicka ett mail till en riktig människa som jobbar på ditt företag.
-Du kan inte ha en konversation med denna tool.
-Du kan endast förmedla information till den som tar hand om mailen.
-`,
+		name: "skicka-mail-till-" + config.nameOfHuman,
+		description: `${config.description}`,
 		func: (input, _runManager) =>
 			runFunction({ input, _runManager, conversationId, organizationId, config }),
 		tags,
