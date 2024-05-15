@@ -1,23 +1,27 @@
-import { SystemMessage } from "npm:langchain@^0.0.159/schema";
+import { ChatPromptTemplate, MessagesPlaceholder } from "npm:@langchain/core/prompts";
 
-type getSystemMessageInput = {
-	organizationSystemPrompt: string;
-	organizationAbilities: string;
-};
-
-export const getSystemMessage = ({
-	organizationSystemPrompt,
-	organizationAbilities,
-}: getSystemMessageInput) =>
-	new SystemMessage(`
+const getSystemMessageString = `
 ==============================
 
-${organizationSystemPrompt}
+{organizationSystemPrompt}
 
 ==============================
 
 DU KAN GÖRA FÖLJNADE:
-${organizationAbilities}
+{organizationAbilities}
 
 ==============================
-`);
+
+HISTORIK FÖR KONVERSATIONEN:
+{alex_memory}
+
+==============================
+
+`;
+
+export const getPrompt = () =>
+	ChatPromptTemplate.fromMessages([
+		["system", getSystemMessageString],
+		["human", "{input}"],
+		new MessagesPlaceholder("agent_scratchpad"),
+	]);

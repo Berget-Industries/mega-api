@@ -1,4 +1,6 @@
-export const systemPrompt = (
+import { ChatPromptTemplate } from "npm:@langchain/core/prompts";
+
+export const getSystemPromptTemplate = (
 	organizationRules: Record<string, string>,
 	organizationAbilities: string | undefined
 ) => `
@@ -43,7 +45,29 @@ Auto-Replay
 {organizationExamples}
 `;
 
-export const getChatPrompt = () => `
+export const userPromptTemplate = `
 Meddelande:
 {message} 
 `;
+
+interface IPromptAutoFilterInput {
+	organizationAbilities: string | undefined;
+	organizationExamples: string;
+	organizationRules: Record<string, string>;
+	message: string;
+}
+export default async function ({
+	organizationAbilities,
+	organizationExamples,
+	organizationRules,
+	message,
+}: IPromptAutoFilterInput) {
+	const template = ChatPromptTemplate.fromMessages([
+		["system", getSystemPromptTemplate(organizationRules, organizationAbilities)],
+		["human", userPromptTemplate],
+	]);
+
+	const prompt = await template.format({ organizationAbilities, organizationExamples, message });
+
+	return prompt;
+}

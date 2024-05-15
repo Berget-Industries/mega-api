@@ -1,4 +1,6 @@
-export const getSystemMessage = () => `
+import { ChatPromptTemplate } from "npm:@langchain/core/prompts";
+
+export const getSystemMessage = `
 Du är en mail skrivare. Din uppgitft är att skriva om mailet och stylea det med html. 
 Eftersom att det är ett mail som ska skickas så måste ditt svara vara i HTML. Annars kommer det inte synas i mail klienten. Tänk på att använda taggar som <p>, <a>, <br>
 
@@ -8,10 +10,35 @@ börja med att skriva en <div> som innehåller alla element du tycker behövs. d
 {organizationSystemPrompt}
 `;
 
-export const getUserMessage = () => `
+export const getUserMessage = `
 Svaret ska skickas till:
 {nameOfUser}
     
 Här är mailet du ska skriva om:
 {mailToReWrite}
 `;
+
+interface IPromptEvaTemplateInput {
+	organizationSystemPrompt: string;
+	mailToReWrite: string;
+	nameOfUser: string;
+}
+
+export default async function ({
+	organizationSystemPrompt,
+	mailToReWrite,
+	nameOfUser,
+}: IPromptEvaTemplateInput): Promise<string> {
+	const template = ChatPromptTemplate.fromMessages([
+		["ai", getSystemMessage],
+		["user", getUserMessage],
+	]);
+
+	const prompt = await template.format({
+		organizationSystemPrompt,
+		mailToReWrite,
+		nameOfUser,
+	});
+
+	return prompt;
+}

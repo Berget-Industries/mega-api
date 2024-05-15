@@ -1,6 +1,6 @@
-import { Serialized } from "npm:langchain@^0.0.159/load/serializable";
-import { BaseCallbackHandler } from "npm:langchain@^0.0.159/callbacks";
-import { AgentAction, AgentFinish, ChainValues } from "npm:langchain@^0.0.159/schema";
+import { Serialized } from "npm:@langchain/core/serializable";
+import { BaseCallbackHandler } from "npm:@langchain/core/callbacks/base";
+import { AgentAction, AgentFinish, ChainValues } from "npm:@langchain/core";
 import { IAction } from "../../models/Message.ts";
 
 type onAction = (action: IAction) => void;

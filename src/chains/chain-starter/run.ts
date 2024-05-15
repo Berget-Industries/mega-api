@@ -1,11 +1,6 @@
-import { ChatPromptTemplate } from "npm:langchain@^0.0.159/prompts";
-import { LoggerCallbackHandler } from "../callbackHandlers/index.ts";
-import { systemPrompt } from "./prompts.ts";
-import { ChatOpenAI } from "npm:langchain@^0.0.159/chat_models/openai";
-import { LLMChain } from "npm:langchain@^0.0.159/chains";
+import { ChatOpenAI } from "npm:@langchain/openai";
 import TokenCounter from "../../utils/tokenCounter.ts";
-import { getChatPrompt } from "./prompts.ts";
-import { TokenCounterCallbackHandler } from "../callbackHandlers/index.ts";
+import getPrompt from "./prompts.ts";
 import { ILLMOutput } from "../../models/Message.ts";
 
 export interface IRunChainStarterConfig {
@@ -24,40 +19,23 @@ export default async function runChainStarterChain({
 	const agentName = "chain-starter";
 
 	const llm = new ChatOpenAI({
-		modelName: "gpt-4-turbo-preview",
+		modelName: "gpt-4o",
 		temperature: 0.25,
 	});
 
-	const chatPrompt = ChatPromptTemplate.fromMessages([
-		["system", systemPrompt()],
-		["human", getChatPrompt()],
-	]);
-
-	const tokenCounter = new TokenCounter();
-	const chain = new LLMChain({
-		callbacks: [new LoggerCallbackHandler()],
-		outputKey: "output",
-		prompt: chatPrompt,
-		tags: [agentName],
-		llm,
+	const prompt = await getPrompt({
+		organizationSystemMessage,
+		contactInformation,
+		contactName,
 	});
 
 	const startTime = Date.now();
-	const { output } = await chain.call(
-		{
-			organizationSystemMessage,
-			messageInstructions,
-			contactInformation,
-			contactName,
-		},
-		{
-			callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
-		}
-	);
+	const { content, response_metadata } = await llm.invoke(prompt);
 	const endTime = Date.now();
-	const responseTime = endTime - startTime;
 
-	const usedTokens = tokenCounter.getCount();
+	const responseTime = endTime - startTime;
+	const usedTokens = TokenCounter.format(response_metadata.tokenUsage);
+	const output = content as string;
 
 	return Promise.resolve({
 		responseTime,
