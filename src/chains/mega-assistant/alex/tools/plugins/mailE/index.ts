@@ -5,6 +5,8 @@ interface IPluginInitMailE {
 	config: {
 		sendTo: string;
 		subject: string;
+		nameOfHuman: string;
+		description: string;
 	};
 	conversationId: string;
 	organizationId: string;

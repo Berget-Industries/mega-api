@@ -1,8 +1,10 @@
 {
 	"compilerOptions": {
-		"module": "commonjs", // or esnext, depending on your environment
-		"resolveJsonModule": true,
+		"target": "ES2020",
+		"module": "nodenext",
+		"strict": true,
 		"esModuleInterop": true,
+		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true
 	}
 }

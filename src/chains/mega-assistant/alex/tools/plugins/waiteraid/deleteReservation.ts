@@ -1,7 +1,7 @@
 import { z } from "npm:zod";
 import { LoggerCallbackHandler } from "../../../../../callbackHandlers/index.ts";
 import { Reservation } from "../../../../../../models/index.ts";
-import { CallbackManagerForToolRun } from "npm:@langchain/core/callbacks/base";
+import { CallbackManagerForToolRun } from "npm:langchain/callbacks";
 import { deleteReservationFromDate } from "../../../../../../utils/availableDates.ts";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 

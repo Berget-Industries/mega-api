@@ -1,5 +1,5 @@
 import colors from "npm:colors";
-import { Serialized } from "npm:@langchain/core/serializable";
+import { Serialized } from "npm:langchain/load/serializable";
 import { BaseCallbackHandler } from "npm:@langchain/core/callbacks/base";
 import { AgentAction, AgentFinish, ChainValues } from "npm:@langchain/core";
 
