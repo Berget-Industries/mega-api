@@ -4,6 +4,7 @@ import { handleResponseError, handleResponseSuccess } from "../../utils/contextH
 import { Conversation, Organization, Reservation } from "../../models/index.ts";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 import checkOrganizationAccess from "../../middleware/checkOrganizationAccess.ts";
+import apiKeyAuthenticationMiddleware from "../../middleware/apiKeyAuthenticationMiddleware.ts";
 
 const router = new Router();
 router.get(
@@ -42,5 +43,50 @@ router.get(
 		}
 	}
 );
+
+router.get("/conversation/chat", apiKeyAuthenticationMiddleware, async (ctx: Context) => {
+	try {
+		const conversationId = ctx.request.url.searchParams.get("conversation");
+		if (!conversationId) {
+			handleResponseError(ctx, {
+				status: "missing-id",
+				message: "Saknar reservations id:et.",
+			});
+			return;
+		}
+
+		const organizationId = ctx.state.organizationId;
+
+		const conversationDoc = await Conversation.findOne({
+			_id: conversationId,
+			organization: organizationId,
+		})
+			.populate("messages contact")
+			.exec();
+
+		if (!conversationDoc) {
+			handleResponseError(ctx, {
+				status: "not-found",
+				message: "Ingen konversation hittades med angivet ID för denna organisation.",
+			});
+			return;
+		}
+
+		handleResponseSuccess(ctx, { conversation: conversationDoc });
+	} catch (error) {
+		console.error(error);
+		if (error instanceof mongoose.Error.CastError) {
+			handleResponseError(ctx, {
+				status: "invalid-id",
+				message: "Kunde inte hitta konversationen. ID:et är ogiltigt.",
+			});
+		} else {
+			handleResponseError(ctx, {
+				status: "internal-error",
+				message: "Tekniskt fel.",
+			});
+		}
+	}
+});
 
 export default router;
