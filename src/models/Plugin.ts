@@ -11,7 +11,7 @@ export interface IPlugin {
 	lastHeartbeat: Date | null;
 }
 
-export default model<IPlugin>(
+export const Plugin = model<IPlugin>(
 	"Plugin",
 	new Schema({
 		name: String,
@@ -24,3 +24,5 @@ export default model<IPlugin>(
 		lastHeartbeat: { type: Date, default: null },
 	})
 );
+
+export default Plugin;
