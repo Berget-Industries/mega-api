@@ -2,7 +2,7 @@ import { IAction } from "../../../models/Message.ts";
 import AlexMemory from "../../../models/AlexMemory.ts";
 import TokenCounter from "../../../utils/tokenCounter.ts";
 import { ChatOpenAI } from "npm:@langchain/openai@0.0.29";
-import getPluginConfig from "../../../utils/getPluginConfig.ts";
+import { getPluginConfig, getAlexPlugins } from "../../../utils/getPluginConfig.ts";
 import { BufferMemory } from "npm:langchain/memory";
 import { StructuredTool } from "npm:langchain/tools";
 
@@ -22,7 +22,7 @@ import {
 } from "../../callbackHandlers/index.ts";
 
 // REGULAR TOOLS
-import knowledgeTool from "./tools/knowledgeTool.ts";
+import { initPluginKnowledge } from "./tools/knowledgeTool.ts";
 import getCurrentDateAndTimeTool from "./tools/getCurrentDateAndTime.ts";
 
 // PLUGIN TOOLS
@@ -80,6 +80,58 @@ const createTools = async ({
 	return activatedTools;
 };
 
+const createTools2 = async ({
+	agentName,
+	organizationId,
+	conversationId,
+}: {
+	agentName: string;
+	organizationId: string;
+	conversationId: string;
+}): Promise<StructuredTool[]> => {
+	type availablePlugin = "waiteraid" | "mega-assistant-alex-mailE-sendToHuman";
+	const availablePlugins = {
+		waiteraid: initPluginWaiterAid,
+		"mega-assistant-alex-knowledge": initPluginKnowledge,
+		"mega-assistant-alex-mailE-sendToHuman": initPluginMailESendToHuman,
+		"mega-assistant-alex-gSuite-createCalendarEvent": initPluginGSuiteCalendarEvent,
+	};
+
+	const activatedTools: StructuredTool[] = [
+		getCurrentDateAndTimeTool({ tags: [agentName, "getCurrentDateAndTimeTool"] }),
+	];
+
+	const alexPlugins = await getAlexPlugins(organizationId);
+	for (const plugin of alexPlugins) {
+		const { name, config } = plugin;
+
+		const foundInitFunc = Object.keys(availablePlugins).find(
+			(_) => _ === name
+		) as availablePlugin;
+
+		if (!foundInitFunc) {
+			console.error("Requested organization plugin does not exist!", name);
+			continue;
+		}
+
+		console.log("Activating plugin:", name);
+
+		const initPluginFunc = availablePlugins[foundInitFunc];
+		const pluginTools = initPluginFunc({
+			config: config as any,
+			conversationId,
+			organizationId,
+			tags: [agentName, name],
+		});
+
+		for (const pluginTool of pluginTools) {
+			activatedTools.push(pluginTool);
+		}
+	}
+
+	return activatedTools;
+};
+
 const createMemory = (sessionId: string) => {
 	const collection = AlexMemory.collection as unknown as Collection;
 
@@ -116,6 +168,8 @@ export default async function initAgentAlex({
 	const agentName = "Alex";
 	const tokenCounter = new TokenCounter();
 
+	console.log(organizationPlugins);
+
 	const llm = new ChatOpenAI({
 		model: "gpt-4o",
 		temperature: 0,
@@ -130,8 +184,8 @@ export default async function initAgentAlex({
 		],
 	}) as unknown as BaseChatModel<BaseFunctionCallOptions, BaseMessageChunk>;
 
-	const tools = await createTools({
-		organizationPlugins,
+	const tools = await createTools2({
+		// organizationPlugins,
 		organizationId,
 		conversationId,
 		agentName,

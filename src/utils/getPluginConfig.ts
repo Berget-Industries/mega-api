@@ -1,6 +1,5 @@
-import { Plugin } from "../models/index.ts";
-
-export default async function getPluginConfig(pluginName: string, organizationId: string) {
+import { Plugin, IPlugin } from "../models/Plugin.ts";
+export async function getPluginConfig(pluginName: string, organizationId: string) {
 	if (!organizationId) {
 		console.log("Organisationens id saknas.");
 		return undefined;
@@ -26,4 +25,22 @@ export default async function getPluginConfig(pluginName: string, organizationId
 	} else {
 		return undefined;
 	}
+}
+
+export default getPluginConfig;
+
+export async function getAlexPlugins(organizationId: string) {
+	const pluginDocs = await Plugin.find({
+		organization: organizationId,
+		isActivated: true,
+		name: {
+			$regex: /^mega-assistant-alex-/,
+		},
+	});
+
+	const pluginConfigs = pluginDocs.map((pluginDoc) => {
+		return pluginDoc.toObject() as IPlugin;
+	});
+
+	return pluginConfigs;
 }
