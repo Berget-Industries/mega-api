@@ -5,6 +5,7 @@ import { OpenAIEmbeddings } from "npm:langchain/embeddings/openai";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 import { MongoDBAtlasVectorSearch } from "npm:@langchain/mongodb";
 import { CallbackManagerForToolRun } from "npm:langchain/callbacks";
+import { Collection, Document } from "npm:mongodb";
 
 export const knowledgeToolInputZod = z.object({
 	query: z.string().describe("Frågan du vill få svar på."),
@@ -28,7 +29,7 @@ const runFunction = async (
 	);
 
 	const dbModel = mongoose.model(config.collection, dataSchema);
-	const collection = dbModel.collection;
+	const collection = dbModel.collection as unknown as Collection<Document>;
 
 	const embeddings = new OpenAIEmbeddings();
 	const vectorStore = new MongoDBAtlasVectorSearch(embeddings, {
