@@ -61,6 +61,15 @@ const inputPlugins: availablePlugin[] = [
 				tls: true,
 				tlsOptions: { rejectUnauthorized: false },
 			},
+			nodeMailerConfig: {
+				host: "",
+				port: 456,
+				secure: true,
+				auth: {
+					user: "",
+					pass: "",
+				},
+			},
 		} as DefaultConfigMailer,
 		dependencies: [["mega-assistant-alex", "auto-filter"]],
 	},
@@ -69,7 +78,6 @@ const inputPlugins: availablePlugin[] = [
 type DefaultConfigMegaAssistantAlex = {
 	systemPrompt: string;
 	abilities: string;
-	tools: string[];
 };
 
 type DefaultConfigMegaAssistantEva = {
@@ -92,7 +100,6 @@ const chainPlugins: availablePlugin[] = [
 		defaultConfig: {
 			systemPrompt: "",
 			abilities: "",
-			tools: [],
 		} as DefaultConfigMegaAssistantAlex,
 		dependencies: [],
 	},
@@ -101,7 +108,7 @@ const chainPlugins: availablePlugin[] = [
 		type: "chain",
 		defaultConfig: {
 			systemPrompt: "",
-			model: "gpt-4-1106-preview",
+			model: "gpt-4o",
 		} as DefaultConfigMegaAssistantEva,
 		dependencies: ["mega-assistant-alex"],
 	},
@@ -131,8 +138,11 @@ type DefaultConfigMegaAssistantAlexWaiteraid = {
 };
 
 type DefaultConfigMegaAssistantAlexMailESendToHuman = {
-	sendTo: string;
 	subject: string;
+	sendTo: string;
+	nameOfHuman: string;
+	description: string;
+	onSuccess: string;
 };
 
 const toolPlugins: availablePlugin[] = [
@@ -149,8 +159,11 @@ const toolPlugins: availablePlugin[] = [
 		name: "mega-assistant-alex-mailE-sendToHuman",
 		type: "tool",
 		defaultConfig: {
-			sendTo: "",
 			subject: "",
+			sendTo: "",
+			nameOfHuman: "",
+			description: "",
+			onSuccess: "",
 		} as DefaultConfigMegaAssistantAlexMailESendToHuman,
 		dependencies: ["mega-assistant-alex"],
 	},
