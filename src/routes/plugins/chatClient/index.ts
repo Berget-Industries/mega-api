@@ -1,11 +1,9 @@
-import getConfig from "./getConfig.ts";
-import chatClient from "./chatClient/index.ts";
-import addSelectedMenu from "./addSelectedMenu.ts";
+import config from "./config.ts";
 import { Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 const router = new Router();
-const basePath = "/plugins";
-const routes = [getConfig, chatClient, addSelectedMenu];
+const basePath = "/chat-client";
+const routes = [config];
 
 routes.forEach((_) => {
 	router.use(basePath, _.routes());
