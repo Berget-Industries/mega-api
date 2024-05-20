@@ -61,8 +61,6 @@ router.post(
 			}
 
 			if (foundPlugin.name === "mega-assistant-alex") {
-				console.log("mega-assistant-alex1");
-
 				await Plugin.updateMany(
 					{
 						organization: foundPlugin.organization,
