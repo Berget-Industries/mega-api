@@ -4,6 +4,7 @@ type availablePlugin = {
 	type: availablePluginType;
 	defaultConfig: Record<string, any>;
 	dependencies: string[] | string[][];
+	allowMultiple: boolean;
 };
 
 type DefaultConfigChatClient = {
@@ -45,6 +46,7 @@ const inputPlugins: availablePlugin[] = [
 			name: "",
 		} as DefaultConfigChatClient,
 		dependencies: ["mega-assistant-alex"],
+		allowMultiple: true,
 	},
 	{
 		name: "mailer",
@@ -72,6 +74,7 @@ const inputPlugins: availablePlugin[] = [
 			},
 		} as DefaultConfigMailer,
 		dependencies: [["mega-assistant-alex", "auto-filter"]],
+		allowMultiple: true,
 	},
 ];
 
@@ -102,6 +105,7 @@ const chainPlugins: availablePlugin[] = [
 			abilities: "",
 		} as DefaultConfigMegaAssistantAlex,
 		dependencies: [],
+		allowMultiple: false,
 	},
 	{
 		name: "mega-assistant-eva",
@@ -111,6 +115,7 @@ const chainPlugins: availablePlugin[] = [
 			model: "gpt-4o",
 		} as DefaultConfigMegaAssistantEva,
 		dependencies: ["mega-assistant-alex"],
+		allowMultiple: false,
 	},
 	{
 		name: "auto-filter",
@@ -121,6 +126,7 @@ const chainPlugins: availablePlugin[] = [
 			},
 		} as DefaultConfigAutoFilter,
 		dependencies: ["mailer"],
+		allowMultiple: false,
 	},
 	{
 		name: "chain-starter",
@@ -129,6 +135,7 @@ const chainPlugins: availablePlugin[] = [
 			systemPrompt: "",
 		} as DefaultConfigChainStarter,
 		dependencies: ["mailer"],
+		allowMultiple: false,
 	},
 ];
 
@@ -146,15 +153,15 @@ type DefaultConfigMegaAssistantAlexMailESendToHuman = {
 };
 
 const toolPlugins: availablePlugin[] = [
-	{
-		name: "mega-assistant-alex-waiteraid",
-		type: "tool",
-		defaultConfig: {
-			chambre: false,
-			apiKey: "",
-		} as DefaultConfigMegaAssistantAlexWaiteraid,
-		dependencies: ["mega-assistant-alex"],
-	},
+	// {
+	// 	name: "mega-assistant-alex-waiteraid",
+	// 	type: "tool",
+	// 	defaultConfig: {
+	// 		chambre: false,
+	// 		apiKey: "",
+	// 	} as DefaultConfigMegaAssistantAlexWaiteraid,
+	// 	dependencies: ["mega-assistant-alex"],
+	// },
 	{
 		name: "mega-assistant-alex-mailE-sendToHuman",
 		type: "tool",
@@ -166,6 +173,7 @@ const toolPlugins: availablePlugin[] = [
 			onSuccess: "",
 		} as DefaultConfigMegaAssistantAlexMailESendToHuman,
 		dependencies: ["mega-assistant-alex"],
+		allowMultiple: true,
 	},
 ];
 

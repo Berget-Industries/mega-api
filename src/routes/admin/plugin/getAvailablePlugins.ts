@@ -40,13 +40,13 @@ router.get(
 			const allAvailablePlugins = getAvailablePlugins();
 
 			const actualAvailablePlugins = allAvailablePlugins.filter((availablePlugin) => {
-				if (availablePlugin.type !== "input") {
+				if (availablePlugin.allowMultiple) {
+					return true;
+				} else {
 					const doesPluginExist = orgPlugins.some(
 						(orgPlugin) => orgPlugin.name === availablePlugin.name
 					);
 					return !doesPluginExist;
-				} else {
-					return true;
 				}
 			});
 
