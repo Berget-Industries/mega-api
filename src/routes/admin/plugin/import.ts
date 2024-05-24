@@ -46,9 +46,9 @@ router.post(
 				return;
 			}
 
-			const { dependencies, type, defaultConfig } = foundDefaultPlugin;
+			const { dependencies, type, defaultConfig, allowMultiple } = foundDefaultPlugin;
 
-			if (type !== "input") {
+			if (!allowMultiple) {
 				const foundPlugin = await Plugin.findOne({ name, organization: organizationId });
 				if (foundPlugin) {
 					handleResponsePartialContent(ctx, {
