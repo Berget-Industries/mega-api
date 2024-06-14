@@ -28,6 +28,7 @@ export async function sendMail(to: string, subject: string, html: string) {
 		to,
 		subject,
 		html,
+		content: "auto",
 	});
 	await client.close();
 }

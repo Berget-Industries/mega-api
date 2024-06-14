@@ -41,9 +41,9 @@ const createTools = async ({
 	organizationId: string;
 	conversationId: string;
 }): Promise<StructuredTool[]> => {
-	type availablePlugins = "waiteraid" | "mega-assistant-alex-mailE-sendToHuman" | undefined;
+	type availablePlugins = "mega-assistant-alex-mailE-sendToHuman" | undefined;
 	const availablePlugins = {
-		waiteraid: initPluginWaiterAid,
+		// waiteraid: initPluginWaiterAid,
 		"mega-assistant-alex-mailE-sendToHuman": initPluginMailESendToHuman,
 		"mega-assistant-alex-gSuite-createCalendarEvent": initPluginGSuiteCalendarEvent,
 	};
@@ -67,6 +67,7 @@ const createTools = async ({
 				conversationId,
 				organizationId,
 				tags: [agentName, foundPlugin],
+				pluginId: "",
 			});
 
 			for (const pluginTool of pluginTools as any) {
@@ -89,12 +90,15 @@ const createTools2 = async ({
 	organizationId: string;
 	conversationId: string;
 }): Promise<StructuredTool[]> => {
-	type availablePlugin = "waiteraid" | "mega-assistant-alex-mailE-sendToHuman";
+	type availablePlugin =
+		| "mega-assistant-alex-mailE-sendToHuman"
+		| "mega-assistant-alex-gSuite-createCalendarEvent"
+		| "mega-assistant-alex-knowledge";
+
 	const availablePlugins = {
-		waiteraid: initPluginWaiterAid,
-		"mega-assistant-alex-knowledge": initPluginKnowledge,
 		"mega-assistant-alex-mailE-sendToHuman": initPluginMailESendToHuman,
 		"mega-assistant-alex-gSuite-createCalendarEvent": initPluginGSuiteCalendarEvent,
+		"mega-assistant-alex-knowledge": initPluginKnowledge,
 	};
 
 	const activatedTools: StructuredTool[] = [
@@ -103,7 +107,7 @@ const createTools2 = async ({
 
 	const alexPlugins = await getAlexPlugins(organizationId);
 	for (const plugin of alexPlugins) {
-		const { name, config } = plugin;
+		const { name, config, _id } = plugin;
 
 		const foundInitFunc = Object.keys(availablePlugins).find(
 			(_) => _ === name
@@ -122,6 +126,7 @@ const createTools2 = async ({
 			conversationId,
 			organizationId,
 			tags: [agentName, name],
+			pluginId: _id.toString(),
 		});
 
 		for (const pluginTool of pluginTools) {
@@ -225,6 +230,7 @@ export default async function initAgentAlex({
 		.map((step: Record<string, any>) => {
 			const { action, observation } = step;
 			const { tool, toolInput } = action;
+
 			const docId = `${observation}`
 				.replace("Det lyckades! Dokument Id: ", "")
 				.split(": ")[0];
@@ -232,7 +238,7 @@ export default async function initAgentAlex({
 			const formattedAction: IAction = {
 				type: tool,
 				input: toolInput,
-				docId: docId,
+				docId: "",
 				date: new Date(),
 			};
 
