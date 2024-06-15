@@ -10,3 +10,4 @@ export { default as Session } from "./Session.ts";
 export { default as Plugin } from "./Plugin.ts";
 export { default as Worker } from "./Worker.ts";
 export { default as PluginStat_MailE_SendMailToHuman } from "./PluginStat_MailE_SendMailToHuman.ts";
+export { default as PluginStat_KnowledgeTool } from "./PluginStat_KnowledgeTool.ts";
