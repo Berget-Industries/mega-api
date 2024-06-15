@@ -2,7 +2,7 @@ import mongoose from "npm:mongoose";
 import authenticationMiddleware from "../../middleware/authenticationMiddleware.ts";
 import checkOrganizationAccess from "../../middleware/checkOrganizationAccess.ts";
 import { Context, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { PluginStat_MailE_SendMailToHuman } from "../../models/index.ts";
+import { PluginStat_MailE_SendMailToHuman, PluginStat_KnowledgeTool } from "../../models/index.ts";
 import { handleResponseError, handleResponseSuccess } from "../../utils/contextHandler.ts";
 import { getAlexPlugins } from "../../utils/getPluginConfig.ts";
 
@@ -55,6 +55,45 @@ const getStats_MailESendToHuman = async (pluginId: string, startDate: Date, endD
 	return categorizedStats;
 };
 
+const getStats_KnowledgeTool = async (pluginId: string, startDate: Date, endDate: Date) => {
+	const stats = await PluginStat_KnowledgeTool.find({
+		pluginId,
+		date: {
+			$gte: startDate,
+			$lte: endDate,
+		},
+	});
+
+	const categorizedStats: Record<string, Record<string, number>> = {};
+	const dateRange = generateDateRange(startDate, endDate);
+
+	for (const date of dateRange) {
+		const dateString = date.toISOString().split("T")[0];
+
+		for (const stat of stats) {
+			const queryString = stat.query.toLowerCase();
+			if (!categorizedStats[queryString]) {
+				categorizedStats[queryString] = {};
+			}
+
+			if (!categorizedStats[queryString][dateString]) {
+				categorizedStats[queryString][dateString] = 0;
+			}
+		}
+	}
+
+	for (const stat of stats) {
+		const dateString = stat.date.toISOString().split("T")[0];
+		const queryString = stat.query.toLowerCase();
+		if (!categorizedStats[queryString][dateString]) {
+			categorizedStats[queryString][dateString] = 0;
+		}
+		categorizedStats[queryString][dateString]++;
+	}
+
+	return categorizedStats;
+};
+
 router.get(
 	"/plugin-stats",
 	authenticationMiddleware,
@@ -87,6 +126,14 @@ router.get(
 
 					const uniqeKey = (plugin.config as { nameOfHuman: string }).nameOfHuman;
 					allStats[plugin.name + "__" + uniqeKey] = plugStats;
+				}
+
+				if (plugin.name.endsWith("knowledge")) {
+					allStats.knowledge = await getStats_KnowledgeTool(
+						plugin._id.toString(),
+						startDate,
+						endDate
+					);
 				}
 			}
 

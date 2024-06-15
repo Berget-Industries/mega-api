@@ -1,8 +1,8 @@
 import { model, Schema, Types } from "npm:mongoose";
 
 interface ISendMailToHuman {
-	category: string;
-	description: string;
+	query: string;
+	results: string[];
 	organizationId: Types.ObjectId;
 	conversationId: Types.ObjectId;
 	pluginId: Types.ObjectId;
@@ -10,10 +10,10 @@ interface ISendMailToHuman {
 }
 
 export default model<ISendMailToHuman>(
-	"PluginStat_MailE_SendToHuman",
+	"PluginStat_KnowledgeTool",
 	new Schema({
-		category: String,
-		description: String,
+		query: String,
+		result: [{ type: String }],
 		organizationId: { type: Types.ObjectId, ref: "Organization" },
 		conversationId: { type: Types.ObjectId, ref: "Conversation" },
 		pluginId: { type: Types.ObjectId, ref: "Plugin" },
