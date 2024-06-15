@@ -7,9 +7,11 @@ interface IPluginInitMailE {
 		subject: string;
 		nameOfHuman: string;
 		description: string;
+		subjectForStats: string;
 	};
 	conversationId: string;
 	organizationId: string;
+	pluginId: string;
 }
 
 export default function initMailE({
@@ -17,8 +19,9 @@ export default function initMailE({
 	config,
 	conversationId,
 	organizationId,
+	pluginId,
 }: IPluginInitMailE) {
-	return [sendToHuman({ config, conversationId, organizationId, tags })];
+	return [sendToHuman({ config, pluginId, conversationId, organizationId, tags })];
 }
 
 export const initPluginMailESendToHuman = ({
@@ -26,4 +29,5 @@ export const initPluginMailESendToHuman = ({
 	config,
 	conversationId,
 	organizationId,
-}: IPluginInitMailE) => [sendToHuman({ config, conversationId, organizationId, tags })];
+	pluginId,
+}: IPluginInitMailE) => [sendToHuman({ config, pluginId, conversationId, organizationId, tags })];

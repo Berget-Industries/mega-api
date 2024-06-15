@@ -67,6 +67,10 @@ export function knowledgeTool({
 export interface InitPluginKnowledge {
 	tags: string[];
 	config: KnowledgeToolConfig;
+
+	conversationId: string;
+	organizationId: string;
+	pluginId: string;
 }
 
 export const initPluginKnowledge = ({ tags, config }: InitPluginKnowledge) => [

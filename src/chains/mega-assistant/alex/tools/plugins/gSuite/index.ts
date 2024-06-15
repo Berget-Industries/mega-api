@@ -5,6 +5,7 @@ interface initPluginGSuite {
 	config: Record<string, any>;
 	conversationId: string;
 	organizationId: string;
+	pluginId: string;
 }
 
 interface initPluginGSuiteCalendarEvent extends initPluginGSuite {
@@ -36,6 +37,7 @@ export const initPluginGSuiteCalendarEvent = ({
 	config,
 	conversationId,
 	organizationId,
+	pluginId,
 }: initPluginGSuiteCalendarEvent) => [
 	createCalendarEvent({ config, conversationId, organizationId, tags }),
 ];
