@@ -4,8 +4,8 @@ import { LoggerCallbackHandler } from "../../../callbackHandlers/index.ts";
 import { OpenAIEmbeddings } from "npm:langchain/embeddings/openai";
 import { DynamicStructuredTool, StructuredTool } from "npm:langchain/tools";
 import { MongoDBAtlasVectorSearch } from "npm:@langchain/mongodb";
-import { CallbackManagerForToolRun } from "npm:langchain/callbacks";
 import { Collection, Document } from "npm:mongodb";
+import { PluginStat_KnowledgeTool } from "../../../../models/index.ts";
 
 export const knowledgeToolInputZod = z.object({
 	query: z.string().describe("Frågan du vill få svar på."),
@@ -17,8 +17,10 @@ export interface KnowledgeToolConfig {
 
 const runFunction = async (
 	{ query }: z.infer<typeof knowledgeToolInputZod>,
-	_runManager: CallbackManagerForToolRun | undefined,
-	config: KnowledgeToolConfig
+	config: KnowledgeToolConfig,
+	organizationId: string,
+	conversationId: string,
+	pluginId: string
 ) => {
 	const dataSchema = new mongoose.Schema(
 		{
@@ -43,22 +45,36 @@ const runFunction = async (
 
 	const returnValue = result.map((x) => x.pageContent);
 
+	await PluginStat_KnowledgeTool.create({
+		query,
+		result: returnValue,
+		organizationId,
+		conversationId,
+		pluginId,
+	});
+
 	return Promise.resolve(returnValue.join("\n"));
 };
 
 export function knowledgeTool({
 	tags,
 	config,
+	organizationId,
+	conversationId,
+	pluginId,
 }: {
 	tags: string[];
 	config: KnowledgeToolConfig;
+	conversationId: string;
+	organizationId: string;
+	pluginId: string;
 }): StructuredTool {
 	return new DynamicStructuredTool({
 		verbose: true,
 		schema: knowledgeToolInputZod,
 		name: "min-kunskap",
 		description: "användbart när du behöver svar på en fråga som du inte vet svaret på.",
-		func: (input, runManager) => runFunction(input, runManager, config),
+		func: (input) => runFunction(input, config, organizationId, conversationId, pluginId),
 		callbacks: [new LoggerCallbackHandler()],
 		tags,
 	});
@@ -67,8 +83,18 @@ export function knowledgeTool({
 export interface InitPluginKnowledge {
 	tags: string[];
 	config: KnowledgeToolConfig;
+
+	conversationId: string;
+	organizationId: string;
+	pluginId: string;
 }
 
-export const initPluginKnowledge = ({ tags, config }: InitPluginKnowledge) => [
-	knowledgeTool({ tags, config }),
+export const initPluginKnowledge = ({
+	tags,
+	config,
+	organizationId,
+	conversationId,
+	pluginId,
+}: InitPluginKnowledge) => [
+	knowledgeTool({ tags, config, organizationId, conversationId, pluginId }),
 ];

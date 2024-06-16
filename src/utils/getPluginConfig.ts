@@ -39,7 +39,7 @@ export async function getAlexPlugins(organizationId: string) {
 	});
 
 	const pluginConfigs = pluginDocs.map((pluginDoc) => {
-		return pluginDoc.toObject() as IPlugin;
+		return pluginDoc.toObject();
 	});
 
 	return pluginConfigs;
