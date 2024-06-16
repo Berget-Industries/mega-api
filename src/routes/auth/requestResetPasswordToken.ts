@@ -6,7 +6,7 @@ import { handleResponseError, handleResponseSuccess } from "../../utils/contextH
 const router = new Router();
 router.post("/requestResetPasswordToken", async (ctx: Context) => {
 	try {
-		const { email } = await ctx.state.session.user;
+		const { email } = await ctx.request.body().value;
 		const userDoc = await User.findOne({ email });
 
 		if (!userDoc) {
@@ -16,7 +16,7 @@ router.post("/requestResetPasswordToken", async (ctx: Context) => {
 			});
 			return;
 		}
-
+		console.log("Detta är emailen:", email);
 		await sendResetPasswordMail(userDoc.email);
 
 		handleResponseSuccess(ctx, {
