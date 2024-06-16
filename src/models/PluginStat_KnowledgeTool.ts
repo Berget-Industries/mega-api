@@ -2,7 +2,7 @@ import { model, Schema, Types } from "npm:mongoose";
 
 interface ISendMailToHuman {
 	query: string;
-	results: string[];
+	result: string[];
 	organizationId: Types.ObjectId;
 	conversationId: Types.ObjectId;
 	pluginId: Types.ObjectId;
