@@ -5,6 +5,7 @@ import { ILLMOutput } from "../../models/Message.ts";
 
 export interface IMegaAssistantStreamChunk {
 	token: string;
+	type: "assistant" | "tool";
 	assistant: string;
 	role: "thinker" | "speaker";
 	conversationId: string;
@@ -42,7 +43,7 @@ export async function runMegaAssistant({
 		| evaConfig
 		| undefined;
 
-	console.log(alexConfig);
+	// console.log(alexConfig);
 
 	const alex = await runAlex({
 		organizationSystemPrompt: alexConfig.systemPrompt,
@@ -51,17 +52,18 @@ export async function runMegaAssistant({
 		organizationId,
 		conversationId,
 		input: message,
-		onStreamChunk: (token: string) =>
+		onStreamChunk: (token: string, type: "assistant" | "tool") =>
 			onStreamChunk &&
 			onStreamChunk({
 				token,
+				type,
 				assistant: "Alex",
 				role: evaConfig ? "thinker" : "speaker",
 				conversationId,
 			}),
 	});
 
-	console.log(alex);
+	// console.log(alex);
 
 	if (!evaConfig) {
 		console.log("No Eva config found");
