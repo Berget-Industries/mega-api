@@ -11,7 +11,7 @@ export default class TokenCounterCallbackHandler extends BaseCallbackHandler {
 	}
 
 	handleLLMStart(llm: any, prompts: string[]) {
-		console.log(prompts[0]);
+		// console.log(prompts[0]);
 		const numberOfTokens = TokenCounter.calculateTokens(prompts[0]);
 		this.counter.updateCount({
 			output: 0,

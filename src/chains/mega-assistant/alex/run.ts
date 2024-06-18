@@ -179,14 +179,7 @@ export default async function initAgentAlex({
 		model: "gpt-4o",
 		temperature: 0,
 		streaming: true,
-		callbacks: [
-			new TokenCounterCallbackHandler(tokenCounter),
-			{
-				handleLLMNewToken(token) {
-					onStreamChunk?.(token, "assistant");
-				},
-			},
-		],
+		callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
 	}) as unknown as BaseChatModel<BaseFunctionCallOptions, BaseMessageChunk>;
 
 	const tools = await createTools2({
@@ -224,34 +217,61 @@ export default async function initAgentAlex({
 		},
 		{ version: "v1" }
 	);
+
+	let output = "";
+	const actions: IAction[] = [];
+
+	for await (const chunk of stream) {
+		const name = chunk.name;
+
+		if (chunk.event === "on_llm_stream") {
+			const function_call = chunk.data.chunk.message.additional_kwargs.function_call;
+
+			if (function_call) {
+				const { name, arguments: args } = function_call;
+				if (name) {
+					onStreamChunk?.(`\n\ntool-input__${name}\n\n`, "tool");
+				} else {
+					onStreamChunk?.(args, "tool");
+				}
+			} else {
+				const newToken = chunk.data.chunk.text;
+				output += newToken;
+				onStreamChunk?.(newToken, "assistant");
+			}
+		}
+
+		if (chunk.event === "on_tool_start") {
+			onStreamChunk?.(`\n\ntool-start__${name}\n`, "tool");
+		}
+
+		if (chunk.event === "on_tool_end") {
+			onStreamChunk?.(`tool-end__${name}\n\n`, "tool");
+
+			const { input, output } = chunk.data.output;
+			const splitString = "Det lyckades! Dokument Id: ";
+
+			if (output && `${output}`.startsWith(splitString)) {
+				actions.push({
+					type: "skicka-mail-till-manniska",
+					docId: output.split(splitString)[0],
+					date: new Date(),
+					input,
+				} as IAction);
+			}
+		}
+	}
+
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
 	const usedTokens = tokenCounter.getCount();
 
-	let output: string = "";
-
-	for await (const chunk of stream) {
-		if (chunk.event === "on_llm_stream") {
-			output += chunk.data.chunk.text;
-			console.log(chunk.data.chunk.text);
-		}
-
-		if (chunk.event === "on_tool_start") {
-			console.log(chunk);
-		}
-
-		if (chunk.event === "on_tool_end") {
-			memory.saveContext({});
-			console.log(chunk);
-		}
-	}
-
 	return Promise.resolve({
 		name: "mega-assistant-alex",
 		responseTime,
 		usedTokens,
-		actions: [],
+		actions,
 		output,
 	});
 }
