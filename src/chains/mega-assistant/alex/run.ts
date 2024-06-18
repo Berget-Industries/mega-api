@@ -140,7 +140,7 @@ const createTools2 = async ({
 const createMemory = (sessionId: string) => {
 	const collection = AlexMemory.collection as unknown as Collection;
 
-	const bufferMemory = new BufferMemory({
+	return new BufferMemory({
 		chatHistory: new MongoDBChatMessageHistory({
 			collection,
 			sessionId,
@@ -149,8 +149,6 @@ const createMemory = (sessionId: string) => {
 		outputKey: "output",
 		inputKey: "input",
 	});
-
-	return bufferMemory;
 };
 
 interface IAgentAlexConfig {
