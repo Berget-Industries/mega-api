@@ -10,7 +10,7 @@ export const sendMailToHumanToolInputZod = z.object({
 	namn: z.string().describe("Namnet på personen som du pratar med just."),
 	email: z.string().email().describe("E-post till personen pratar med just nu."),
 	description: z.string().describe("Beskriv vad personen är intresserad av"),
-	category: z.string().describe("Välj en kategori för detta mailet från listan"),
+	category: z.string().describe("Välj en statisik-kategori för detta mailet från listan"),
 });
 
 const runFunction = async ({

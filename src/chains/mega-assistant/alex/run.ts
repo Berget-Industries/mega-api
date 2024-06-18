@@ -228,9 +228,9 @@ export default async function initAgentAlex({
 			if (function_call) {
 				const { name, arguments: args } = function_call;
 				if (name) {
-					onStreamChunk?.(`\n\ntool-input__${name}\n\n`, "tool");
+					onStreamChunk?.(`tool-input__${name}`, "tool");
 				} else {
-					onStreamChunk?.(args, "tool");
+					// onStreamChunk?.(args, "tool");
 				}
 			} else {
 				const newToken = chunk.data.chunk.text;
@@ -240,19 +240,19 @@ export default async function initAgentAlex({
 		}
 
 		if (chunk.event === "on_tool_start") {
-			onStreamChunk?.(`\n\ntool-start__${name}\n`, "tool");
+			onStreamChunk?.(`tool-start__${name}`, "tool");
 		}
 
 		if (chunk.event === "on_tool_end") {
-			onStreamChunk?.(`tool-end__${name}\n\n`, "tool");
+			onStreamChunk?.(`tool-end__${name}`, "tool");
 
-			const { input, output } = chunk.data.output;
+			const { input, output } = chunk.data;
 			const splitString = "Det lyckades! Dokument Id: ";
 
 			if (output && `${output}`.startsWith(splitString)) {
 				actions.push({
-					type: "skicka-mail-till-manniska",
-					docId: output.split(splitString)[0],
+					type: chunk.name,
+					docId: output.replace(splitString, ""),
 					date: new Date(),
 					input,
 				} as IAction);
