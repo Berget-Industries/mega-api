@@ -216,7 +216,7 @@ export default async function initAgentAlex({
 		{ version: "v1" }
 	);
 
-	var output = "";
+	let output = "";
 	const actions: IAction[] = [];
 
 	for await (const chunk of stream) {
