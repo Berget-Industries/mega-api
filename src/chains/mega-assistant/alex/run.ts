@@ -228,7 +228,7 @@ export default async function initAgentAlex({
 			if (function_call) {
 				const { name, arguments: args } = function_call;
 				if (name) {
-					onStreamChunk?.(`tool-input__${name}`, "tool");
+					onStreamChunk?.(`tool-input__${name} `, "tool");
 				} else {
 					// onStreamChunk?.(args, "tool");
 				}
@@ -240,12 +240,12 @@ export default async function initAgentAlex({
 		}
 
 		if (chunk.event === "on_tool_start") {
-			onStreamChunk?.(`tool-start__${name}`, "tool");
+			onStreamChunk?.(`tool-start__${name} `, "tool");
 		}
 
 		if (chunk.event === "on_tool_end") {
-			output += `tool-end__${name}`;
-			onStreamChunk?.(`tool-end__${name}`, "tool");
+			output += `tool-end__${name} `;
+			onStreamChunk?.(`tool-end__${name} `, "tool");
 
 			const { input, output: funcOutput } = chunk.data;
 			const splitString = "Det lyckades! Dokument Id: ";
