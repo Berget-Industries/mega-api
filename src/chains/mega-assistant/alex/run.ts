@@ -216,7 +216,7 @@ export default async function initAgentAlex({
 		{ version: "v1" }
 	);
 
-	let output = "";
+	var output = "";
 	const actions: IAction[] = [];
 
 	for await (const chunk of stream) {
@@ -244,12 +244,13 @@ export default async function initAgentAlex({
 		}
 
 		if (chunk.event === "on_tool_end") {
+			output += `tool-end__${name}`;
 			onStreamChunk?.(`tool-end__${name}`, "tool");
 
-			const { input, output } = chunk.data;
+			const { input, output: funcOutput } = chunk.data;
 			const splitString = "Det lyckades! Dokument Id: ";
 
-			if (output && `${output}`.startsWith(splitString)) {
+			if (funcOutput && `${funcOutput}`.startsWith(splitString)) {
 				actions.push({
 					type: chunk.name,
 					docId: output.replace(splitString, ""),
