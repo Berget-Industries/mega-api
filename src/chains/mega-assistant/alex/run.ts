@@ -208,7 +208,7 @@ export default async function initAgentAlex({
 	const startTime = Date.now();
 	const stream = agentExecutor.streamEvents(
 		{
-			alex_memory: (await memory.loadMemoryVariables()).alex_memory,
+			alex_memory: (await memory.loadMemoryVariables({})).alex_memory,
 			input,
 			organizationSystemPrompt,
 			organizationAbilities,

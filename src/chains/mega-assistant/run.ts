@@ -79,7 +79,13 @@ export async function runMegaAssistant({
 		nameOfUser: contactName,
 		onStreamChunk: (token: string) =>
 			onStreamChunk &&
-			onStreamChunk({ token, assistant: "Eva", role: "speaker", conversationId }),
+			onStreamChunk({
+				token,
+				type: "assistant",
+				assistant: "Eva",
+				role: "speaker",
+				conversationId,
+			}),
 	});
 
 	console.log(eva);
