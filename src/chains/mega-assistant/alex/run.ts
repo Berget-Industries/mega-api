@@ -253,7 +253,7 @@ export default async function initAgentAlex({
 			if (funcOutput && `${funcOutput}`.startsWith(splitString)) {
 				actions.push({
 					type: chunk.name,
-					docId: output.replace(splitString, ""),
+					docId: funcOutput.replace(splitString, ""),
 					date: new Date(),
 					input,
 				} as IAction);
