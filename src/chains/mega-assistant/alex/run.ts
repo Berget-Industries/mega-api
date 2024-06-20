@@ -118,7 +118,7 @@ const createTools2 = async ({
 			continue;
 		}
 
-		console.log("Activating plugin:", name);
+		// console.log("Activating plugin:", name);
 
 		const initPluginFunc = availablePlugins[foundInitFunc];
 		const pluginTools = initPluginFunc({
@@ -158,7 +158,7 @@ interface IAgentAlexConfig {
 	organizationSystemPrompt: string;
 	organizationAbilities: string;
 	organizationPlugins: string[];
-	onStreamChunk?: (token: string) => void;
+	onStreamChunk?: (token: string, type: "assistant" | "tool") => void;
 }
 
 export default async function initAgentAlex({
@@ -173,20 +173,11 @@ export default async function initAgentAlex({
 	const agentName = "Alex";
 	const tokenCounter = new TokenCounter();
 
-	console.log(organizationPlugins);
-
 	const llm = new ChatOpenAI({
 		model: "gpt-4o",
 		temperature: 0,
 		streaming: true,
-		callbacks: [
-			new TokenCounterCallbackHandler(tokenCounter),
-			{
-				handleLLMNewToken(token) {
-					onStreamChunk?.(token);
-				},
-			},
-		],
+		callbacks: [new TokenCounterCallbackHandler(tokenCounter)],
 	}) as unknown as BaseChatModel<BaseFunctionCallOptions, BaseMessageChunk>;
 
 	const tools = await createTools2({
@@ -215,35 +206,65 @@ export default async function initAgentAlex({
 	});
 
 	const startTime = Date.now();
-	const { output, intermediateSteps } = await agentExecutor.invoke({
-		input,
-		organizationSystemPrompt,
-		organizationAbilities,
-	});
+	const stream = agentExecutor.streamEvents(
+		{
+			alex_memory: (await memory.loadMemoryVariables({})).alex_memory,
+			input,
+			organizationSystemPrompt,
+			organizationAbilities,
+		},
+		{ version: "v1" }
+	);
+
+	let output = "";
+	const actions: IAction[] = [];
+
+	for await (const chunk of stream) {
+		const name = chunk.name;
+
+		if (chunk.event === "on_llm_stream") {
+			const function_call = chunk.data.chunk.message.additional_kwargs.function_call;
+
+			if (function_call) {
+				const { name, arguments: args } = function_call;
+				if (name) {
+					onStreamChunk?.(`tool-input__${name} `, "tool");
+				} else {
+					// onStreamChunk?.(args, "tool");
+				}
+			} else {
+				const newToken = chunk.data.chunk.text;
+				output += newToken;
+				onStreamChunk?.(newToken, "assistant");
+			}
+		}
+
+		if (chunk.event === "on_tool_start") {
+			onStreamChunk?.(`tool-start__${name} `, "tool");
+		}
+
+		if (chunk.event === "on_tool_end") {
+			output += `tool-end__${name} `;
+			onStreamChunk?.(`tool-end__${name} `, "tool");
+
+			const { input, output: funcOutput } = chunk.data;
+			const splitString = "Det lyckades! Dokument Id: ";
+
+			if (funcOutput && `${funcOutput}`.startsWith(splitString)) {
+				actions.push({
+					type: chunk.name,
+					docId: output.replace(splitString, ""),
+					date: new Date(),
+					input,
+				} as IAction);
+			}
+		}
+	}
+
 	const endTime = Date.now();
 
 	const responseTime = endTime - startTime;
 	const usedTokens = tokenCounter.getCount();
-
-	const actions: IAction[] = intermediateSteps
-		.filter((step: Record<string, any>) => step.action && step.observation)
-		.map((step: Record<string, any>) => {
-			const { action, observation } = step;
-			const { tool, toolInput } = action;
-
-			const docId = `${observation}`
-				.replace("Det lyckades! Dokument Id: ", "")
-				.split(": ")[0];
-
-			const formattedAction: IAction = {
-				type: tool,
-				input: toolInput,
-				docId: "",
-				date: new Date(),
-			};
-
-			return formattedAction;
-		});
 
 	return Promise.resolve({
 		name: "mega-assistant-alex",
